@@ -1,0 +1,19 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ${DB_POSTGRES_NAME}
+      POSTGRES_USER: ${DB_POSTGRES_USERNAME}
+      POSTGRES_PASSWORD: ${DB_POSTGRES_PASSWORD}
+    ports:
+      - '${DB_POSTGRES_PORT}:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ 'CMD-SHELL', 'pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB' ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:

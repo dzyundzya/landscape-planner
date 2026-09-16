@@ -3,7 +3,7 @@ from math import ceil
 from sqlalchemy import select
 
 from app.models import ProjectModel
-from app.repositories.base.base_crud_repository import BaseCRUDRepository
+from app.repositories.crud.base_crud_repository import BaseCRUDRepository
 
 
 class ProjectCRUDRepository(BaseCRUDRepository[ProjectModel]):
@@ -11,7 +11,7 @@ class ProjectCRUDRepository(BaseCRUDRepository[ProjectModel]):
 
     model = ProjectModel
 
-    async def get_project_page(
+    async def get_projects_page(
         self,
         page: int = 1,
         limit: int = 100,

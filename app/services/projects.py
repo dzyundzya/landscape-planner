@@ -2,7 +2,7 @@ from loguru import logger
 
 from app.models import ProjectModel
 from app.repositories.crud.projects import ProjectCRUDRepository
-from app.schemas.project import ProjectPageSchema, ProjectCreateSchema
+from app.schemas.project import ProjectCreateSchema, ProjectPageSchema
 from app.services.base import BaseService
 from app.services.exceptions.projects import ProjectNotFoundError
 

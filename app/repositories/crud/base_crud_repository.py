@@ -15,7 +15,7 @@ class BaseCRUDRepository[ModelType: BaseModel]:
     async def get_obj_by_id(self, obj_id: int) -> ModelType | None:
         """Получает объект по ID."""
 
-        return await self.session.scalar(select(ModelType).where(self.model.id == obj_id))
+        return await self.session.scalar(select(self.model).where(self.model.id == obj_id))
 
     async def create_obj(self, new_obj: ModelType) -> ModelType:
         """Создает объект."""
@@ -30,4 +30,4 @@ class BaseCRUDRepository[ModelType: BaseModel]:
     async def get_total(self) -> int:
         """Считает общее количество объектов."""
 
-        return await self.session.scalar(select(func.count()).select_from(self.model.id)) or 0
+        return await self.session.scalar(select(func.count()).select_from(self.model)) or 0

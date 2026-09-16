@@ -1,0 +1,31 @@
+[tool.poetry]
+name = "landscape-planner"
+version = "0.1.0"
+description = ""
+authors = ["@dzyundzya <dzyundzya.aa@yandex.ru>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">=3.12,<3.13"
+fastapi = "^0.141.1"
+uvicorn = {extras = ["standard"], version = "^0.53.0"}
+pydantic = ">=2,<3"
+pydantic-settings = "^2.15.0"
+python-multipart = "^0.0.32"
+loguru = "^0.7.3"
+sqlalchemy = {version = ">=2,<3", extras = ["asyncio"]}
+asyncpg = "^0.31.0"
+alembic = "^1.20.0"
+ezdxf = "^1.4.4"
+
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^9.1.1"
+pytest-asyncio = "^1.4.0"
+pytest-cov = "^7.1.0"
+httpx = "^0.28.1"
+ruff = "^0.16.7"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

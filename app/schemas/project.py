@@ -9,17 +9,10 @@ from app.schemas.base.pagination import PageResponseSchema
 class ProjectCreateSchema(BaseModel):
     """Схема создания проекта."""
 
-    name: Annotated[
-        str, Field(min_length=2, max_length=255, description='Название проекта.')
-    ]
-    description: Annotated[
-        str | None, Field(max_length=2000, description='Описание проекта')
-    ] = None
+    name: Annotated[str, Field(min_length=2, max_length=255, description='Название проекта.')]
+    description: Annotated[str | None, Field(max_length=2000, description='Описание проекта')] = None
 
-    model_config = ConfigDict(
-        str_strip_whitespace=True,
-        extra='forbid'
-    )
+    model_config = ConfigDict(str_strip_whitespace=True, extra='forbid')
 
 
 class ProjectReadSchema(BaseModel):

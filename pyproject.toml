@@ -34,6 +34,14 @@ build-backend = "poetry.core.masonry.api"
 target-version = "py312"
 line-length = 120
 src = ["app"]
+exclude = [
+    ".git",
+    ".mypy_cache",
+    ".ruff_cache",
+    ".venv",
+    "app/main.py",
+    "app/core/db/migrations/versions/*",
+]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B", "SIM"]

@@ -46,7 +46,7 @@ addopts = [
 [tool.coverage.run]
 branch = true
 source = ["app"]
-concurrency = ["greenlet"]
+concurrency = ["greenlet", "thread"]
 omit = [
     "app/core/db/migrations/*",
     "app/core/db/migrations/versions/*",
@@ -76,7 +76,6 @@ exclude = [
     ".mypy_cache",
     ".ruff_cache",
     ".venv",
-    "app/main.py",
     "app/core/db/migrations/versions/*",
 ]
 

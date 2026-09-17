@@ -102,6 +102,14 @@ class PlanStatus(StrEnum):
     INVALID = 'invalid'
 
 
+class ValidationStatus(StrEnum):
+    """Результат отдельной проверки или всего запуска Validator."""
+
+    PASSED = 'passed'
+    FAILED = 'failed'
+    NEEDS_VERIFICATION = 'needs_verification'
+
+
 class PlantingType(StrEnum):
     """Тип проектируемой посадки."""
 

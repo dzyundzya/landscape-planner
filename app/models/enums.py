@@ -32,3 +32,21 @@ class JobStatus(StrEnum):
     RUNNING = 'running'
     SUCCEEDED = 'succeeded'
     FAILED = 'failed'
+
+
+class FileArtifactKind(StrEnum):
+    """Назначение сформированного файла."""
+
+    CANONICAL_DXF = 'canonical_dxf'
+    RESULT_DXF = 'result_dxf'
+    PLAN_JSON = 'plan_json'
+    REPORT_JSON = 'report_json'
+    REPORT_MARKDOWN = 'report_markdown'
+
+
+class FileArtifactFormat(StrEnum):
+    """Формат сформированного файла."""
+
+    DXF = 'dxf'
+    JSON = 'json'
+    MARKDOWN = 'markdown'

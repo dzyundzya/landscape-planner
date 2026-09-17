@@ -47,6 +47,7 @@ class BackendSettings(BaseSettings):
 
     FILE_STORAGE_ROOT: Path = Path('var/storage')
     MAX_UPLOAD_SIZE_BYTES: int = 50 * 1024 * 1024
+    MAX_ARTIFACT_SIZE_BYTES: int = 200 * 1024 * 1024
 
     model_config = SettingsConfigDict(
         env_file='.env',

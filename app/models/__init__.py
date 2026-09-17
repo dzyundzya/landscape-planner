@@ -9,6 +9,8 @@ from app.models.enums import (
     JobType,
     NormativeRulesStatus,
     PlanStatus,
+    PlantingSource,
+    PlantingType,
     ProjectFileFormat,
     ProjectFileStatus,
     SemanticObjectType,
@@ -16,6 +18,7 @@ from app.models.enums import (
 from app.models.file_artifact import FileArtifactModel
 from app.models.job import JobModel
 from app.models.plan import PlanModel
+from app.models.planting import PlantingModel
 from app.models.project import ProjectModel
 from app.models.project_file import ProjectFileModel
 
@@ -33,6 +36,9 @@ __all__ = (
     'NormativeRulesStatus',
     'PlanModel',
     'PlanStatus',
+    'PlantingModel',
+    'PlantingSource',
+    'PlantingType',
     'ProjectFileFormat',
     'ProjectFileModel',
     'ProjectFileStatus',

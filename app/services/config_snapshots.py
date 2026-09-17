@@ -6,6 +6,8 @@ from loguru import logger
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models import ConfigSnapshotModel, CoordinateUnit, NormativeRulesStatus
+from app.planning import PlantingValidationError
+from app.planning.planting_validation import build_boundary
 from app.repositories.crud.analyses import AnalysisCRUDRepository
 from app.repositories.crud.config_snapshots import ConfigSnapshotCRUDRepository
 from app.repositories.crud.project_files import ProjectFileCRUDRepository
@@ -56,6 +58,7 @@ class ConfigSnapshotService(BaseService[ConfigSnapshotCRUDRepository]):
         if analysis is None:
             raise ConfigPrerequisiteError(f'Project with id={project_id} has no analysis for the current source file')
 
+        self._validate_boundary(data=data)
         self._validate_layer_mappings(data=data, analysis_result=analysis.result)
         scale = UNIT_SCALE_TO_METERS[data.coordinate_unit]
         payload = self._build_payload(analysis_id=analysis.id, data=data, scale=scale)
@@ -95,6 +98,13 @@ class ConfigSnapshotService(BaseService[ConfigSnapshotCRUDRepository]):
             snapshot.version,
         )
         return snapshot
+
+    @staticmethod
+    def _validate_boundary(data: ConfigSnapshotUpsertSchema) -> None:
+        try:
+            build_boundary(boundary=data.boundary.model_dump(mode='json'))
+        except PlantingValidationError as exc:
+            raise InvalidConfigSnapshotError(str(exc)) from exc
 
     @staticmethod
     def _validate_layer_mappings(data: ConfigSnapshotUpsertSchema, analysis_result: dict[str, object]) -> None:

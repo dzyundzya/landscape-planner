@@ -4,6 +4,7 @@ from typing import Annotated
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from app.models import PlanStatus
+from app.schemas.planting import PlantingReadSchema
 
 NonNegativeInt = Annotated[int, Field(ge=0)]
 
@@ -41,6 +42,7 @@ class PlanReadSchema(BaseModel):
     status: PlanStatus
     generator_version: str
     generation_summary: PlanGenerationSummarySchema
+    plantings: list[PlantingReadSchema]
     created_at: datetime
     updated_at: datetime | None
 

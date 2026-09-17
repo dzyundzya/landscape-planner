@@ -100,3 +100,17 @@ class PlanStatus(StrEnum):
     NEEDS_VERIFICATION = 'needs_verification'
     VERIFIED = 'verified'
     INVALID = 'invalid'
+
+
+class PlantingType(StrEnum):
+    """Тип проектируемой посадки."""
+
+    TREE = 'tree'
+    BUSH = 'bush'
+
+
+class PlantingSource(StrEnum):
+    """Источник появления посадки в плане."""
+
+    GENERATED = 'generated'
+    MANUAL = 'manual'

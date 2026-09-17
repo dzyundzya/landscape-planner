@@ -12,6 +12,12 @@ from app.services.exceptions.file_artifacts import (
 )
 from app.services.exceptions.jobs import InvalidJobError, JobStateConflictError
 from app.services.exceptions.plans import InvalidPlanError, PlanPrerequisiteError
+from app.services.exceptions.plantings import (
+    InvalidPlanRevisionError,
+    PlanRevisionConflictError,
+    PlanRevisionRequiredError,
+    PlantingValidationError,
+)
 from app.services.exceptions.project_files import InvalidProjectFileError, ProjectFileTooLargeError
 
 
@@ -203,5 +209,45 @@ def register_exception_handlers(app: FastAPI) -> None:
         logger.info('Некорректный план: path={}, detail={}', request.url.path, str(exc))
         return JSONResponse(
             status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+            content={'detail': str(exc)},
+        )
+
+    @app.exception_handler(PlantingValidationError)
+    async def planting_validation_handler(request: Request, exc: PlantingValidationError) -> JSONResponse:
+        """Преобразует невалидную посадку в HTTP 422."""
+
+        logger.info('Посадка отклонена: path={}, detail={}', request.url.path, str(exc))
+        return JSONResponse(
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+            content={'detail': str(exc)},
+        )
+
+    @app.exception_handler(PlanRevisionConflictError)
+    async def plan_revision_conflict_handler(request: Request, exc: PlanRevisionConflictError) -> JSONResponse:
+        """Преобразует устаревшую ревизию плана в HTTP 409."""
+
+        logger.info('Конфликт ревизии плана: path={}, detail={}', request.url.path, str(exc))
+        return JSONResponse(
+            status_code=status.HTTP_409_CONFLICT,
+            content={'detail': str(exc)},
+        )
+
+    @app.exception_handler(PlanRevisionRequiredError)
+    async def plan_revision_required_handler(request: Request, exc: PlanRevisionRequiredError) -> JSONResponse:
+        """Преобразует отсутствие If-Match в HTTP 428."""
+
+        logger.info('Не указана ревизия плана: path={}', request.url.path)
+        return JSONResponse(
+            status_code=status.HTTP_428_PRECONDITION_REQUIRED,
+            content={'detail': str(exc)},
+        )
+
+    @app.exception_handler(InvalidPlanRevisionError)
+    async def invalid_plan_revision_handler(request: Request, exc: InvalidPlanRevisionError) -> JSONResponse:
+        """Преобразует неверный If-Match в HTTP 400."""
+
+        logger.info('Некорректная ревизия плана: path={}, detail={}', request.url.path, str(exc))
+        return JSONResponse(
+            status_code=status.HTTP_400_BAD_REQUEST,
             content={'detail': str(exc)},
         )

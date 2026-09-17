@@ -1,17 +1,22 @@
 from datetime import UTC, datetime
+from decimal import Decimal
 
 from loguru import logger
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models import JobModel, JobStatus, JobType, PlanModel, PlanStatus
+from app.models import JobModel, JobStatus, JobType, PlanModel, PlanStatus, PlantingModel, PlantingSource, PlantingType
+from app.planning import PlantingCandidate, validate_planting_set
+from app.planning import PlantingValidationError as CorePlantingValidationError
 from app.repositories.crud.analyses import AnalysisCRUDRepository
 from app.repositories.crud.config_snapshots import ConfigSnapshotCRUDRepository
 from app.repositories.crud.jobs import JobCRUDRepository
 from app.repositories.crud.plans import PlanCRUDRepository
+from app.repositories.crud.plantings import PlantingCRUDRepository
 from app.repositories.crud.project_files import ProjectFileCRUDRepository
 from app.repositories.crud.projects import ProjectCRUDRepository
 from app.schemas.config_snapshot import GenerationParametersSchema
 from app.schemas.plan import PlanGenerationSummarySchema
+from app.schemas.planting import PlantingCreateSchema
 from app.services.base import BaseService
 from app.services.exceptions.jobs import JobNotFoundError, JobStateConflictError
 from app.services.exceptions.plans import InvalidPlanError, PlanNotFoundError, PlanPrerequisiteError
@@ -31,6 +36,7 @@ class PlanService(BaseService[PlanCRUDRepository]):
         self.analysis_repository = AnalysisCRUDRepository(async_session=async_session)
         self.config_repository = ConfigSnapshotCRUDRepository(async_session=async_session)
         self.job_repository = JobCRUDRepository(async_session=async_session)
+        self.planting_repository = PlantingCRUDRepository(async_session=async_session)
 
     async def enqueue_plan_generation(self, project_id: int) -> JobModel:
         """Ставит генерацию плана по текущей конфигурации в очередь."""
@@ -93,6 +99,7 @@ class PlanService(BaseService[PlanCRUDRepository]):
         job_id: int,
         generator_version: str,
         generation_summary: PlanGenerationSummarySchema,
+        plantings: list[PlantingCreateSchema],
     ) -> PlanModel:
         """Атомарно публикует план и завершает задачу генерации."""
 
@@ -118,7 +125,12 @@ class PlanService(BaseService[PlanCRUDRepository]):
         config = await self.config_repository.get_obj_by_id(obj_id=config_snapshot_id)
         if config is None or config.project_id != project_id or config.analysis_id != analysis_id:
             raise InvalidPlanError(f'Config snapshot with id={config_snapshot_id} does not match plan inputs')
-        self._validate_generation_summary(summary=generation_summary, generation=config.generation)
+        self._validate_generation_result(
+            summary=generation_summary,
+            plantings=plantings,
+            boundary=config.boundary,
+            generation=config.generation,
+        )
 
         analysis = await self.analysis_repository.get_obj_by_id(obj_id=analysis_id)
         if analysis is None or analysis.project_id != project_id or analysis.project_file_id != project_file_id:
@@ -136,6 +148,19 @@ class PlanService(BaseService[PlanCRUDRepository]):
                 generator_version=normalized_generator_version,
                 generation_summary=generation_summary.model_dump(mode='json'),
             )
+        )
+        await self.planting_repository.create_many(
+            plantings=[
+                PlantingModel(
+                    plan_id=plan.id,
+                    type=planting.type,
+                    source=PlantingSource.GENERATED,
+                    x_m=Decimal(str(planting.x_m)),
+                    y_m=Decimal(str(planting.y_m)),
+                    species=planting.species,
+                )
+                for planting in plantings
+            ]
         )
         job.status = JobStatus.SUCCEEDED
         job.stage = 'completed'
@@ -176,9 +201,28 @@ class PlanService(BaseService[PlanCRUDRepository]):
             raise JobStateConflictError(job_id=job.id, status=job.status)
 
     @staticmethod
-    def _validate_generation_summary(summary: PlanGenerationSummarySchema, generation: dict[str, object]) -> None:
+    def _validate_generation_result(
+        summary: PlanGenerationSummarySchema,
+        plantings: list[PlantingCreateSchema],
+        boundary: dict[str, object],
+        generation: dict[str, object],
+    ) -> None:
         parameters = GenerationParametersSchema.model_validate(generation)
         if summary.tree_count > parameters.max_trees:
             raise InvalidPlanError('Generated tree count exceeds config limit')
         if summary.bush_count > parameters.max_bushes:
             raise InvalidPlanError('Generated bush count exceeds config limit')
+        tree_count = sum(planting.type is PlantingType.TREE for planting in plantings)
+        bush_count = sum(planting.type is PlantingType.BUSH for planting in plantings)
+        if tree_count != summary.tree_count or bush_count != summary.bush_count:
+            raise InvalidPlanError('Generation summary does not match published plantings')
+        try:
+            validate_planting_set(
+                candidates=[
+                    PlantingCandidate(type=planting.type, x_m=planting.x_m, y_m=planting.y_m) for planting in plantings
+                ],
+                boundary=boundary,
+                generation=generation,
+            )
+        except CorePlantingValidationError as exc:
+            raise InvalidPlanError(str(exc)) from exc

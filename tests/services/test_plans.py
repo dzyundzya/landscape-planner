@@ -5,6 +5,7 @@ from tests.api.test_plans import create_current_config
 
 from app.models import JobStatus, ProjectModel
 from app.schemas.plan import PlanGenerationSummarySchema
+from app.schemas.planting import PlantingCreateSchema
 from app.services.exceptions.plans import InvalidPlanError
 from app.services.jobs import JobService
 from app.services.plans import PlanService
@@ -37,6 +38,10 @@ async def test_publish_plan_completes_job_atomically(
         job_id=job.id,
         generator_version='planner/1',
         generation_summary=summary,
+        plantings=[
+            PlantingCreateSchema(type='tree', x_m=1, y_m=1),
+            PlantingCreateSchema(type='bush', x_m=4, y_m=1),
+        ],
     )
 
     assert plan.revision == 1
@@ -52,6 +57,7 @@ async def test_publish_plan_completes_job_atomically(
         job_id=job.id,
         generator_version='ignored-after-publication',
         generation_summary=summary,
+        plantings=[],
     )
     assert repeated_plan.id == plan.id
 
@@ -81,6 +87,7 @@ async def test_publish_plan_rejects_count_above_config_limit(
                 bush_count=0,
                 rejected_candidate_count=0,
             ),
+            plantings=[],
         )
 
 

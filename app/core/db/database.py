@@ -5,6 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, async_sessionmaker
 from sqlalchemy.pool import Pool
 
 from app.core.config.manager import settings
+from app.services.exceptions.base import AppError
 
 
 class AsyncDatabase:
@@ -33,7 +34,9 @@ class AsyncDatabase:
         async with self.async_session_maker() as session:
             try:
                 yield session
-            # TODO не забудь сделать кастомный ексепшен
+            except AppError:
+                await session.rollback()
+                raise
             except Exception:
                 await session.rollback()
                 logger.exception('Транзакция базы данных отменена из-за непредвиденной ошибки')

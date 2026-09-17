@@ -6,6 +6,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.models.base_model import BaseModel
 
 if TYPE_CHECKING:
+    from app.models.job import JobModel
     from app.models.project_file import ProjectFileModel
 
 
@@ -18,6 +19,11 @@ class ProjectModel(BaseModel):
     description: Mapped[str | None] = mapped_column(Text, nullable=True)
 
     files: Mapped[list['ProjectFileModel']] = relationship(
+        back_populates='project',
+        cascade='all, delete-orphan',
+        passive_deletes=True,
+    )
+    jobs: Mapped[list['JobModel']] = relationship(
         back_populates='project',
         cascade='all, delete-orphan',
         passive_deletes=True,

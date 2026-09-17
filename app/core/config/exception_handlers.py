@@ -3,6 +3,11 @@ from fastapi.responses import JSONResponse
 from loguru import logger
 
 from app.services.exceptions.base import AlreadyExistsError, BadRequestError, NotFoundError
+from app.services.exceptions.file_artifacts import (
+    FileArtifactTooLargeError,
+    FileArtifactUnavailableError,
+    InvalidFileArtifactError,
+)
 from app.services.exceptions.jobs import InvalidJobError, JobStateConflictError
 from app.services.exceptions.project_files import InvalidProjectFileError, ProjectFileTooLargeError
 
@@ -100,6 +105,39 @@ def register_exception_handlers(app: FastAPI) -> None:
         """Преобразует запрещённый переход задачи в HTTP 409."""
 
         logger.info('Конфликт состояния задачи: path={}, detail={}', request.url.path, str(exc))
+        return JSONResponse(
+            status_code=status.HTTP_409_CONFLICT,
+            content={'detail': str(exc)},
+        )
+
+    @app.exception_handler(InvalidFileArtifactError)
+    async def invalid_file_artifact_handler(request: Request, exc: InvalidFileArtifactError) -> JSONResponse:
+        """Преобразует ошибку файла результата в HTTP 422."""
+
+        logger.info('Некорректный файл результата: path={}, detail={}', request.url.path, str(exc))
+        return JSONResponse(
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+            content={'detail': str(exc)},
+        )
+
+    @app.exception_handler(FileArtifactTooLargeError)
+    async def file_artifact_too_large_handler(request: Request, exc: FileArtifactTooLargeError) -> JSONResponse:
+        """Преобразует превышение размера результата в HTTP 413."""
+
+        logger.info('Превышен размер файла результата: path={}, detail={}', request.url.path, str(exc))
+        return JSONResponse(
+            status_code=status.HTTP_413_CONTENT_TOO_LARGE,
+            content={'detail': str(exc)},
+        )
+
+    @app.exception_handler(FileArtifactUnavailableError)
+    async def file_artifact_unavailable_handler(
+        request: Request,
+        exc: FileArtifactUnavailableError,
+    ) -> JSONResponse:
+        """Преобразует недоступность зарегистрированного файла в HTTP 409."""
+
+        logger.error('Файл результата недоступен: path={}, detail={}', request.url.path, str(exc))
         return JSONResponse(
             status_code=status.HTTP_409_CONFLICT,
             content={'detail': str(exc)},

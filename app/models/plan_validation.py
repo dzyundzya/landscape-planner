@@ -8,6 +8,7 @@ from app.models.base_model import BaseModel
 from app.models.enums import NormativeRulesStatus, ValidationStatus
 
 if TYPE_CHECKING:
+    from app.models.export import ExportModel
     from app.models.plan import PlanModel
 
 
@@ -55,3 +56,4 @@ class PlanValidationModel(BaseModel):
     rules_sha256: Mapped[str | None] = mapped_column(String(64), nullable=True)
 
     plan: Mapped['PlanModel'] = relationship(back_populates='validations')
+    exports: Mapped[list['ExportModel']] = relationship(back_populates='validation')

@@ -3,6 +3,7 @@ from fastapi.responses import JSONResponse
 from loguru import logger
 
 from app.services.exceptions.base import AlreadyExistsError, BadRequestError, NotFoundError
+from app.services.exceptions.project_files import InvalidProjectFileError, ProjectFileTooLargeError
 
 
 def register_exception_handlers(app: FastAPI) -> None:
@@ -50,5 +51,35 @@ def register_exception_handlers(app: FastAPI) -> None:
 
         return JSONResponse(
             status_code=status.HTTP_400_BAD_REQUEST,
+            content={'detail': str(exc)},
+        )
+
+    @app.exception_handler(InvalidProjectFileError)
+    async def invalid_project_file_handler(request: Request, exc: InvalidProjectFileError) -> JSONResponse:
+        """Преобразует ошибку исходного файла в HTTP 422."""
+
+        logger.info(
+            'Некорректный исходный файл: path={}, detail={}',
+            request.url.path,
+            str(exc),
+        )
+
+        return JSONResponse(
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+            content={'detail': str(exc)},
+        )
+
+    @app.exception_handler(ProjectFileTooLargeError)
+    async def project_file_too_large_handler(request: Request, exc: ProjectFileTooLargeError) -> JSONResponse:
+        """Преобразует превышение размера файла в HTTP 413."""
+
+        logger.info(
+            'Превышен размер исходного файла: path={}, detail={}',
+            request.url.path,
+            str(exc),
+        )
+
+        return JSONResponse(
+            status_code=status.HTTP_413_CONTENT_TOO_LARGE,
             content={'detail': str(exc)},
         )

@@ -15,5 +15,20 @@ services:
       timeout: 5s
       retries: 5
 
+  test_db:
+    image: postgres:16-alpine
+    profiles: ['test']
+    environment:
+      POSTGRES_DB: landscape_planner_test
+      POSTGRES_USER: ${DB_POSTGRES_USERNAME}
+      POSTGRES_PASSWORD: ${DB_POSTGRES_PASSWORD}
+    ports:
+      - '5434:5432'
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
 volumes:
   postgres_data:

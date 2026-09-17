@@ -11,6 +11,7 @@ if TYPE_CHECKING:
     from app.models.analysis import AnalysisModel
     from app.models.config_snapshot import ConfigSnapshotModel
     from app.models.job import JobModel
+    from app.models.planting import PlantingModel
     from app.models.project import ProjectModel
     from app.models.project_file import ProjectFileModel
 
@@ -68,3 +69,9 @@ class PlanModel(BaseModel):
     analysis: Mapped['AnalysisModel'] = relationship(back_populates='plans')
     config_snapshot: Mapped['ConfigSnapshotModel'] = relationship(back_populates='plans')
     job: Mapped['JobModel'] = relationship(back_populates='plan')
+    plantings: Mapped[list['PlantingModel']] = relationship(
+        back_populates='plan',
+        cascade='all, delete-orphan',
+        passive_deletes=True,
+        lazy='selectin',
+    )

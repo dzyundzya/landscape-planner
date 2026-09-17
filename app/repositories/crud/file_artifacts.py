@@ -32,3 +32,11 @@ class FileArtifactCRUDRepository(BaseCRUDRepository[FileArtifactModel]):
                 FileArtifactModel.project_id == project_id,
             )
         )
+
+    async def get_artifacts_for_job(self, job_id: int) -> list[FileArtifactModel]:
+        """Возвращает все файлы, опубликованные выполняющейся задачей."""
+
+        result = await self.session.scalars(
+            select(FileArtifactModel).where(FileArtifactModel.job_id == job_id).order_by(FileArtifactModel.id)
+        )
+        return list(result.all())

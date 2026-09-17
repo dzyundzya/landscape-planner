@@ -11,9 +11,13 @@ from sqlalchemy.ext.asyncio import AsyncConnection, AsyncEngine, AsyncSession, a
 from sqlalchemy.pool import NullPool
 
 import app.models  # noqa: F401
+from app.api.dependencies.project_files import get_project_file_service
 from app.core.db.base import Base
 from app.core.db.database import async_db
+from app.core.dependencies.session import DBSession
 from app.main import backend_app
+from app.services.project_files import ProjectFileService
+from app.storage import LocalFileStorage
 
 TEST_DATABASE_URL_ENV = 'TEST_DATABASE_URL'
 ROOT_DIR = Path(__file__).resolve().parents[2]
@@ -108,6 +112,7 @@ async def db_session(test_sessionmaker: async_sessionmaker[AsyncSession]) -> Asy
 @pytest_asyncio.fixture(loop_scope='session')
 async def app_test(
     test_sessionmaker: async_sessionmaker[AsyncSession],
+    file_storage_root: Path,
 ) -> AsyncGenerator[FastAPI, None]:
     """Подменяет основную DB dependency тестовой сессией."""
 
@@ -118,12 +123,29 @@ async def app_test(
             finally:
                 await session.rollback()
 
+    def get_test_project_file_service(async_session: DBSession) -> ProjectFileService:
+        return ProjectFileService(
+            async_session=async_session,
+            storage=LocalFileStorage(
+                root=file_storage_root,
+                max_size_bytes=1024 * 1024,
+            ),
+        )
+
     backend_app.dependency_overrides[async_db.get_session] = get_test_session
+    backend_app.dependency_overrides[get_project_file_service] = get_test_project_file_service
 
     try:
         yield backend_app
     finally:
         backend_app.dependency_overrides.clear()
+
+
+@pytest_asyncio.fixture(loop_scope='session')
+async def file_storage_root(tmp_path: Path) -> Path:
+    """Возвращает временную директорию файлового хранилища."""
+
+    return tmp_path / 'storage'
 
 
 @pytest_asyncio.fixture(loop_scope='session')

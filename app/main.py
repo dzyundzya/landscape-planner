@@ -54,7 +54,9 @@ def init_backend_app() -> FastAPI:
 
     return app
 
+
 backend_app: FastAPI = init_backend_app()
+
 
 @backend_app.get('/health')
 async def health_check() -> dict[str, str]:

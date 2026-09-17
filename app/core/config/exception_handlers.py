@@ -11,6 +11,10 @@ from app.services.exceptions.file_artifacts import (
     InvalidFileArtifactError,
 )
 from app.services.exceptions.jobs import InvalidJobError, JobStateConflictError
+from app.services.exceptions.plan_validations import (
+    InvalidPlanValidationError,
+    PlanValidationUnavailableError,
+)
 from app.services.exceptions.plans import InvalidPlanError, PlanPrerequisiteError
 from app.services.exceptions.plantings import (
     InvalidPlanRevisionError,
@@ -249,5 +253,28 @@ def register_exception_handlers(app: FastAPI) -> None:
         logger.info('Некорректная ревизия плана: path={}, detail={}', request.url.path, str(exc))
         return JSONResponse(
             status_code=status.HTTP_400_BAD_REQUEST,
+            content={'detail': str(exc)},
+        )
+
+    @app.exception_handler(PlanValidationUnavailableError)
+    async def plan_validation_unavailable_handler(
+        request: Request,
+        exc: PlanValidationUnavailableError,
+    ) -> JSONResponse:
+        """Преобразует отсутствие проверки актуальной ревизии в HTTP 409."""
+
+        logger.info('Проверка плана отсутствует: path={}, detail={}', request.url.path, str(exc))
+        return JSONResponse(
+            status_code=status.HTTP_409_CONFLICT,
+            content={'detail': str(exc)},
+        )
+
+    @app.exception_handler(InvalidPlanValidationError)
+    async def invalid_plan_validation_handler(request: Request, exc: InvalidPlanValidationError) -> JSONResponse:
+        """Преобразует несогласованный результат Validator в HTTP 422."""
+
+        logger.info('Некорректная проверка плана: path={}, detail={}', request.url.path, str(exc))
+        return JSONResponse(
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
             content={'detail': str(exc)},
         )

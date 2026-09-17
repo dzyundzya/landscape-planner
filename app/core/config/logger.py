@@ -11,6 +11,7 @@ LOG_FORMAT = (
     '<level>{message}</level>'
 )
 
+
 def configure_logger() -> None:
     """Настраивает логирование в Loguru."""
 

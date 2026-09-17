@@ -2,9 +2,9 @@ from fastapi import APIRouter, status
 
 from app.api.dependencies.projects import ProjectServiceDep
 from app.core.dependencies.pagination import PaginationDep
-from app.schemas.project import ProjectPageSchema, ProjectReadSchema, ProjectCreateSchema
+from app.schemas.project import ProjectCreateSchema, ProjectPageSchema, ProjectReadSchema
 
-router = APIRouter(prefix="/projects", tags=["Projects"])
+router = APIRouter(prefix='/projects', tags=['Projects'])
 
 
 @router.get('/', response_model=ProjectPageSchema)

@@ -50,3 +50,11 @@ class FileArtifactFormat(StrEnum):
     DXF = 'dxf'
     JSON = 'json'
     MARKDOWN = 'markdown'
+
+
+class AnalysisWarningSeverity(StrEnum):
+    """Серьёзность предупреждения анализа чертежа."""
+
+    INFO = 'info'
+    WARNING = 'warning'
+    BLOCKING = 'blocking'

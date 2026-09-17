@@ -7,6 +7,7 @@ from app.models.base_model import BaseModel
 from app.models.enums import ProjectFileFormat, ProjectFileStatus
 
 if TYPE_CHECKING:
+    from app.models.analysis import AnalysisModel
     from app.models.file_artifact import FileArtifactModel
     from app.models.job import JobModel
     from app.models.project import ProjectModel
@@ -58,3 +59,4 @@ class ProjectFileModel(BaseModel):
     project: Mapped['ProjectModel'] = relationship(back_populates='files')
     jobs: Mapped[list['JobModel']] = relationship(back_populates='project_file')
     artifacts: Mapped[list['FileArtifactModel']] = relationship(back_populates='project_file')
+    analyses: Mapped[list['AnalysisModel']] = relationship(back_populates='project_file')

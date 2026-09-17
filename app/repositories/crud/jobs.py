@@ -2,7 +2,7 @@ from datetime import UTC, datetime
 
 from sqlalchemy import select, update
 
-from app.models import JobModel, JobStatus
+from app.models import JobModel, JobStatus, JobType
 from app.repositories.crud.base_crud_repository import BaseCRUDRepository
 
 
@@ -10,6 +10,20 @@ class JobCRUDRepository(BaseCRUDRepository[JobModel]):
     """Операции с очередью фоновых задач."""
 
     model = JobModel
+
+    async def get_active_analysis(self, project_file_id: int) -> JobModel | None:
+        """Возвращает незавершённую задачу анализа исходника."""
+
+        return await self.session.scalar(
+            select(JobModel)
+            .where(
+                JobModel.project_file_id == project_file_id,
+                JobModel.type == JobType.ANALYZE,
+                JobModel.status.in_((JobStatus.QUEUED, JobStatus.RUNNING)),
+            )
+            .order_by(JobModel.created_at, JobModel.id)
+            .limit(1)
+        )
 
     async def get_job_by_id_for_update(self, job_id: int) -> JobModel | None:
         """Получает задачу с блокировкой до завершения транзакции."""

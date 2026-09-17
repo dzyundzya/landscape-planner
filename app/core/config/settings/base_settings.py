@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from pydantic import SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -42,6 +44,9 @@ class BackendSettings(BaseSettings):
 
     LOGGING_LEVEL: str = 'INFO'
     LOGGERS: tuple[str, str] = ('uvicorn.asgi', 'uvicorn.access')
+
+    FILE_STORAGE_ROOT: Path = Path('var/storage')
+    MAX_UPLOAD_SIZE_BYTES: int = 50 * 1024 * 1024
 
     model_config = SettingsConfigDict(
         env_file='.env',

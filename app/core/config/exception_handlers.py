@@ -4,6 +4,7 @@ from loguru import logger
 
 from app.services.exceptions.analyses import AnalysisSourceNotReadyError, InvalidAnalysisError
 from app.services.exceptions.base import AlreadyExistsError, BadRequestError, NotFoundError
+from app.services.exceptions.config_snapshots import ConfigPrerequisiteError, InvalidConfigSnapshotError
 from app.services.exceptions.file_artifacts import (
     FileArtifactTooLargeError,
     FileArtifactUnavailableError,
@@ -159,6 +160,26 @@ def register_exception_handlers(app: FastAPI) -> None:
         """Преобразует несогласованный результат анализа в HTTP 422."""
 
         logger.info('Некорректный результат анализа: path={}, detail={}', request.url.path, str(exc))
+        return JSONResponse(
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+            content={'detail': str(exc)},
+        )
+
+    @app.exception_handler(ConfigPrerequisiteError)
+    async def config_prerequisite_handler(request: Request, exc: ConfigPrerequisiteError) -> JSONResponse:
+        """Преобразует неготовность проекта к настройке в HTTP 409."""
+
+        logger.info('Проект не готов к настройке: path={}, detail={}', request.url.path, str(exc))
+        return JSONResponse(
+            status_code=status.HTTP_409_CONFLICT,
+            content={'detail': str(exc)},
+        )
+
+    @app.exception_handler(InvalidConfigSnapshotError)
+    async def invalid_config_snapshot_handler(request: Request, exc: InvalidConfigSnapshotError) -> JSONResponse:
+        """Преобразует несогласованные настройки в HTTP 422."""
+
+        logger.info('Некорректные настройки проекта: path={}, detail={}', request.url.path, str(exc))
         return JSONResponse(
             status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
             content={'detail': str(exc)},

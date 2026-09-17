@@ -58,3 +58,37 @@ class AnalysisWarningSeverity(StrEnum):
     INFO = 'info'
     WARNING = 'warning'
     BLOCKING = 'blocking'
+
+
+class CoordinateUnit(StrEnum):
+    """Подтверждённая единица координат исходного чертежа."""
+
+    MILLIMETER = 'millimeter'
+    CENTIMETER = 'centimeter'
+    METER = 'meter'
+    KILOMETER = 'kilometer'
+    INCH = 'inch'
+    FOOT = 'foot'
+    YARD = 'yard'
+
+
+class SemanticObjectType(StrEnum):
+    """Подтверждённое назначение объектов слоя."""
+
+    BUILDING = 'building'
+    ROAD = 'road'
+    UTILITY_WATER = 'utility_water'
+    UTILITY_SEWER = 'utility_sewer'
+    UTILITY_GAS = 'utility_gas'
+    UTILITY_POWER = 'utility_power'
+    EXISTING_TREE = 'existing_tree'
+    EXISTING_BUSH = 'existing_bush'
+    OTHER_OBSTACLE = 'other_obstacle'
+    IGNORE = 'ignore'
+
+
+class NormativeRulesStatus(StrEnum):
+    """Статус нормативного набора снимка конфигурации."""
+
+    NEEDS_VERIFICATION = 'needs_verification'
+    VERIFIED = 'verified'

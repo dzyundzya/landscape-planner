@@ -9,6 +9,16 @@ class ProjectFileCRUDRepository(BaseCRUDRepository[ProjectFileModel]):
 
     model = ProjectFileModel
 
+    async def get_latest_for_project(self, project_id: int) -> ProjectFileModel | None:
+        """Возвращает последнюю версию исходного файла проекта."""
+
+        return await self.session.scalar(
+            select(ProjectFileModel)
+            .where(ProjectFileModel.project_id == project_id)
+            .order_by(ProjectFileModel.version.desc(), ProjectFileModel.id.desc())
+            .limit(1)
+        )
+
     async def get_next_version(self, project_id: int) -> int:
         """Возвращает следующий номер версии исходника проекта."""
 

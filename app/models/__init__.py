@@ -1,4 +1,6 @@
+from app.models.analysis import AnalysisModel
 from app.models.enums import (
+    AnalysisWarningSeverity,
     FileArtifactFormat,
     FileArtifactKind,
     JobStatus,
@@ -12,6 +14,8 @@ from app.models.project import ProjectModel
 from app.models.project_file import ProjectFileModel
 
 __all__ = (
+    'AnalysisModel',
+    'AnalysisWarningSeverity',
     'FileArtifactFormat',
     'FileArtifactKind',
     'FileArtifactModel',

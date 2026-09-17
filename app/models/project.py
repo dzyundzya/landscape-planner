@@ -6,6 +6,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.models.base_model import BaseModel
 
 if TYPE_CHECKING:
+    from app.models.analysis import AnalysisModel
     from app.models.file_artifact import FileArtifactModel
     from app.models.job import JobModel
     from app.models.project_file import ProjectFileModel
@@ -30,6 +31,11 @@ class ProjectModel(BaseModel):
         passive_deletes=True,
     )
     artifacts: Mapped[list['FileArtifactModel']] = relationship(
+        back_populates='project',
+        cascade='all, delete-orphan',
+        passive_deletes=True,
+    )
+    analyses: Mapped[list['AnalysisModel']] = relationship(
         back_populates='project',
         cascade='all, delete-orphan',
         passive_deletes=True,

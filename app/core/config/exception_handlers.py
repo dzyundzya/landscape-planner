@@ -2,6 +2,7 @@ from fastapi import FastAPI, Request, status
 from fastapi.responses import JSONResponse
 from loguru import logger
 
+from app.services.exceptions.analyses import AnalysisSourceNotReadyError, InvalidAnalysisError
 from app.services.exceptions.base import AlreadyExistsError, BadRequestError, NotFoundError
 from app.services.exceptions.file_artifacts import (
     FileArtifactTooLargeError,
@@ -140,5 +141,25 @@ def register_exception_handlers(app: FastAPI) -> None:
         logger.error('Файл результата недоступен: path={}, detail={}', request.url.path, str(exc))
         return JSONResponse(
             status_code=status.HTTP_409_CONFLICT,
+            content={'detail': str(exc)},
+        )
+
+    @app.exception_handler(AnalysisSourceNotReadyError)
+    async def analysis_source_not_ready_handler(request: Request, exc: AnalysisSourceNotReadyError) -> JSONResponse:
+        """Преобразует неготовность исходника к анализу в HTTP 409."""
+
+        logger.info('Исходник не готов к анализу: path={}, detail={}', request.url.path, str(exc))
+        return JSONResponse(
+            status_code=status.HTTP_409_CONFLICT,
+            content={'detail': str(exc)},
+        )
+
+    @app.exception_handler(InvalidAnalysisError)
+    async def invalid_analysis_handler(request: Request, exc: InvalidAnalysisError) -> JSONResponse:
+        """Преобразует несогласованный результат анализа в HTTP 422."""
+
+        logger.info('Некорректный результат анализа: path={}, detail={}', request.url.path, str(exc))
+        return JSONResponse(
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
             content={'detail': str(exc)},
         )

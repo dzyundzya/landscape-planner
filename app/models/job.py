@@ -11,6 +11,7 @@ from app.models.enums import JobStatus, JobType
 if TYPE_CHECKING:
     from app.models.analysis import AnalysisModel
     from app.models.file_artifact import FileArtifactModel
+    from app.models.plan import PlanModel
     from app.models.project import ProjectModel
     from app.models.project_file import ProjectFileModel
 
@@ -65,3 +66,4 @@ class JobModel(BaseModel):
     project_file: Mapped['ProjectFileModel | None'] = relationship(back_populates='jobs')
     artifacts: Mapped[list['FileArtifactModel']] = relationship(back_populates='job')
     analysis: Mapped['AnalysisModel | None'] = relationship(back_populates='job')
+    plan: Mapped['PlanModel | None'] = relationship(back_populates='job')

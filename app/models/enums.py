@@ -92,3 +92,11 @@ class NormativeRulesStatus(StrEnum):
 
     NEEDS_VERIFICATION = 'needs_verification'
     VERIFIED = 'verified'
+
+
+class PlanStatus(StrEnum):
+    """Состояние проверки плана озеленения."""
+
+    NEEDS_VERIFICATION = 'needs_verification'
+    VERIFIED = 'verified'
+    INVALID = 'invalid'

@@ -10,6 +10,7 @@ if TYPE_CHECKING:
     from app.models.analysis import AnalysisModel
     from app.models.file_artifact import FileArtifactModel
     from app.models.job import JobModel
+    from app.models.plan import PlanModel
     from app.models.project import ProjectModel
 
 
@@ -60,3 +61,4 @@ class ProjectFileModel(BaseModel):
     jobs: Mapped[list['JobModel']] = relationship(back_populates='project_file')
     artifacts: Mapped[list['FileArtifactModel']] = relationship(back_populates='project_file')
     analyses: Mapped[list['AnalysisModel']] = relationship(back_populates='project_file')
+    plans: Mapped[list['PlanModel']] = relationship(back_populates='project_file')

@@ -11,6 +11,11 @@ class ProjectCRUDRepository(BaseCRUDRepository[ProjectModel]):
 
     model = ProjectModel
 
+    async def get_project_by_id_for_update(self, project_id: int) -> ProjectModel | None:
+        """Получает проект с блокировкой до завершения транзакции."""
+
+        return await self.session.scalar(select(ProjectModel).where(ProjectModel.id == project_id).with_for_update())
+
     async def get_projects_page(
         self,
         page: int = 1,

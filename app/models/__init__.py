@@ -8,12 +8,14 @@ from app.models.enums import (
     JobStatus,
     JobType,
     NormativeRulesStatus,
+    PlanStatus,
     ProjectFileFormat,
     ProjectFileStatus,
     SemanticObjectType,
 )
 from app.models.file_artifact import FileArtifactModel
 from app.models.job import JobModel
+from app.models.plan import PlanModel
 from app.models.project import ProjectModel
 from app.models.project_file import ProjectFileModel
 
@@ -29,6 +31,8 @@ __all__ = (
     'JobStatus',
     'JobType',
     'NormativeRulesStatus',
+    'PlanModel',
+    'PlanStatus',
     'ProjectFileFormat',
     'ProjectFileModel',
     'ProjectFileStatus',

@@ -10,6 +10,7 @@ from app.models.enums import CoordinateUnit, NormativeRulesStatus
 
 if TYPE_CHECKING:
     from app.models.analysis import AnalysisModel
+    from app.models.plan import PlanModel
     from app.models.project import ProjectModel
 
 
@@ -69,3 +70,4 @@ class ConfigSnapshotModel(BaseModel):
 
     project: Mapped['ProjectModel'] = relationship(back_populates='config_snapshots')
     analysis: Mapped['AnalysisModel'] = relationship(back_populates='config_snapshots')
+    plans: Mapped[list['PlanModel']] = relationship(back_populates='config_snapshot')

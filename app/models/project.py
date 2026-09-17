@@ -10,6 +10,7 @@ if TYPE_CHECKING:
     from app.models.config_snapshot import ConfigSnapshotModel
     from app.models.file_artifact import FileArtifactModel
     from app.models.job import JobModel
+    from app.models.plan import PlanModel
     from app.models.project_file import ProjectFileModel
 
 
@@ -42,6 +43,11 @@ class ProjectModel(BaseModel):
         passive_deletes=True,
     )
     config_snapshots: Mapped[list['ConfigSnapshotModel']] = relationship(
+        back_populates='project',
+        cascade='all, delete-orphan',
+        passive_deletes=True,
+    )
+    plans: Mapped[list['PlanModel']] = relationship(
         back_populates='project',
         cascade='all, delete-orphan',
         passive_deletes=True,

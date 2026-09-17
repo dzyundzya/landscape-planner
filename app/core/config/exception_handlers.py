@@ -3,6 +3,7 @@ from fastapi.responses import JSONResponse
 from loguru import logger
 
 from app.services.exceptions.base import AlreadyExistsError, BadRequestError, NotFoundError
+from app.services.exceptions.jobs import InvalidJobError, JobStateConflictError
 from app.services.exceptions.project_files import InvalidProjectFileError, ProjectFileTooLargeError
 
 
@@ -81,5 +82,25 @@ def register_exception_handlers(app: FastAPI) -> None:
 
         return JSONResponse(
             status_code=status.HTTP_413_CONTENT_TOO_LARGE,
+            content={'detail': str(exc)},
+        )
+
+    @app.exception_handler(InvalidJobError)
+    async def invalid_job_handler(request: Request, exc: InvalidJobError) -> JSONResponse:
+        """Преобразует некорректные параметры задачи в HTTP 422."""
+
+        logger.info('Некорректная задача: path={}, detail={}', request.url.path, str(exc))
+        return JSONResponse(
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+            content={'detail': str(exc)},
+        )
+
+    @app.exception_handler(JobStateConflictError)
+    async def job_state_conflict_handler(request: Request, exc: JobStateConflictError) -> JSONResponse:
+        """Преобразует запрещённый переход задачи в HTTP 409."""
+
+        logger.info('Конфликт состояния задачи: path={}, detail={}', request.url.path, str(exc))
+        return JSONResponse(
+            status_code=status.HTTP_409_CONFLICT,
             content={'detail': str(exc)},
         )

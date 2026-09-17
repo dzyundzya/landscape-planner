@@ -4,14 +4,15 @@ from pathlib import Path
 
 import uvicorn
 from fastapi import FastAPI
-from loguru import logger
 from fastapi.middleware.cors import CORSMiddleware
-from starlette.staticfiles import StaticFiles
+from fastapi.staticfiles import StaticFiles
+from loguru import logger
 
+from app.api.endpoints import router as api_endpoint_router
+from app.core.config.exception_handlers import register_exception_handlers
 from app.core.config.logger import configure_logger
 from app.core.config.manager import settings
 from app.core.db.database import async_db
-from app.api.endpoints import router as api_endpoint_router
 
 
 def init_backend_app() -> FastAPI:
@@ -20,20 +21,22 @@ def init_backend_app() -> FastAPI:
 
     @asynccontextmanager
     async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
-        logger.warning(
+        logger.info(
             'Приложение Landscape planner запущено: debug={}, api_prefix={}',
             settings.DEBUG,
             settings.API_PREFIX,
         )
         yield
-        logger.warning('Приложение Landscape planner останавливается')
+        logger.info('Приложение Landscape planner останавливается')
         await async_db.dispose()
-        logger.warning('Подключение к базе данных закрыто')
+        logger.info('Подключение к базе данных закрыто')
 
     app = FastAPI(
         **settings.set_backend_app_attributes,
         lifespan=lifespan,
     )
+
+    register_exception_handlers(app=app)
 
     app.add_middleware(
         CORSMiddleware,

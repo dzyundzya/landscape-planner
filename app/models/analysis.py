@@ -7,6 +7,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.models.base_model import BaseModel
 
 if TYPE_CHECKING:
+    from app.models.config_snapshot import ConfigSnapshotModel
     from app.models.job import JobModel
     from app.models.project import ProjectModel
     from app.models.project_file import ProjectFileModel
@@ -41,3 +42,4 @@ class AnalysisModel(BaseModel):
     project: Mapped['ProjectModel'] = relationship(back_populates='analyses')
     project_file: Mapped['ProjectFileModel'] = relationship(back_populates='analyses')
     job: Mapped['JobModel'] = relationship(back_populates='analysis')
+    config_snapshots: Mapped[list['ConfigSnapshotModel']] = relationship(back_populates='analysis')

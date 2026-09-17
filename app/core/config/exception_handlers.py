@@ -11,6 +11,7 @@ from app.services.exceptions.file_artifacts import (
     InvalidFileArtifactError,
 )
 from app.services.exceptions.jobs import InvalidJobError, JobStateConflictError
+from app.services.exceptions.plans import InvalidPlanError, PlanPrerequisiteError
 from app.services.exceptions.project_files import InvalidProjectFileError, ProjectFileTooLargeError
 
 
@@ -180,6 +181,26 @@ def register_exception_handlers(app: FastAPI) -> None:
         """Преобразует несогласованные настройки в HTTP 422."""
 
         logger.info('Некорректные настройки проекта: path={}, detail={}', request.url.path, str(exc))
+        return JSONResponse(
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+            content={'detail': str(exc)},
+        )
+
+    @app.exception_handler(PlanPrerequisiteError)
+    async def plan_prerequisite_handler(request: Request, exc: PlanPrerequisiteError) -> JSONResponse:
+        """Преобразует неготовность проекта к генерации в HTTP 409."""
+
+        logger.info('Проект не готов к генерации: path={}, detail={}', request.url.path, str(exc))
+        return JSONResponse(
+            status_code=status.HTTP_409_CONFLICT,
+            content={'detail': str(exc)},
+        )
+
+    @app.exception_handler(InvalidPlanError)
+    async def invalid_plan_handler(request: Request, exc: InvalidPlanError) -> JSONResponse:
+        """Преобразует несогласованный результат генерации в HTTP 422."""
+
+        logger.info('Некорректный план: path={}, detail={}', request.url.path, str(exc))
         return JSONResponse(
             status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
             content={'detail': str(exc)},

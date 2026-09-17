@@ -1,0 +1,16 @@
+from app.services.exceptions.base import AppError, NotFoundError
+
+
+class PlanNotFoundError(NotFoundError):
+    """План проекта не найден."""
+
+    def __init__(self, plan_id: int) -> None:
+        super().__init__(entity='Plan', obj_id=plan_id)
+
+
+class PlanPrerequisiteError(AppError):
+    """Проект ещё не готов к генерации плана."""
+
+
+class InvalidPlanError(AppError):
+    """Результат генератора не соответствует зафиксированным входам."""

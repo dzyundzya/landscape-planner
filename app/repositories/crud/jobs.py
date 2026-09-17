@@ -25,6 +25,21 @@ class JobCRUDRepository(BaseCRUDRepository[JobModel]):
             .limit(1)
         )
 
+    async def get_active_plan_generation(self, project_id: int, config_snapshot_id: int) -> JobModel | None:
+        """Возвращает незавершённую генерацию для снимка конфигурации."""
+
+        return await self.session.scalar(
+            select(JobModel)
+            .where(
+                JobModel.project_id == project_id,
+                JobModel.type == JobType.GENERATE_PLAN,
+                JobModel.status.in_((JobStatus.QUEUED, JobStatus.RUNNING)),
+                JobModel.input_data['config_snapshot_id'].as_integer() == config_snapshot_id,
+            )
+            .order_by(JobModel.created_at, JobModel.id)
+            .limit(1)
+        )
+
     async def get_job_by_id_for_update(self, job_id: int) -> JobModel | None:
         """Получает задачу с блокировкой до завершения транзакции."""
 

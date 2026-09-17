@@ -11,11 +11,13 @@ from sqlalchemy.ext.asyncio import AsyncConnection, AsyncEngine, AsyncSession, a
 from sqlalchemy.pool import NullPool
 
 import app.models  # noqa: F401
+from app.api.dependencies.file_artifacts import get_file_artifact_service
 from app.api.dependencies.project_files import get_project_file_service
 from app.core.db.base import Base
 from app.core.db.database import async_db
 from app.core.dependencies.session import DBSession
 from app.main import backend_app
+from app.services.file_artifacts import FileArtifactService
 from app.services.project_files import ProjectFileService
 from app.storage import LocalFileStorage
 
@@ -132,8 +134,18 @@ async def app_test(
             ),
         )
 
+    def get_test_file_artifact_service(async_session: DBSession) -> FileArtifactService:
+        return FileArtifactService(
+            async_session=async_session,
+            storage=LocalFileStorage(
+                root=file_storage_root,
+                max_size_bytes=1024 * 1024,
+            ),
+        )
+
     backend_app.dependency_overrides[async_db.get_session] = get_test_session
     backend_app.dependency_overrides[get_project_file_service] = get_test_project_file_service
+    backend_app.dependency_overrides[get_file_artifact_service] = get_test_file_artifact_service
 
     try:
         yield backend_app

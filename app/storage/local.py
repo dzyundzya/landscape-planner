@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import BinaryIO
 from uuid import uuid4
 
-from app.models.enums import ProjectFileFormat
+from app.models.enums import FileArtifactFormat, ProjectFileFormat
 from app.storage.exceptions import EmptyStorageFileError, StorageFileTooLargeError
 
 CHUNK_SIZE = 1024 * 1024
@@ -39,8 +39,34 @@ class LocalFileStorage:
 
         file_id = uuid4().hex
         storage_key = f'projects/{project_id}/sources/{file_id}.{file_format.value}'
+        return self._save(storage_key=storage_key, source=source)
+
+    def save_artifact(
+        self,
+        project_id: int,
+        file_format: FileArtifactFormat,
+        source: BinaryIO,
+    ) -> StoredFile:
+        """Атомарно сохраняет сформированный файл проекта."""
+
+        file_id = uuid4().hex
+        extension = 'md' if file_format is FileArtifactFormat.MARKDOWN else file_format.value
+        storage_key = f'projects/{project_id}/artifacts/{file_id}.{extension}'
+        return self._save(storage_key=storage_key, source=source)
+
+    def get_path(self, storage_key: str) -> Path:
+        """Возвращает безопасный абсолютный путь по внутреннему ключу."""
+
+        return self._resolve(storage_key)
+
+    def delete(self, storage_key: str) -> None:
+        """Удаляет файл по внутреннему ключу."""
+
+        self._resolve(storage_key).unlink(missing_ok=True)
+
+    def _save(self, storage_key: str, source: BinaryIO) -> StoredFile:
         destination = self._resolve(storage_key)
-        temporary = self._resolve(f'.tmp/{file_id}.part')
+        temporary = self._resolve(f'.tmp/{uuid4().hex}.part')
         destination.parent.mkdir(parents=True, exist_ok=True)
         temporary.parent.mkdir(parents=True, exist_ok=True)
 
@@ -72,11 +98,6 @@ class LocalFileStorage:
             size_bytes=size_bytes,
             sha256=digest.hexdigest(),
         )
-
-    def delete(self, storage_key: str) -> None:
-        """Удаляет файл по внутреннему ключу."""
-
-        self._resolve(storage_key).unlink(missing_ok=True)
 
     def _resolve(self, storage_key: str) -> Path:
         path = (self.root / storage_key).resolve()

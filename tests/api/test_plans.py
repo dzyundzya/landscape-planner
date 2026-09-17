@@ -19,6 +19,7 @@ from app.models import (
     ProjectModel,
 )
 from app.schemas.plan import PlanGenerationSummarySchema
+from app.schemas.planting import PlantingCreateSchema
 from app.services.jobs import JobService
 from app.services.plans import PlanService
 
@@ -105,6 +106,18 @@ def generation_summary() -> PlanGenerationSummarySchema:
     )
 
 
+def generated_plantings() -> list[PlantingCreateSchema]:
+    """Возвращает посадки, согласованные с тестовой границей и интервалами."""
+
+    return [
+        PlantingCreateSchema(type='tree', x_m=1, y_m=1),
+        PlantingCreateSchema(type='tree', x_m=6, y_m=1),
+        PlantingCreateSchema(type='bush', x_m=1, y_m=4),
+        PlantingCreateSchema(type='bush', x_m=3, y_m=5),
+        PlantingCreateSchema(type='bush', x_m=1, y_m=7),
+    ]
+
+
 async def publish_plan(
     client: AsyncClient,
     db_session: AsyncSession,
@@ -127,6 +140,7 @@ async def publish_plan(
         job_id=job.id,
         generator_version='hex-grid/1',
         generation_summary=generation_summary(),
+        plantings=generated_plantings(),
     )
     return plan.id, job.id
 
@@ -180,12 +194,16 @@ async def test_get_published_plan(
     data = response.json()
 
     assert response.status_code == 200
+    assert response.headers['etag'] == '"1"'
     assert data['id'] == plan_id
     assert data['job_id'] == job_id
     assert data['revision'] == 1
     assert data['status'] == PlanStatus.NEEDS_VERIFICATION
     assert data['generator_version'] == 'hex-grid/1'
     assert data['generation_summary'] == generation_summary().model_dump(mode='json')
+    assert len(data['plantings']) == 5
+    assert {item['source'] for item in data['plantings']} == {'generated'}
+    assert len({item['public_id'] for item in data['plantings']}) == 5
 
 
 async def test_get_plan_hides_other_project(

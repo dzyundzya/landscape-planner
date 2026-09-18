@@ -5,7 +5,7 @@ class ConfigSnapshotNotFoundError(NotFoundError):
     """Снимок настроек проекта не найден."""
 
     def __init__(self, project_id: int) -> None:
-        super().__init__(entity='Config snapshot for project', obj_id=project_id)
+        super().__init__(entity='снимок конфигурации проекта', obj_id=project_id)
 
 
 class ConfigPrerequisiteError(AppError):

@@ -11,7 +11,7 @@ def get_expected_plan_revision(
     """Извлекает положительную ревизию плана из заголовка If-Match."""
 
     if if_match is None:
-        raise PlanRevisionRequiredError('If-Match header with plan revision is required')
+        raise PlanRevisionRequiredError('Требуется заголовок If-Match с ревизией плана')
 
     value = if_match.strip()
     if value.startswith('W/'):
@@ -20,9 +20,9 @@ def get_expected_plan_revision(
     try:
         revision = int(value)
     except ValueError as exc:
-        raise InvalidPlanRevisionError('If-Match must contain a positive integer plan revision') from exc
+        raise InvalidPlanRevisionError('If-Match должен содержать положительный номер ревизии плана') from exc
     if revision < 1:
-        raise InvalidPlanRevisionError('If-Match must contain a positive integer plan revision')
+        raise InvalidPlanRevisionError('If-Match должен содержать положительный номер ревизии плана')
     return revision
 
 

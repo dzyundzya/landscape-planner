@@ -102,7 +102,7 @@ class LocalFileStorage:
     def _resolve(self, storage_key: str) -> Path:
         path = (self.root / storage_key).resolve()
         if not path.is_relative_to(self.root):
-            raise ValueError('Storage key points outside storage root')
+            raise ValueError('Ключ хранилища указывает за пределы его корневой директории')
         return path
 
     @staticmethod

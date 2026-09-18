@@ -34,7 +34,7 @@ class CheckResultSchema(BaseModel):
 
         measurement = (self.actual, self.required, self.unit)
         if any(value is not None for value in measurement) and not all(value is not None for value in measurement):
-            raise ValueError('actual, required and unit must be provided together')
+            raise ValueError('Поля actual, required и unit должны быть указаны вместе')
         return self
 
 
@@ -62,7 +62,7 @@ class ValidationSummarySchema(BaseModel):
         """Проверяет согласованность общего количества проверок."""
 
         if self.passed + self.failed + self.needs_verification != self.total:
-            raise ValueError('Validation summary counts must equal total')
+            raise ValueError('Счётчики сводки проверки должны соответствовать общему количеству')
         return self
 
 

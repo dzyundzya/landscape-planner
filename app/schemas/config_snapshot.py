@@ -16,9 +16,9 @@ def validate_polygon_coordinates(coordinates: list[list[Coordinate]]) -> None:
 
     for ring in coordinates:
         if ring[0] != ring[-1]:
-            raise ValueError('Boundary rings must be closed')
+            raise ValueError('Кольца границы должны быть замкнуты')
         if len(set(ring[:-1])) < 3:
-            raise ValueError('Boundary rings must contain at least three distinct points')
+            raise ValueError('Кольца границы должны содержать не менее трёх различных точек')
 
 
 class PolygonBoundarySchema(BaseModel):
@@ -98,7 +98,7 @@ class ConfigSnapshotUpsertSchema(BaseModel):
 
         normalized_layers = [mapping.layer.casefold() for mapping in self.layer_mappings]
         if len(normalized_layers) != len(set(normalized_layers)):
-            raise ValueError('Each DXF layer may have only one mapping')
+            raise ValueError('Для каждого слоя DXF допускается только один mapping')
         return self
 
 

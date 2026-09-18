@@ -26,7 +26,7 @@ def build_boundary(boundary: dict[str, object]) -> BaseGeometry:
 
     geometry = shape(boundary)
     if geometry.geom_type not in {'Polygon', 'MultiPolygon'} or geometry.is_empty or not geometry.is_valid:
-        raise PlantingValidationError('Configured project boundary is invalid')
+        raise PlantingValidationError('Настроенная граница проекта некорректна')
     return geometry
 
 
@@ -43,13 +43,13 @@ def validate_planting_set(
     tree_count = sum(candidate.type is PlantingType.TREE for candidate in candidates)
     bush_count = sum(candidate.type is PlantingType.BUSH for candidate in candidates)
     if tree_count > parameters.max_trees:
-        raise PlantingValidationError('Tree count exceeds config limit')
+        raise PlantingValidationError('Количество деревьев превышает лимит конфигурации')
     if bush_count > parameters.max_bushes:
-        raise PlantingValidationError('Bush count exceeds config limit')
+        raise PlantingValidationError('Количество кустарников превышает лимит конфигурации')
 
     for index, candidate in enumerate(candidates):
         if not geometry.contains(Point(candidate.x_m, candidate.y_m)):
-            raise PlantingValidationError(f'Planting at index={index} is outside the project boundary')
+            raise PlantingValidationError(f'Посадка с индексом {index} находится вне границы проекта')
 
         for other_index in range(index):
             other = candidates[other_index]
@@ -61,7 +61,7 @@ def validate_planting_set(
             )
             if distance + 1e-9 < required:
                 raise PlantingValidationError(
-                    f'Plantings at indexes {other_index} and {index} require distance {required} m, actual {distance} m'
+                    f'Для посадок с индексами {other_index} и {index} требуется расстояние {required} м, фактическое — {distance} м'
                 )
 
 

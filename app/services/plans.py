@@ -46,15 +46,15 @@ class PlanService(BaseService[PlanCRUDRepository]):
 
         project_file = await self.project_file_repository.get_latest_for_project(project_id=project_id)
         if project_file is None:
-            raise PlanPrerequisiteError(f'Project with id={project_id} has no source file')
+            raise PlanPrerequisiteError(f'У проекта с id={project_id} отсутствует исходный файл')
 
         analysis = await self.analysis_repository.get_latest_for_project_file(project_file_id=project_file.id)
         if analysis is None:
-            raise PlanPrerequisiteError(f'Project with id={project_id} has no analysis for the current source file')
+            raise PlanPrerequisiteError(f'У проекта с id={project_id} отсутствует анализ текущего исходного файла')
 
         config = await self.config_repository.get_latest_for_project(project_id=project_id)
         if config is None or config.analysis_id != analysis.id:
-            raise PlanPrerequisiteError(f'Project with id={project_id} has no config for the current analysis')
+            raise PlanPrerequisiteError(f'У проекта с id={project_id} отсутствует конфигурация текущего анализа')
 
         active_job = await self.job_repository.get_active_plan_generation(
             project_id=project_id,
@@ -109,7 +109,7 @@ class PlanService(BaseService[PlanCRUDRepository]):
 
         normalized_generator_version = generator_version.strip()
         if not normalized_generator_version or len(normalized_generator_version) > 100:
-            raise InvalidPlanError('Generator version must contain from 1 to 100 characters')
+            raise InvalidPlanError('Версия генератора должна содержать от 1 до 100 символов')
 
         job = await self.job_repository.get_job_by_id_for_update(job_id=job_id)
         if job is None:
@@ -124,7 +124,7 @@ class PlanService(BaseService[PlanCRUDRepository]):
 
         config = await self.config_repository.get_obj_by_id(obj_id=config_snapshot_id)
         if config is None or config.project_id != project_id or config.analysis_id != analysis_id:
-            raise InvalidPlanError(f'Config snapshot with id={config_snapshot_id} does not match plan inputs')
+            raise InvalidPlanError(f'Снимок конфигурации с id={config_snapshot_id} не соответствует входам плана')
         self._validate_generation_result(
             summary=generation_summary,
             plantings=plantings,
@@ -134,7 +134,7 @@ class PlanService(BaseService[PlanCRUDRepository]):
 
         analysis = await self.analysis_repository.get_obj_by_id(obj_id=analysis_id)
         if analysis is None or analysis.project_id != project_id or analysis.project_file_id != project_file_id:
-            raise InvalidPlanError(f'Analysis with id={analysis_id} does not match plan inputs')
+            raise InvalidPlanError(f'Анализ с id={analysis_id} не соответствует входам плана')
 
         plan = await self.repository.create_obj(
             new_obj=PlanModel(
@@ -187,16 +187,16 @@ class PlanService(BaseService[PlanCRUDRepository]):
         config_snapshot_id: int,
     ) -> None:
         if job.type is not JobType.GENERATE_PLAN:
-            raise InvalidPlanError(f'Job with id={job.id} is not a plan generation job')
+            raise InvalidPlanError(f'Задача с id={job.id} не является задачей генерации плана')
         expected_inputs = {
             'project_file_id': project_file_id,
             'analysis_id': analysis_id,
             'config_snapshot_id': config_snapshot_id,
         }
         if job.project_id != project_id or job.project_file_id != project_file_id:
-            raise InvalidPlanError(f'Job with id={job.id} does not match project and source file')
+            raise InvalidPlanError(f'Задача с id={job.id} не соответствует проекту и исходному файлу')
         if any(job.input_data.get(key) != value for key, value in expected_inputs.items()):
-            raise InvalidPlanError(f'Job with id={job.id} does not match analysis and config snapshot')
+            raise InvalidPlanError(f'Задача с id={job.id} не соответствует анализу и снимку конфигурации')
         if job.status is not JobStatus.RUNNING:
             raise JobStateConflictError(job_id=job.id, status=job.status)
 
@@ -209,13 +209,13 @@ class PlanService(BaseService[PlanCRUDRepository]):
     ) -> None:
         parameters = GenerationParametersSchema.model_validate(generation)
         if summary.tree_count > parameters.max_trees:
-            raise InvalidPlanError('Generated tree count exceeds config limit')
+            raise InvalidPlanError('Количество сгенерированных деревьев превышает лимит конфигурации')
         if summary.bush_count > parameters.max_bushes:
-            raise InvalidPlanError('Generated bush count exceeds config limit')
+            raise InvalidPlanError('Количество сгенерированных кустарников превышает лимит конфигурации')
         tree_count = sum(planting.type is PlantingType.TREE for planting in plantings)
         bush_count = sum(planting.type is PlantingType.BUSH for planting in plantings)
         if tree_count != summary.tree_count or bush_count != summary.bush_count:
-            raise InvalidPlanError('Generation summary does not match published plantings')
+            raise InvalidPlanError('Сводка генерации не соответствует опубликованным посадкам')
         try:
             validate_planting_set(
                 candidates=[

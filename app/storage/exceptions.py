@@ -7,8 +7,11 @@ class StorageFileTooLargeError(StorageError):
 
     def __init__(self, max_size_bytes: int) -> None:
         self.max_size_bytes = max_size_bytes
-        super().__init__(f'File size exceeds {max_size_bytes} bytes')
+        super().__init__(f'Размер файла превышает {max_size_bytes} байт')
 
 
 class EmptyStorageFileError(StorageError):
     """Загруженный файл не содержит данных."""
+
+    def __init__(self) -> None:
+        super().__init__('Файл в хранилище не содержит данных')

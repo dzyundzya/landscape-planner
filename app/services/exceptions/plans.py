@@ -5,7 +5,7 @@ class PlanNotFoundError(NotFoundError):
     """План проекта не найден."""
 
     def __init__(self, plan_id: int) -> None:
-        super().__init__(entity='Plan', obj_id=plan_id)
+        super().__init__(entity='план', obj_id=plan_id)
 
 
 class PlanPrerequisiteError(AppError):

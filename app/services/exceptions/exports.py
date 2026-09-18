@@ -5,7 +5,7 @@ class ExportNotFoundError(NotFoundError):
     """Комплект экспорта не найден внутри плана."""
 
     def __init__(self, export_id: int) -> None:
-        super().__init__(entity='Export', obj_id=export_id)
+        super().__init__(entity='экспорт', obj_id=export_id)
 
 
 class ExportPrerequisiteError(AppError):

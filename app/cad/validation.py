@@ -18,7 +18,7 @@ def validate_dxf(path: Path) -> None:
     try:
         ezdxf.readfile(path)
     except (DXFError, OSError, UnicodeError) as exc:
-        raise InvalidDxfError from exc
+        raise InvalidDxfError('Не удалось прочитать DXF-файл') from exc
 
 
 def validate_dwf(path: Path) -> None:
@@ -28,7 +28,7 @@ def validate_dwf(path: Path) -> None:
         with path.open('rb') as source:
             signature = source.read(6)
     except OSError as exc:
-        raise InvalidDwfError from exc
+        raise InvalidDwfError('Не удалось прочитать DWF-файл') from exc
 
     if signature != b'(DWF V':
-        raise InvalidDwfError
+        raise InvalidDwfError('Файл не содержит корректную сигнатуру DWF')

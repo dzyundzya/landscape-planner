@@ -11,6 +11,42 @@ class Point2D:
 
 
 @dataclass(frozen=True, slots=True)
+class CoordinateTransform:
+    """Обратимое преобразование координат DXF в локальные метры."""
+
+    scale_to_meters: float
+    source_origin: Point2D = Point2D(0.0, 0.0)
+    local_origin_m: Point2D = Point2D(0.0, 0.0)
+
+    def __post_init__(self) -> None:
+        values = (
+            self.scale_to_meters,
+            self.source_origin.x,
+            self.source_origin.y,
+            self.local_origin_m.x,
+            self.local_origin_m.y,
+        )
+        if not all(isfinite(value) for value in values) or self.scale_to_meters <= 0:
+            raise ValueError('Coordinate transform must contain finite values and positive scale')
+
+    def to_local_meters(self, point: Point2D) -> Point2D:
+        """Переводит точку исходного DXF в локальные метры."""
+
+        return Point2D(
+            x=(point.x - self.source_origin.x) * self.scale_to_meters + self.local_origin_m.x,
+            y=(point.y - self.source_origin.y) * self.scale_to_meters + self.local_origin_m.y,
+        )
+
+    def to_source(self, point: Point2D) -> Point2D:
+        """Возвращает локальную точку в координаты исходного DXF."""
+
+        return Point2D(
+            x=(point.x - self.local_origin_m.x) / self.scale_to_meters + self.source_origin.x,
+            y=(point.y - self.local_origin_m.y) / self.scale_to_meters + self.source_origin.y,
+        )
+
+
+@dataclass(frozen=True, slots=True)
 class GeometryProvenance:
     """Происхождение нормализованного объекта DXF."""
 

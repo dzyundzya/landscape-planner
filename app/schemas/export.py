@@ -1,18 +1,10 @@
 from datetime import datetime
-from decimal import Decimal
 from typing import Annotated
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from app.models import (
-    CoordinateUnit,
-    FileArtifactFormat,
-    FileArtifactKind,
-    NormativeRulesStatus,
-    PlantCatalogStatus,
-    TerritoryType,
-)
-from app.schemas.config_snapshot import BoundarySchema, LayerMappingSchema
+from app.models import FileArtifactFormat, FileArtifactKind
+from app.schemas.config_snapshot import CalculationConfigSnapshotSchema
 from app.schemas.file_artifact import FileArtifactReadSchema
 from app.schemas.plan import PlanGenerationSummarySchema
 from app.schemas.plan_validation import PlanValidationReadSchema
@@ -29,25 +21,6 @@ class ExportPlanSnapshotSchema(BaseModel):
     model_config = ConfigDict(extra='forbid')
 
 
-class ExportConfigSnapshotSchema(BaseModel):
-    """Неизменяемая конфигурация, необходимая для формирования экспорта."""
-
-    content_sha256: Annotated[str, Field(min_length=64, max_length=64)]
-    coordinate_unit: CoordinateUnit
-    unit_scale_to_meters: Annotated[Decimal, Field(gt=0)]
-    boundary: BoundarySchema
-    layer_mappings: list[LayerMappingSchema]
-    territory_type: TerritoryType
-    rules_status: NormativeRulesStatus
-    rules_version: Annotated[str, Field(min_length=1, max_length=100)]
-    rules_sha256: Annotated[str, Field(min_length=64, max_length=64)]
-    plant_catalog_status: PlantCatalogStatus
-    plant_catalog_version: Annotated[str, Field(min_length=1, max_length=100)]
-    plant_catalog_sha256: Annotated[str, Field(min_length=64, max_length=64)]
-
-    model_config = ConfigDict(extra='forbid')
-
-
 class ExportJobInputSchema(BaseModel):
     """Полный снимок входов фоновой задачи экспорта."""
 
@@ -57,7 +30,7 @@ class ExportJobInputSchema(BaseModel):
     project_file_id: Annotated[int, Field(ge=1)]
     project_file_sha256: Annotated[str, Field(min_length=64, max_length=64)]
     config_snapshot_id: Annotated[int, Field(ge=1)]
-    config: ExportConfigSnapshotSchema
+    config: CalculationConfigSnapshotSchema
     plan: ExportPlanSnapshotSchema
     validation: PlanValidationReadSchema
 

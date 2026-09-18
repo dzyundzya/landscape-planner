@@ -88,6 +88,26 @@ class GenerationParametersSchema(BaseModel):
     model_config = ConfigDict(extra='forbid', allow_inf_nan=False)
 
 
+class CalculationConfigSnapshotSchema(BaseModel):
+    """Неизменяемые настройки для фонового расчёта плана."""
+
+    content_sha256: Annotated[str, Field(min_length=64, max_length=64)]
+    coordinate_unit: CoordinateUnit
+    unit_scale_to_meters: Annotated[Decimal, Field(gt=0)]
+    boundary: BoundarySchema
+    layer_mappings: list[LayerMappingSchema]
+    generation: GenerationParametersSchema
+    territory_type: TerritoryType
+    rules_status: NormativeRulesStatus
+    rules_version: Annotated[str, Field(min_length=1, max_length=100)]
+    rules_sha256: Annotated[str, Field(min_length=64, max_length=64)]
+    plant_catalog_status: PlantCatalogStatus
+    plant_catalog_version: Annotated[str, Field(min_length=1, max_length=100)]
+    plant_catalog_sha256: Annotated[str, Field(min_length=64, max_length=64)]
+
+    model_config = ConfigDict(extra='forbid')
+
+
 class ConfigSnapshotUpsertSchema(BaseModel):
     """Схема подтверждения настроек текущего анализа."""
 

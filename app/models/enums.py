@@ -21,6 +21,7 @@ class JobType(StrEnum):
     CONVERT_DWF = 'convert_dwf'
     ANALYZE = 'analyze'
     GENERATE_PLAN = 'generate_plan'
+    VALIDATE_PLAN = 'validate_plan'
     EXPORT = 'export'
     AGENT_REQUEST = 'agent_request'
 

@@ -21,12 +21,8 @@ from app.repositories.crud.jobs import JobCRUDRepository
 from app.repositories.crud.plan_validations import PlanValidationCRUDRepository
 from app.repositories.crud.plans import PlanCRUDRepository
 from app.repositories.crud.project_files import ProjectFileCRUDRepository
-from app.schemas.export import (
-    ExportConfigSnapshotSchema,
-    ExportJobInputSchema,
-    ExportManifestItemSchema,
-    ExportPlanSnapshotSchema,
-)
+from app.schemas.config_snapshot import CalculationConfigSnapshotSchema
+from app.schemas.export import ExportJobInputSchema, ExportManifestItemSchema, ExportPlanSnapshotSchema
 from app.schemas.plan_validation import PlanValidationReadSchema
 from app.schemas.planting import PlantingReadSchema
 from app.services.base import BaseService
@@ -114,12 +110,13 @@ class ExportService(BaseService[ExportCRUDRepository]):
             project_file_id=project_file.id,
             project_file_sha256=project_file.sha256,
             config_snapshot_id=plan.config_snapshot_id,
-            config=ExportConfigSnapshotSchema(
+            config=CalculationConfigSnapshotSchema(
                 content_sha256=config.content_sha256,
                 coordinate_unit=config.coordinate_unit,
                 unit_scale_to_meters=config.unit_scale_to_meters,
                 boundary=config.boundary,
                 layer_mappings=config.layer_mappings,
+                generation=config.generation,
                 territory_type=config.territory_type,
                 rules_status=config.rules_status,
                 rules_version=config.rules_version,

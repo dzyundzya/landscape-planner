@@ -10,7 +10,7 @@ from app.core.db.database import async_db
 from app.models import JobType
 from app.storage import LocalFileStorage
 from app.worker.dispatcher import JobDispatcher
-from app.worker.handlers import AnalysisJobHandler, ExportJobHandler, PlanGenerationJobHandler
+from app.worker.handlers import AnalysisJobHandler, ExportJobHandler, PlanGenerationJobHandler, PlanValidationJobHandler
 from app.worker.lock import WorkerAdvisoryLock
 from app.worker.runner import WorkerExitReason, WorkerRunner
 
@@ -33,6 +33,12 @@ def build_dispatcher() -> JobDispatcher:
                 storage=storage,
                 rules_path=settings.NORMATIVE_RULES_PATH,
                 plant_catalog_path=settings.PLANT_CATALOG_PATH,
+                curve_tolerance_m=settings.GEOMETRY_CURVE_TOLERANCE_M,
+            ),
+            JobType.VALIDATE_PLAN: PlanValidationJobHandler(
+                session_factory=async_db.async_session_maker,
+                storage=storage,
+                rules_path=settings.NORMATIVE_RULES_PATH,
                 curve_tolerance_m=settings.GEOMETRY_CURVE_TOLERANCE_M,
             ),
             JobType.EXPORT: ExportJobHandler(

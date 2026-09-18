@@ -14,3 +14,10 @@ class PlanPrerequisiteError(AppError):
 
 class InvalidPlanError(AppError):
     """Результат генератора не соответствует зафиксированным входам."""
+
+
+class PlanPreviewUnavailableError(AppError):
+    """Для плана отсутствует подготовленная геометрия preview."""
+
+    def __init__(self, plan_id: int) -> None:
+        super().__init__(f'Для плана с id={plan_id} отсутствует подготовленное представление')

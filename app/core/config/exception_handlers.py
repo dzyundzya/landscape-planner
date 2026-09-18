@@ -17,7 +17,7 @@ from app.services.exceptions.plan_validations import (
     PlanValidationAlreadyExistsError,
     PlanValidationUnavailableError,
 )
-from app.services.exceptions.plans import InvalidPlanError, PlanPrerequisiteError
+from app.services.exceptions.plans import InvalidPlanError, PlanPrerequisiteError, PlanPreviewUnavailableError
 from app.services.exceptions.plantings import (
     InvalidPlanRevisionError,
     PlanRevisionConflictError,
@@ -286,6 +286,16 @@ def register_exception_handlers(app: FastAPI) -> None:
         """Преобразует отсутствие проверки актуальной ревизии в HTTP 409."""
 
         logger.info('Проверка плана отсутствует: path={}, detail={}', request.url.path, str(exc))
+        return JSONResponse(
+            status_code=status.HTTP_409_CONFLICT,
+            content={'detail': str(exc)},
+        )
+
+    @app.exception_handler(PlanPreviewUnavailableError)
+    async def plan_preview_unavailable_handler(request: Request, exc: PlanPreviewUnavailableError) -> JSONResponse:
+        """Преобразует отсутствие подготовленного preview в HTTP 409."""
+
+        logger.info('Представление плана отсутствует: path={}, detail={}', request.url.path, str(exc))
         return JSONResponse(
             status_code=status.HTTP_409_CONFLICT,
             content={'detail': str(exc)},

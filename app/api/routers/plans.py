@@ -3,6 +3,7 @@ from fastapi import APIRouter, Response, status
 from app.api.dependencies.plans import PlanServiceDep
 from app.schemas.job import JobReadSchema
 from app.schemas.plan import PlanReadSchema
+from app.schemas.preview import PlanPreviewReadSchema
 
 router = APIRouter(prefix='/projects/{project_id}/plans', tags=['Plans'])
 
@@ -21,3 +22,12 @@ async def get_plan(project_id: int, plan_id: int, service: PlanServiceDep, respo
     plan = await service.get_plan(project_id=project_id, plan_id=plan_id)
     response.headers['ETag'] = f'"{plan.revision}"'
     return plan
+
+
+@router.get('/{plan_id}/preview', response_model=PlanPreviewReadSchema)
+async def get_plan_preview(project_id: int, plan_id: int, service: PlanServiceDep, response: Response):
+    """Возвращает диагностическую геометрию плана в локальных метрах."""
+
+    preview = await service.get_preview(project_id=project_id, plan_id=plan_id)
+    response.headers['ETag'] = f'"{preview.plan_revision}"'
+    return preview

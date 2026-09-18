@@ -7,6 +7,7 @@ from app.models import (
     NormativeRulesStatus,
     PlanModel,
     PlanStatus,
+    PlantCatalogStatus,
     PlanValidationModel,
     ValidationStatus,
 )
@@ -110,6 +111,14 @@ class PlanValidationService(BaseService[PlanValidationCRUDRepository]):
                     reason='Нормативный справочник не проверен',
                 )
             )
+        if config.plant_catalog_status is not PlantCatalogStatus.VERIFIED:
+            checks.append(
+                CheckResultSchema(
+                    check_type='plant_catalog_status',
+                    status=ValidationStatus.NEEDS_VERIFICATION,
+                    reason='Происхождение справочника растений не подтверждено',
+                )
+            )
 
         summary = self._build_summary(checks=checks)
         status = self._get_validation_status(summary=summary)
@@ -124,6 +133,9 @@ class PlanValidationService(BaseService[PlanValidationCRUDRepository]):
                 rules_status=config.rules_status,
                 rules_version=config.rules_version,
                 rules_sha256=config.rules_sha256,
+                plant_catalog_status=config.plant_catalog_status,
+                plant_catalog_version=config.plant_catalog_version,
+                plant_catalog_sha256=config.plant_catalog_sha256,
             )
         )
         plan.status = self._to_plan_status(status=status)

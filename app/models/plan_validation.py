@@ -5,7 +5,7 @@ from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models.base_model import BaseModel
-from app.models.enums import NormativeRulesStatus, ValidationStatus
+from app.models.enums import NormativeRulesStatus, PlantCatalogStatus, ValidationStatus
 
 if TYPE_CHECKING:
     from app.models.export import ExportModel
@@ -54,6 +54,19 @@ class PlanValidationModel(BaseModel):
     )
     rules_version: Mapped[str | None] = mapped_column(String(100), nullable=True)
     rules_sha256: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    plant_catalog_status: Mapped[PlantCatalogStatus | None] = mapped_column(
+        Enum(
+            PlantCatalogStatus,
+            name='validation_plant_catalog_status',
+            native_enum=False,
+            create_constraint=True,
+            length=32,
+            values_callable=lambda enum: [item.value for item in enum],
+        ),
+        nullable=True,
+    )
+    plant_catalog_version: Mapped[str | None] = mapped_column(String(100), nullable=True)
+    plant_catalog_sha256: Mapped[str | None] = mapped_column(String(64), nullable=True)
 
     plan: Mapped['PlanModel'] = relationship(back_populates='validations')
     exports: Mapped[list['ExportModel']] = relationship(back_populates='validation')

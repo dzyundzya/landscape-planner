@@ -94,6 +94,26 @@ class NormativeRulesStatus(StrEnum):
     VERIFIED = 'verified'
 
 
+class PlantCatalogStatus(StrEnum):
+    """Статус проверки происхождения справочника растений."""
+
+    NEEDS_VERIFICATION = 'needs_verification'
+    VERIFIED = 'verified'
+
+
+class TerritoryType(StrEnum):
+    """Тип территории для подбора рекомендованного ассортимента."""
+
+    COURTYARD = 'courtyard'
+    PRESCHOOL = 'preschool'
+    EDUCATION_AND_SPORT = 'education_and_sport'
+    HEALTHCARE = 'healthcare'
+    ROADS = 'roads'
+    PUBLIC_AND_COMMERCIAL = 'public_and_commercial'
+    PARKS_AND_PUBLIC_GREEN = 'parks_and_public_green'
+    INDUSTRIAL_AND_PROTECTION = 'industrial_and_protection'
+
+
 class PlanStatus(StrEnum):
     """Состояние проверки плана озеленения."""
 

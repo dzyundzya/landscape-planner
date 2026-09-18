@@ -6,20 +6,28 @@ from loguru import logger
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config.manager import settings
-from app.models import ConfigSnapshotModel, CoordinateUnit, NormativeRulesStatus
+from app.models import ConfigSnapshotModel, CoordinateUnit, NormativeRulesStatus, PlantCatalogStatus
 from app.planning import PlantingValidationError
 from app.planning.planting_validation import build_boundary
 from app.repositories.crud.analyses import AnalysisCRUDRepository
 from app.repositories.crud.config_snapshots import ConfigSnapshotCRUDRepository
 from app.repositories.crud.project_files import ProjectFileCRUDRepository
 from app.repositories.crud.projects import ProjectCRUDRepository
-from app.rules import LoadedRuleSet, RuleCatalogError, RuleVerificationStatus, load_rule_set
+from app.rules import (
+    LoadedPlantCatalog,
+    LoadedRuleSet,
+    PlantCatalogError,
+    RuleCatalogError,
+    RuleVerificationStatus,
+    load_plant_catalog,
+    load_rule_set,
+)
 from app.schemas.config_snapshot import ConfigSnapshotUpsertSchema
 from app.services.base import BaseService
 from app.services.exceptions.config_snapshots import ConfigPrerequisiteError, InvalidConfigSnapshotError
 from app.services.exceptions.projects import ProjectNotFoundError
 
-CONFIG_SCHEMA_VERSION = 1
+CONFIG_SCHEMA_VERSION = 2
 UNIT_SCALE_TO_METERS = {
     CoordinateUnit.MILLIMETER: Decimal('0.001'),
     CoordinateUnit.CENTIMETER: Decimal('0.01'),
@@ -64,6 +72,8 @@ class ConfigSnapshotService(BaseService[ConfigSnapshotCRUDRepository]):
         self._validate_layer_mappings(data=data, analysis_result=analysis.result)
         rule_set = self._load_rule_set()
         rules_status = self._get_rules_status(rule_set=rule_set)
+        plant_catalog = self._load_plant_catalog()
+        plant_catalog_status = PlantCatalogStatus(plant_catalog.data.source.verification_status)
         scale = UNIT_SCALE_TO_METERS[data.coordinate_unit]
         payload = self._build_payload(
             analysis_id=analysis.id,
@@ -71,6 +81,8 @@ class ConfigSnapshotService(BaseService[ConfigSnapshotCRUDRepository]):
             scale=scale,
             rule_set=rule_set,
             rules_status=rules_status,
+            plant_catalog=plant_catalog,
+            plant_catalog_status=plant_catalog_status,
         )
         content_sha256 = self._calculate_hash(payload=payload)
 
@@ -92,9 +104,13 @@ class ConfigSnapshotService(BaseService[ConfigSnapshotCRUDRepository]):
                 boundary=data.boundary.model_dump(mode='json'),
                 layer_mappings=[mapping.model_dump(mode='json') for mapping in data.layer_mappings],
                 generation=data.generation.model_dump(mode='json'),
+                territory_type=data.territory_type,
                 rules_status=rules_status,
                 rules_version=rule_set.data.version,
                 rules_sha256=rule_set.sha256,
+                plant_catalog_status=plant_catalog_status,
+                plant_catalog_version=plant_catalog.data.version,
+                plant_catalog_sha256=plant_catalog.sha256,
                 content_sha256=content_sha256,
             )
         )
@@ -136,11 +152,14 @@ class ConfigSnapshotService(BaseService[ConfigSnapshotCRUDRepository]):
         scale: Decimal,
         rule_set: LoadedRuleSet,
         rules_status: NormativeRulesStatus,
+        plant_catalog: LoadedPlantCatalog,
+        plant_catalog_status: PlantCatalogStatus,
     ) -> dict[str, object]:
         return {
             'analysis_id': analysis_id,
             'schema_version': CONFIG_SCHEMA_VERSION,
             'coordinate_unit': data.coordinate_unit.value,
+            'territory_type': data.territory_type.value,
             'unit_scale_to_meters': str(scale),
             'boundary': data.boundary.model_dump(mode='json'),
             'layer_mappings': [mapping.model_dump(mode='json') for mapping in data.layer_mappings],
@@ -148,6 +167,9 @@ class ConfigSnapshotService(BaseService[ConfigSnapshotCRUDRepository]):
             'rules_status': rules_status.value,
             'rules_version': rule_set.data.version,
             'rules_sha256': rule_set.sha256,
+            'plant_catalog_status': plant_catalog_status.value,
+            'plant_catalog_version': plant_catalog.data.version,
+            'plant_catalog_sha256': plant_catalog.sha256,
         }
 
     @staticmethod
@@ -164,6 +186,13 @@ class ConfigSnapshotService(BaseService[ConfigSnapshotCRUDRepository]):
         ):
             return NormativeRulesStatus.VERIFIED
         return NormativeRulesStatus.NEEDS_VERIFICATION
+
+    @staticmethod
+    def _load_plant_catalog() -> LoadedPlantCatalog:
+        try:
+            return load_plant_catalog(settings.PLANT_CATALOG_PATH)
+        except PlantCatalogError as exc:
+            raise InvalidConfigSnapshotError('Не удалось зафиксировать справочник растений') from exc
 
     @staticmethod
     def _calculate_hash(payload: dict[str, object]) -> str:

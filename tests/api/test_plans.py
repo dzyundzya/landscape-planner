@@ -13,10 +13,12 @@ from app.models import (
     JobType,
     NormativeRulesStatus,
     PlanStatus,
+    PlantCatalogStatus,
     ProjectFileFormat,
     ProjectFileModel,
     ProjectFileStatus,
     ProjectModel,
+    TerritoryType,
 )
 from app.schemas.plan import PlanGenerationSummarySchema
 from app.schemas.planting import PlantingCreateSchema
@@ -83,9 +85,13 @@ async def create_current_config(db_session: AsyncSession, project_id: int) -> Co
             'tree_bush_distance_m': 2,
             'grid_spacing_m': 1,
         },
+        territory_type=TerritoryType.COURTYARD,
         rules_status=NormativeRulesStatus.NEEDS_VERIFICATION,
         rules_version=None,
         rules_sha256=None,
+        plant_catalog_status=PlantCatalogStatus.VERIFIED,
+        plant_catalog_version='TEST_ONLY/1',
+        plant_catalog_sha256='d' * 64,
         content_sha256='b' * 64,
     )
     db_session.add(config)
@@ -170,6 +176,8 @@ async def test_enqueue_plan_generation(
     assert job.input_data['config_snapshot_id'] == config.id
     assert job.input_data['config_content_sha256'] == config.content_sha256
     assert job.input_data['rules_status'] == 'needs_verification'
+    assert job.input_data['territory_type'] == 'courtyard'
+    assert job.input_data['plant_catalog_status'] == 'verified'
 
 
 async def test_enqueue_plan_requires_project_inputs(client: AsyncClient, project: ProjectModel) -> None:

@@ -10,12 +10,9 @@ import yaml
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 from yaml import YAMLError
 
+from app.models.enums import PlantCatalogStatus, TerritoryType
 
-class PlantCatalogVerificationStatus(StrEnum):
-    """Статус проверки происхождения справочника растений."""
-
-    NEEDS_VERIFICATION = 'needs_verification'
-    VERIFIED = 'verified'
+PlantCatalogVerificationStatus = PlantCatalogStatus
 
 
 class PlantAssortment(StrEnum):
@@ -33,19 +30,6 @@ class PlantGroup(StrEnum):
     DECIDUOUS_TREE = 'deciduous_tree'
     DECIDUOUS_SHRUB = 'deciduous_shrub'
     VINE = 'vine'
-
-
-class TerritoryType(StrEnum):
-    """Тип территории из колонок исходной таблицы."""
-
-    COURTYARD = 'courtyard'
-    PRESCHOOL = 'preschool'
-    EDUCATION_AND_SPORT = 'education_and_sport'
-    HEALTHCARE = 'healthcare'
-    ROADS = 'roads'
-    PUBLIC_AND_COMMERCIAL = 'public_and_commercial'
-    PARKS_AND_PUBLIC_GREEN = 'parks_and_public_green'
-    INDUSTRIAL_AND_PROTECTION = 'industrial_and_protection'
 
 
 class PlantSuitability(StrEnum):

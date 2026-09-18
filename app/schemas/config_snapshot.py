@@ -4,7 +4,13 @@ from typing import Annotated, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, JsonValue, model_validator
 
-from app.models import CoordinateUnit, NormativeRulesStatus, SemanticObjectType
+from app.models import (
+    CoordinateUnit,
+    NormativeRulesStatus,
+    PlantCatalogStatus,
+    SemanticObjectType,
+    TerritoryType,
+)
 
 Coordinate = tuple[float, float]
 LinearRing = Annotated[list[Coordinate], Field(min_length=4)]
@@ -86,6 +92,7 @@ class ConfigSnapshotUpsertSchema(BaseModel):
     """Схема подтверждения настроек текущего анализа."""
 
     coordinate_unit: CoordinateUnit
+    territory_type: TerritoryType
     boundary: BoundarySchema
     layer_mappings: list[LayerMappingSchema] = Field(default_factory=list)
     generation: GenerationParametersSchema
@@ -118,6 +125,10 @@ class ConfigSnapshotReadSchema(BaseModel):
     rules_status: NormativeRulesStatus
     rules_version: str | None
     rules_sha256: Annotated[str | None, Field(min_length=64, max_length=64)]
+    territory_type: TerritoryType | None
+    plant_catalog_status: PlantCatalogStatus | None
+    plant_catalog_version: str | None
+    plant_catalog_sha256: Annotated[str | None, Field(min_length=64, max_length=64)]
     content_sha256: Annotated[str, Field(min_length=64, max_length=64)]
     created_at: datetime
 

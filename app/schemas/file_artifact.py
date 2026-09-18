@@ -13,6 +13,7 @@ class FileArtifactReadSchema(BaseModel):
     project_id: Annotated[int, Field(ge=1)]
     project_file_id: Annotated[int | None, Field(ge=1)]
     job_id: Annotated[int, Field(ge=1)]
+    export_id: Annotated[int | None, Field(ge=1)]
     kind: FileArtifactKind
     format: FileArtifactFormat
     download_name: str

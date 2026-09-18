@@ -10,6 +10,7 @@ from app.models.enums import PlanStatus
 if TYPE_CHECKING:
     from app.models.analysis import AnalysisModel
     from app.models.config_snapshot import ConfigSnapshotModel
+    from app.models.export import ExportModel
     from app.models.job import JobModel
     from app.models.plan_validation import PlanValidationModel
     from app.models.planting import PlantingModel
@@ -77,6 +78,11 @@ class PlanModel(BaseModel):
         lazy='selectin',
     )
     validations: Mapped[list['PlanValidationModel']] = relationship(
+        back_populates='plan',
+        cascade='all, delete-orphan',
+        passive_deletes=True,
+    )
+    exports: Mapped[list['ExportModel']] = relationship(
         back_populates='plan',
         cascade='all, delete-orphan',
         passive_deletes=True,

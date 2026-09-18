@@ -7,6 +7,7 @@ from app.models.base_model import BaseModel
 from app.models.enums import FileArtifactFormat, FileArtifactKind
 
 if TYPE_CHECKING:
+    from app.models.export import ExportModel
     from app.models.job import JobModel
     from app.models.project import ProjectModel
     from app.models.project_file import ProjectFileModel
@@ -19,6 +20,7 @@ class FileArtifactModel(BaseModel):
     __table_args__ = (
         CheckConstraint('size_bytes > 0', name='ck_file_artifacts_size_bytes_positive'),
         UniqueConstraint('job_id', 'kind', name='uq_file_artifacts_job_kind'),
+        UniqueConstraint('export_id', 'kind', name='uq_file_artifacts_export_kind'),
     )
 
     project_id: Mapped[int] = mapped_column(
@@ -35,6 +37,11 @@ class FileArtifactModel(BaseModel):
         ForeignKey('jobs.id', ondelete='RESTRICT'),
         index=True,
         nullable=False,
+    )
+    export_id: Mapped[int | None] = mapped_column(
+        ForeignKey('exports.id', ondelete='SET NULL'),
+        index=True,
+        nullable=True,
     )
     kind: Mapped[FileArtifactKind] = mapped_column(
         Enum(
@@ -67,3 +74,4 @@ class FileArtifactModel(BaseModel):
     project: Mapped['ProjectModel'] = relationship(back_populates='artifacts')
     project_file: Mapped['ProjectFileModel | None'] = relationship(back_populates='artifacts')
     job: Mapped['JobModel'] = relationship(back_populates='artifacts')
+    export: Mapped['ExportModel | None'] = relationship(back_populates='artifacts')

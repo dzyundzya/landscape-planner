@@ -8,6 +8,7 @@ from app.models.base_model import BaseModel
 if TYPE_CHECKING:
     from app.models.analysis import AnalysisModel
     from app.models.config_snapshot import ConfigSnapshotModel
+    from app.models.export import ExportModel
     from app.models.file_artifact import FileArtifactModel
     from app.models.job import JobModel
     from app.models.plan import PlanModel
@@ -33,6 +34,11 @@ class ProjectModel(BaseModel):
         passive_deletes=True,
     )
     artifacts: Mapped[list['FileArtifactModel']] = relationship(
+        back_populates='project',
+        cascade='all, delete-orphan',
+        passive_deletes=True,
+    )
+    exports: Mapped[list['ExportModel']] = relationship(
         back_populates='project',
         cascade='all, delete-orphan',
         passive_deletes=True,

@@ -16,6 +16,7 @@ from app.models.enums import (
     SemanticObjectType,
     ValidationStatus,
 )
+from app.models.export import ExportModel
 from app.models.file_artifact import FileArtifactModel
 from app.models.job import JobModel
 from app.models.plan import PlanModel
@@ -29,6 +30,7 @@ __all__ = (
     'AnalysisWarningSeverity',
     'ConfigSnapshotModel',
     'CoordinateUnit',
+    'ExportModel',
     'FileArtifactFormat',
     'FileArtifactKind',
     'FileArtifactModel',

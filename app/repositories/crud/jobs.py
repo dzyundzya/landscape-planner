@@ -40,6 +40,21 @@ class JobCRUDRepository(BaseCRUDRepository[JobModel]):
             .limit(1)
         )
 
+    async def get_active_export(self, plan_id: int, plan_revision: int) -> JobModel | None:
+        """Возвращает незавершённый экспорт конкретной ревизии плана."""
+
+        return await self.session.scalar(
+            select(JobModel)
+            .where(
+                JobModel.type == JobType.EXPORT,
+                JobModel.status.in_((JobStatus.QUEUED, JobStatus.RUNNING)),
+                JobModel.input_data['plan_id'].as_integer() == plan_id,
+                JobModel.input_data['plan_revision'].as_integer() == plan_revision,
+            )
+            .order_by(JobModel.created_at, JobModel.id)
+            .limit(1)
+        )
+
     async def get_job_by_id_for_update(self, job_id: int) -> JobModel | None:
         """Получает задачу с блокировкой до завершения транзакции."""
 

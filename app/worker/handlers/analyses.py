@@ -29,9 +29,9 @@ class AnalysisJobHandler:
         async with self.session_factory() as session:
             project_file = await ProjectFileCRUDRepository(session).get_obj_by_id(obj_id=project_file_id)
             if project_file is None or project_file.project_id != job.project_id:
-                raise InvalidAnalysisError('Analysis source does not match the queued job')
+                raise InvalidAnalysisError('Источник анализа не соответствует поставленной задаче')
             if project_file.format is not ProjectFileFormat.DXF or project_file.status is not ProjectFileStatus.READY:
-                raise InvalidAnalysisError('Analysis source must be a ready DXF file')
+                raise InvalidAnalysisError('Источник анализа должен быть готовым DXF-файлом')
             self._validate_snapshot(job=job, source_sha256=project_file.sha256, source_version=project_file.version)
             storage_key = project_file.storage_key
             await JobService(session).update_stage(job_id=job.id, stage='analyzing_dxf')
@@ -50,7 +50,7 @@ class AnalysisJobHandler:
     @staticmethod
     def _get_project_file_id(job: JobModel) -> int:
         if job.project_file_id is None:
-            raise InvalidAnalysisError('Analysis job has no source file')
+            raise InvalidAnalysisError('У задачи анализа отсутствует исходный файл')
         return job.project_file_id
 
     @staticmethod
@@ -62,4 +62,4 @@ class AnalysisJobHandler:
             'analysis_schema_version': ANALYSIS_SCHEMA_VERSION,
         }
         if any(job.input_data.get(key) != value for key, value in expected.items()):
-            raise InvalidAnalysisError('Analysis source snapshot does not match the queued job')
+            raise InvalidAnalysisError('Снимок источника анализа не соответствует поставленной задаче')

@@ -5,4 +5,4 @@ class ProjectNotFoundError(NotFoundError):
     """Проект не найден."""
 
     def __init__(self, project_id: int) -> None:
-        super().__init__(entity='Project', obj_id=project_id)
+        super().__init__(entity='проект', obj_id=project_id)

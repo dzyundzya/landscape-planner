@@ -70,7 +70,7 @@ class ExportService(BaseService[ExportCRUDRepository]):
         if completed_export is not None:
             completed_job = await self.job_repository.get_obj_by_id(obj_id=completed_export.job_id)
             if completed_job is None:
-                raise InvalidExportError(f'Export with id={completed_export.id} has no job')
+                raise InvalidExportError(f'У экспорта с id={completed_export.id} отсутствует задача')
             return completed_job
 
         active_job = await self.job_repository.get_active_export(
@@ -85,13 +85,13 @@ class ExportService(BaseService[ExportCRUDRepository]):
             plan_revision=plan.revision,
         )
         if validation is None:
-            raise ExportPrerequisiteError(f'Plan with id={plan.id} has no validation for revision={plan.revision}')
+            raise ExportPrerequisiteError(f'У плана с id={plan.id} отсутствует проверка ревизии {plan.revision}')
         if validation.status is not ValidationStatus.PASSED or plan.status is not PlanStatus.VERIFIED:
-            raise ExportPrerequisiteError(f'Plan with id={plan.id} revision={plan.revision} is not verified for export')
+            raise ExportPrerequisiteError(f'План с id={plan.id} ревизии {plan.revision} не проверен для экспорта')
 
         project_file = await self.project_file_repository.get_obj_by_id(obj_id=plan.project_file_id)
         if project_file is None or project_file.project_id != project_id:
-            raise InvalidExportError('Plan source file is unavailable')
+            raise InvalidExportError('Исходный файл плана недоступен')
 
         job_input = ExportJobInputSchema(
             plan_id=plan.id,
@@ -134,13 +134,13 @@ class ExportService(BaseService[ExportCRUDRepository]):
 
         normalized_version = export_version.strip()
         if not normalized_version or len(normalized_version) > 100:
-            raise InvalidExportError('Export version must contain from 1 to 100 characters')
+            raise InvalidExportError('Версия экспорта должна содержать от 1 до 100 символов')
 
         job = await self.job_repository.get_job_by_id_for_update(job_id=job_id)
         if job is None:
             raise JobNotFoundError(job_id=job_id)
         if job.type is not JobType.EXPORT:
-            raise InvalidExportError(f'Job with id={job.id} is not an export job')
+            raise InvalidExportError(f'Задача с id={job.id} не является задачей экспорта')
         if job.status is not JobStatus.RUNNING:
             raise JobStateConflictError(job_id=job.id, status=job.status)
 
@@ -150,21 +150,23 @@ class ExportService(BaseService[ExportCRUDRepository]):
             plan_revision=job_input.plan_revision,
         )
         if validation is None or validation.id != job_input.validation.id:
-            raise InvalidExportError('Export validation snapshot does not match persisted validation')
+            raise InvalidExportError('Снимок проверки экспорта не соответствует сохранённой проверке')
         if validation.status is not ValidationStatus.PASSED:
-            raise InvalidExportError('Export validation is not passed')
+            raise InvalidExportError('Проверка для экспорта не пройдена')
 
         artifacts = await self.artifact_repository.get_artifacts_for_job(job_id=job.id)
         artifacts_by_kind = {artifact.kind: artifact for artifact in artifacts}
         if set(artifacts_by_kind) != set(REQUIRED_EXPORT_KINDS):
-            raise InvalidExportError('Export job must publish result.dxf, plan.json, report.json and report.md')
+            raise InvalidExportError(
+                'Задача экспорта должна опубликовать result.dxf, plan.json, report.json и report.md'
+            )
         if any(
             artifact.project_id != job.project_id
             or artifact.project_file_id != job_input.project_file_id
             or artifact.export_id is not None
             for artifact in artifacts
         ):
-            raise InvalidExportError('Export artifacts do not match the fixed job inputs')
+            raise InvalidExportError('Артефакты экспорта не соответствуют зафиксированным входам задачи')
 
         manifest = [
             ExportManifestItemSchema(
@@ -215,7 +217,7 @@ class ExportService(BaseService[ExportCRUDRepository]):
         try:
             job_input = ExportJobInputSchema.model_validate(job.input_data)
         except ValidationError as exc:
-            raise InvalidExportError(f'Job with id={job.id} has invalid export inputs') from exc
+            raise InvalidExportError(f'Задача с id={job.id} содержит некорректные входы экспорта') from exc
         if job.project_file_id != job_input.project_file_id:
-            raise InvalidExportError(f'Job with id={job.id} does not match export source file')
+            raise InvalidExportError(f'Задача с id={job.id} не соответствует исходному файлу экспорта')
         return job_input

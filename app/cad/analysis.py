@@ -42,7 +42,7 @@ def analyze_dxf(path: Path) -> AnalysisResultSchema:
     try:
         document = ezdxf.readfile(path)
     except (DXFError, OSError, UnicodeError) as exc:
-        raise DxfAnalysisError('Unable to read source DXF') from exc
+        raise DxfAnalysisError('Не удалось прочитать исходный DXF') from exc
 
     layout_entities = [entity for layout in document.layouts for entity in layout]
     block_layouts = [block for block in document.blocks if not block.is_any_layout]

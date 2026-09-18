@@ -5,7 +5,7 @@ class AnalysisNotFoundError(NotFoundError):
     """Анализ текущего исходника проекта не найден."""
 
     def __init__(self, project_id: int) -> None:
-        super().__init__(entity='Analysis for project', obj_id=project_id)
+        super().__init__(entity='анализ проекта', obj_id=project_id)
 
 
 class AnalysisSourceNotReadyError(AppError):

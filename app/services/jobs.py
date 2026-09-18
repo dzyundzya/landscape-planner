@@ -48,11 +48,9 @@ class JobService(BaseService[JobCRUDRepository]):
         if project_file_id is not None:
             project_file = await self.project_file_repository.get_obj_by_id(obj_id=project_file_id)
             if project_file is None:
-                raise InvalidJobError(f'Project file with id={project_file_id} not found')
+                raise InvalidJobError(f'Исходный файл с id={project_file_id} не найден')
             if project_file.project_id != project_id:
-                raise InvalidJobError(
-                    f'Project file with id={project_file_id} does not belong to project id={project_id}'
-                )
+                raise InvalidJobError(f'Исходный файл с id={project_file_id} не принадлежит проекту с id={project_id}')
 
         job = await self.repository.create_obj(
             new_obj=JobModel(
@@ -103,7 +101,7 @@ class JobService(BaseService[JobCRUDRepository]):
 
         normalized_error = error.strip()
         if not normalized_error:
-            raise InvalidJobError('Job error must not be empty')
+            raise InvalidJobError('Описание ошибки задачи не должно быть пустым')
 
         job = await self._get_running_job_for_update(job_id=job_id)
         job.status = JobStatus.FAILED
@@ -135,7 +133,7 @@ class JobService(BaseService[JobCRUDRepository]):
     @staticmethod
     def _validate_stage(stage: str) -> None:
         if not stage.strip() or len(stage) > 100:
-            raise InvalidJobError('Job stage must contain from 1 to 100 characters')
+            raise InvalidJobError('Название этапа задачи должно содержать от 1 до 100 символов')
 
     @staticmethod
     def _utc_now() -> datetime:

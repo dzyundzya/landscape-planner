@@ -33,10 +33,10 @@ class PlantingPatchSchema(BaseModel):
         """Требует хотя бы одно поле и запрещает null для обязательных полей."""
 
         if not self.model_fields_set:
-            raise ValueError('Planting patch must contain at least one field')
+            raise ValueError('Изменение посадки должно содержать хотя бы одно поле')
         for field_name in ('type', 'x_m', 'y_m'):
             if field_name in self.model_fields_set and getattr(self, field_name) is None:
-                raise ValueError(f'{field_name} must not be null')
+                raise ValueError(f'Поле {field_name} не может быть null')
         return self
 
 

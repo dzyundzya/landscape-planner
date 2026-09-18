@@ -37,7 +37,7 @@ class AnalysisService(BaseService[AnalysisCRUDRepository]):
 
         project_file = await self.project_file_repository.get_latest_for_project(project_id=project_id)
         if project_file is None:
-            raise AnalysisSourceNotReadyError(f'Project with id={project_id} has no source file')
+            raise AnalysisSourceNotReadyError(f'У проекта с id={project_id} отсутствует исходный файл')
         self._ensure_source_ready(project_file.format, project_file.status)
 
         active_job = await self.job_repository.get_active_analysis(project_file_id=project_file.id)
@@ -91,9 +91,7 @@ class AnalysisService(BaseService[AnalysisCRUDRepository]):
 
         project_file = await self.project_file_repository.get_obj_by_id(obj_id=project_file_id)
         if project_file is None or project_file.project_id != project_id:
-            raise InvalidAnalysisError(
-                f'Project file with id={project_file_id} does not belong to project id={project_id}'
-            )
+            raise InvalidAnalysisError(f'Исходный файл с id={project_file_id} не принадлежит проекту с id={project_id}')
         self._ensure_source_ready(project_file.format, project_file.status)
 
         analysis = await self.repository.create_obj(
@@ -124,13 +122,13 @@ class AnalysisService(BaseService[AnalysisCRUDRepository]):
     @staticmethod
     def _ensure_source_ready(file_format: ProjectFileFormat, status: ProjectFileStatus) -> None:
         if file_format is not ProjectFileFormat.DXF or status is not ProjectFileStatus.READY:
-            raise AnalysisSourceNotReadyError('Current project source must be a ready DXF file')
+            raise AnalysisSourceNotReadyError('Текущий исходник проекта должен быть готовым DXF-файлом')
 
     @staticmethod
     def _ensure_job_matches(job: JobModel, project_id: int, project_file_id: int) -> None:
         if job.type is not JobType.ANALYZE:
-            raise InvalidAnalysisError(f'Job with id={job.id} is not an analysis job')
+            raise InvalidAnalysisError(f'Задача с id={job.id} не является задачей анализа')
         if job.project_id != project_id or job.project_file_id != project_file_id:
-            raise InvalidAnalysisError(f'Job with id={job.id} does not match project and source file')
+            raise InvalidAnalysisError(f'Задача с id={job.id} не соответствует проекту и исходному файлу')
         if job.status is not JobStatus.RUNNING:
             raise JobStateConflictError(job_id=job.id, status=job.status)

@@ -19,7 +19,7 @@ class WorkerAdvisoryLock:
         """Пытается получить lock без ожидания и сохраняет выделенную сессию."""
 
         if self._connection is not None:
-            raise RuntimeError('Worker advisory lock has already been acquired')
+            raise RuntimeError('Advisory lock worker уже получен')
 
         connection = await self.engine.connect()
         try:
@@ -110,7 +110,7 @@ class WorkerAdvisoryLock:
 
     async def __aenter__(self) -> 'WorkerAdvisoryLock':
         if not await self.acquire():
-            raise RuntimeError('Worker advisory lock is already held')
+            raise RuntimeError('Advisory lock worker уже удерживается')
         return self
 
     async def __aexit__(
@@ -122,4 +122,4 @@ class WorkerAdvisoryLock:
         await self.release()
 
     def _lost_error(self) -> RuntimeError:
-        return RuntimeError(f'Worker advisory lock lost: lock_id={self.lock_id}')
+        return RuntimeError(f'Worker потерял advisory lock: lock_id={self.lock_id}')

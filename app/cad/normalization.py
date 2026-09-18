@@ -244,7 +244,7 @@ def normalize_dxf(path: Path, options: NormalizationOptions) -> NormalizationRes
     try:
         document = ezdxf.readfile(path)
     except (DXFError, OSError, UnicodeError) as exc:
-        raise DxfNormalizationError('Unable to read source DXF') from exc
+        raise DxfNormalizationError('Не удалось прочитать исходный DXF') from exc
     return DxfGeometryNormalizer(options=options).normalize(document=document)
 
 

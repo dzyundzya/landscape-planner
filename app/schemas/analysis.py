@@ -23,7 +23,7 @@ class AnalysisBoundsSchema(BaseModel):
         """Проверяет порядок минимальных и максимальных координат."""
 
         if self.min_x > self.max_x or self.min_y > self.max_y:
-            raise ValueError('Analysis bounds minimum must not exceed maximum')
+            raise ValueError('Минимальные координаты границ анализа не должны превышать максимальные')
         return self
 
 

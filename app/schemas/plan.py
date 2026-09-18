@@ -16,9 +16,14 @@ class PlanGenerationSummarySchema(BaseModel):
     tree_count: NonNegativeInt
     bush_count: NonNegativeInt
     rejected_candidate_count: NonNegativeInt
+    strategy: Annotated[str, Field(min_length=1, max_length=100)] = 'hex_grid_greedy'
+    selected_offset_index: NonNegativeInt = 0
+    offset_x_m: float = 0.0
+    offset_y_m: float = 0.0
+    grid_spacing_m: Annotated[float | None, Field(gt=0)] = None
     warnings: list[Annotated[str, Field(min_length=1, max_length=2000)]] = Field(default_factory=list)
 
-    model_config = ConfigDict(extra='forbid')
+    model_config = ConfigDict(extra='forbid', allow_inf_nan=False)
 
     @model_validator(mode='after')
     def validate_counts(self) -> 'PlanGenerationSummarySchema':

@@ -20,6 +20,9 @@ class RestrictionZone:
     rule_version: str
     min_distance_m: float
     measurement_reference: str
+    document: str
+    clause: str
+    source_geometry: BaseGeometry
     geometry: BaseGeometry
 
 
@@ -164,6 +167,9 @@ def _build_object_zones(
                 rule_version=rule.version,
                 min_distance_m=rule.min_distance_m,
                 measurement_reference=rule.measurement_reference,
+                document=rule.document or '',
+                clause=rule.clause or '',
+                source_geometry=obj.geometry,
                 geometry=obj.geometry.buffer(rule.min_distance_m),
             )
         )

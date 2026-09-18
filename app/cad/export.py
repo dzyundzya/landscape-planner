@@ -1,0 +1,201 @@
+from dataclasses import dataclass
+from pathlib import Path
+
+import ezdxf
+from ezdxf.document import Drawing
+from ezdxf.lldxf.const import DXF2000, DXFError
+from shapely.geometry import GeometryCollection, MultiPolygon, Polygon
+from shapely.geometry.base import BaseGeometry
+
+from app.domain import CoordinateTransform, Point2D
+from app.geometry import RestrictionResult
+from app.models import PlantingType
+from app.schemas.planting import PlantingReadSchema
+
+EXPORT_DXF_VERSION = 'dxf-export/1'
+LAYER_DEFINITIONS = {
+    'trees': ('GREENPLAN_TREES', 3),
+    'bushes': ('GREENPLAN_BUSHES', 94),
+    'tree_available': ('GREENPLAN_TREE_AVAILABLE', 92),
+    'bush_available': ('GREENPLAN_BUSH_AVAILABLE', 72),
+    'tree_exclusion': ('GREENPLAN_TREE_EXCLUSION', 1),
+    'bush_exclusion': ('GREENPLAN_BUSH_EXCLUSION', 30),
+}
+BLOCK_DEFINITIONS = {
+    PlantingType.TREE: ('GREENPLAN_TREE', 0.5),
+    PlantingType.BUSH: ('GREENPLAN_BUSH', 0.3),
+}
+
+
+class DxfExportError(Exception):
+    """Итоговый DXF не удалось сформировать или проверить."""
+
+
+@dataclass(frozen=True, slots=True)
+class DxfExportMetadata:
+    """Фактически использованные имена новых слоёв и блоков."""
+
+    layers: dict[str, str]
+    blocks: dict[PlantingType, str]
+
+
+def write_landscape_dxf(
+    source_path: Path,
+    output_path: Path,
+    plantings: list[PlantingReadSchema],
+    transform: CoordinateTransform,
+    restrictions: RestrictionResult,
+) -> DxfExportMetadata:
+    """Копирует исходный DXF и добавляет посадки и расчётные зоны."""
+
+    try:
+        document = ezdxf.readfile(source_path)
+        source_entities = _entity_identity(document)
+        layers = _create_layers(document=document)
+        blocks = _create_blocks(document=document, transform=transform)
+        modelspace = document.modelspace()
+
+        for planting in plantings:
+            point = transform.to_source(Point2D(x=float(planting.x_m), y=float(planting.y_m)))
+            layer = layers['trees' if planting.type is PlantingType.TREE else 'bushes']
+            insert = modelspace.add_blockref(
+                blocks[planting.type],
+                (point.x, point.y),
+                dxfattribs={'layer': layer},
+            )
+            insert.add_auto_attribs(
+                {
+                    'PLANTING_ID': str(planting.public_id),
+                    'PLANTING_TYPE': planting.type.value,
+                    'SPECIES': planting.species or '',
+                }
+            )
+
+        _add_geometry(document, restrictions.tree_available, layers['tree_available'], transform)
+        _add_geometry(document, restrictions.bush_available, layers['bush_available'], transform)
+        _add_geometry(document, restrictions.tree_exclusion, layers['tree_exclusion'], transform)
+        _add_geometry(document, restrictions.bush_exclusion, layers['bush_exclusion'], transform)
+        document.saveas(output_path)
+        _verify_output(
+            output_path=output_path,
+            source_entities=source_entities,
+            planting_ids={str(planting.public_id) for planting in plantings},
+            layers=set(layers.values()),
+            blocks=set(blocks.values()),
+        )
+    except (DXFError, OSError, UnicodeError, ValueError, TypeError) as exc:
+        raise DxfExportError('Не удалось сформировать итоговый DXF') from exc
+    return DxfExportMetadata(layers=layers, blocks=blocks)
+
+
+def _create_layers(document: Drawing) -> dict[str, str]:
+    existing = {layer.dxf.name.casefold() for layer in document.layers}
+    names = {}
+    for key, (preferred_name, color) in LAYER_DEFINITIONS.items():
+        name = _unique_name(preferred=preferred_name, existing=existing)
+        document.layers.add(name=name, color=color)
+        existing.add(name.casefold())
+        names[key] = name
+    return names
+
+
+def _create_blocks(document: Drawing, transform: CoordinateTransform) -> dict[PlantingType, str]:
+    existing = {block.name.casefold() for block in document.blocks}
+    names = {}
+    for planting_type, (preferred_name, radius_m) in BLOCK_DEFINITIONS.items():
+        name = _unique_name(preferred=preferred_name, existing=existing)
+        block = document.blocks.new(name=name)
+        radius = radius_m / transform.scale_to_meters
+        block.add_circle((0, 0), radius=radius)
+        block.add_line((-radius, 0), (radius, 0))
+        block.add_line((0, -radius), (0, radius))
+        attribute_height = max(radius * 0.25, 1e-9)
+        for tag in ('PLANTING_ID', 'PLANTING_TYPE', 'SPECIES'):
+            block.add_attdef(
+                tag=tag,
+                insert=(0, 0),
+                height=attribute_height,
+                dxfattribs={'flags': 1},
+            )
+        existing.add(name.casefold())
+        names[planting_type] = name
+    return names
+
+
+def _add_geometry(
+    document: Drawing,
+    geometry: BaseGeometry,
+    layer: str,
+    transform: CoordinateTransform,
+) -> None:
+    for polygon in _iter_polygons(geometry):
+        _add_ring(document=document, coordinates=polygon.exterior.coords, layer=layer, transform=transform)
+        for interior in polygon.interiors:
+            _add_ring(document=document, coordinates=interior.coords, layer=layer, transform=transform)
+
+
+def _add_ring(document: Drawing, coordinates, layer: str, transform: CoordinateTransform) -> None:
+    points = []
+    for x, y, *_ in coordinates:
+        source = transform.to_source(Point2D(x=float(x), y=float(y)))
+        points.append((source.x, source.y))
+    if len(points) < 4:
+        return
+    if points[0] == points[-1]:
+        points.pop()
+    attributes = {'layer': layer}
+    if document.dxfversion >= DXF2000:
+        document.modelspace().add_lwpolyline(points, close=True, dxfattribs=attributes)
+    else:
+        document.modelspace().add_polyline2d(points, close=True, dxfattribs=attributes)
+
+
+def _iter_polygons(geometry: BaseGeometry):
+    if geometry.is_empty:
+        return
+    if isinstance(geometry, Polygon):
+        yield geometry
+    elif isinstance(geometry, MultiPolygon | GeometryCollection):
+        for child in geometry.geoms:
+            yield from _iter_polygons(child)
+
+
+def _verify_output(
+    output_path: Path,
+    source_entities: set[tuple[str, str]],
+    planting_ids: set[str],
+    layers: set[str],
+    blocks: set[str],
+) -> None:
+    document = ezdxf.readfile(output_path)
+    if not source_entities.issubset(_entity_identity(document)):
+        raise DxfExportError('Итоговый DXF потерял исходные сущности modelspace')
+    actual_layers = {layer.dxf.name for layer in document.layers}
+    if not layers.issubset(actual_layers):
+        raise DxfExportError('Итоговый DXF не содержит все расчётные слои')
+    actual_ids = {
+        attribute.dxf.text
+        for insert in document.modelspace().query('INSERT')
+        if insert.dxf.name in blocks
+        for attribute in insert.attribs
+        if attribute.dxf.tag == 'PLANTING_ID'
+    }
+    if actual_ids != planting_ids:
+        raise DxfExportError('Итоговый DXF содержит неполный набор идентификаторов посадок')
+
+
+def _entity_identity(document: Drawing) -> set[tuple[str, str]]:
+    return {
+        (entity.dxf.handle, entity.dxftype())
+        for entity in document.modelspace()
+        if entity.dxf.get('handle') is not None
+    }
+
+
+def _unique_name(preferred: str, existing: set[str]) -> str:
+    if preferred.casefold() not in existing:
+        return preferred
+    suffix = 1
+    while f'{preferred}_{suffix}'.casefold() in existing:
+        suffix += 1
+    return f'{preferred}_{suffix}'

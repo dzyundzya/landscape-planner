@@ -24,6 +24,7 @@ class ConfirmedLayerMapping:
     layer: str
     object_type: str
     geometry_role: GeometryRole
+    attributes: dict[str, object]
 
 
 @dataclass(frozen=True, slots=True)
@@ -43,6 +44,7 @@ class PreparedGeometryObject:
     object_type: str
     geometry: BaseGeometry
     provenance: GeometryProvenance
+    attributes: dict[str, object]
     min_z_m: float
     max_z_m: float
 
@@ -78,7 +80,7 @@ def prepare_project_geometry(
 
     scale = float(unit_scale_to_meters)
     if not isfinite(scale) or scale <= 0:
-        raise ProjectGeometryError('Unit scale to meters must be finite and positive')
+        raise ProjectGeometryError('Масштаб перевода в метры должен быть конечным и положительным')
     transform = CoordinateTransform(scale_to_meters=scale)
     boundary_geometry = _build_boundary(boundary=boundary)
     mappings = _build_mapping_index(layer_mappings=layer_mappings)
@@ -118,6 +120,7 @@ def prepare_project_geometry(
                 object_type=mapping.object_type,
                 geometry=geometry,
                 provenance=normalized.provenance,
+                attributes=dict(mapping.attributes),
                 min_z_m=normalized.provenance.min_z * scale,
                 max_z_m=normalized.provenance.max_z * scale,
             )
@@ -144,9 +147,9 @@ def _build_boundary(boundary: dict[str, object]) -> BaseGeometry:
     try:
         geometry = shape(boundary)
     except (TypeError, ValueError, KeyError) as exc:
-        raise ProjectGeometryError('Configured project boundary cannot be read') from exc
+        raise ProjectGeometryError('Не удалось прочитать настроенную границу проекта') from exc
     if geometry.geom_type not in {'Polygon', 'MultiPolygon'} or geometry.is_empty or not geometry.is_valid:
-        raise ProjectGeometryError('Configured project boundary is invalid')
+        raise ProjectGeometryError('Настроенная граница проекта некорректна')
     return geometry
 
 
@@ -157,20 +160,21 @@ def _build_mapping_index(layer_mappings: Iterable[dict[str, object]]) -> dict[st
         object_type = raw_mapping.get('object_type')
         attributes = raw_mapping.get('attributes', {})
         if not isinstance(layer, str) or not layer.strip() or not isinstance(object_type, str):
-            raise ProjectGeometryError('Layer mapping has invalid layer or object type')
+            raise ProjectGeometryError('Mapping слоя содержит некорректный слой или тип объекта')
         if not isinstance(attributes, dict):
-            raise ProjectGeometryError(f'Layer mapping attributes are invalid for layer {layer}')
+            raise ProjectGeometryError(f'Атрибуты mapping некорректны для слоя {layer}')
         try:
             geometry_role = GeometryRole(attributes.get('geometry_role', GeometryRole.LINE))
         except ValueError as exc:
-            raise ProjectGeometryError(f'Layer {layer} has invalid geometry role') from exc
+            raise ProjectGeometryError(f'Для слоя {layer} указана некорректная роль геометрии') from exc
         key = layer.casefold()
         if key in mappings:
-            raise ProjectGeometryError(f'Layer {layer} has duplicate semantic mappings')
+            raise ProjectGeometryError(f'Для слоя {layer} задано несколько семантических mapping')
         mappings[key] = ConfirmedLayerMapping(
             layer=layer,
             object_type=object_type,
             geometry_role=geometry_role,
+            attributes=dict(attributes),
         )
     return mappings
 

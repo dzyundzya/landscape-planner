@@ -5,6 +5,7 @@ from decimal import Decimal
 from loguru import logger
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.config.manager import settings
 from app.models import ConfigSnapshotModel, CoordinateUnit, NormativeRulesStatus
 from app.planning import PlantingValidationError
 from app.planning.planting_validation import build_boundary
@@ -12,6 +13,7 @@ from app.repositories.crud.analyses import AnalysisCRUDRepository
 from app.repositories.crud.config_snapshots import ConfigSnapshotCRUDRepository
 from app.repositories.crud.project_files import ProjectFileCRUDRepository
 from app.repositories.crud.projects import ProjectCRUDRepository
+from app.rules import LoadedRuleSet, RuleCatalogError, RuleVerificationStatus, load_rule_set
 from app.schemas.config_snapshot import ConfigSnapshotUpsertSchema
 from app.services.base import BaseService
 from app.services.exceptions.config_snapshots import ConfigPrerequisiteError, InvalidConfigSnapshotError
@@ -60,8 +62,16 @@ class ConfigSnapshotService(BaseService[ConfigSnapshotCRUDRepository]):
 
         self._validate_boundary(data=data)
         self._validate_layer_mappings(data=data, analysis_result=analysis.result)
+        rule_set = self._load_rule_set()
+        rules_status = self._get_rules_status(rule_set=rule_set)
         scale = UNIT_SCALE_TO_METERS[data.coordinate_unit]
-        payload = self._build_payload(analysis_id=analysis.id, data=data, scale=scale)
+        payload = self._build_payload(
+            analysis_id=analysis.id,
+            data=data,
+            scale=scale,
+            rule_set=rule_set,
+            rules_status=rules_status,
+        )
         content_sha256 = self._calculate_hash(payload=payload)
 
         existing_snapshot = await self.repository.get_by_content_hash(
@@ -82,9 +92,9 @@ class ConfigSnapshotService(BaseService[ConfigSnapshotCRUDRepository]):
                 boundary=data.boundary.model_dump(mode='json'),
                 layer_mappings=[mapping.model_dump(mode='json') for mapping in data.layer_mappings],
                 generation=data.generation.model_dump(mode='json'),
-                rules_status=NormativeRulesStatus.NEEDS_VERIFICATION,
-                rules_version=None,
-                rules_sha256=None,
+                rules_status=rules_status,
+                rules_version=rule_set.data.version,
+                rules_sha256=rule_set.sha256,
                 content_sha256=content_sha256,
             )
         )
@@ -124,6 +134,8 @@ class ConfigSnapshotService(BaseService[ConfigSnapshotCRUDRepository]):
         analysis_id: int,
         data: ConfigSnapshotUpsertSchema,
         scale: Decimal,
+        rule_set: LoadedRuleSet,
+        rules_status: NormativeRulesStatus,
     ) -> dict[str, object]:
         return {
             'analysis_id': analysis_id,
@@ -133,10 +145,25 @@ class ConfigSnapshotService(BaseService[ConfigSnapshotCRUDRepository]):
             'boundary': data.boundary.model_dump(mode='json'),
             'layer_mappings': [mapping.model_dump(mode='json') for mapping in data.layer_mappings],
             'generation': data.generation.model_dump(mode='json'),
-            'rules_status': NormativeRulesStatus.NEEDS_VERIFICATION.value,
-            'rules_version': None,
-            'rules_sha256': None,
+            'rules_status': rules_status.value,
+            'rules_version': rule_set.data.version,
+            'rules_sha256': rule_set.sha256,
         }
+
+    @staticmethod
+    def _load_rule_set() -> LoadedRuleSet:
+        try:
+            return load_rule_set(settings.NORMATIVE_RULES_PATH)
+        except RuleCatalogError as exc:
+            raise InvalidConfigSnapshotError('Не удалось зафиксировать нормативный справочник') from exc
+
+    @staticmethod
+    def _get_rules_status(rule_set: LoadedRuleSet) -> NormativeRulesStatus:
+        if rule_set.data.rules and all(
+            rule.verification_status is RuleVerificationStatus.VERIFIED for rule in rule_set.data.rules
+        ):
+            return NormativeRulesStatus.VERIFIED
+        return NormativeRulesStatus.NEEDS_VERIFICATION
 
     @staticmethod
     def _calculate_hash(payload: dict[str, object]) -> str:

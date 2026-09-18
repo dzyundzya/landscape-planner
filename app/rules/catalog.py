@@ -32,10 +32,10 @@ class NormativeRuleSchema(BaseModel):
     measurement_reference: Annotated[str, Field(min_length=1, max_length=100)]
     conditions: dict[str, JsonValue] = Field(default_factory=dict)
     required_attributes: list[Annotated[str, Field(min_length=1, max_length=100)]] = Field(default_factory=list)
-    document: Annotated[str | None, Field(max_length=500)] = None
-    edition: Annotated[str | None, Field(max_length=100)] = None
-    clause: Annotated[str | None, Field(max_length=100)] = None
-    source_url: Annotated[str | None, Field(max_length=2000)] = None
+    document: Annotated[str | None, Field(min_length=1, max_length=500)] = None
+    edition: Annotated[str | None, Field(min_length=1, max_length=100)] = None
+    clause: Annotated[str | None, Field(min_length=1, max_length=100)] = None
+    source_url: Annotated[str | None, Field(min_length=1, max_length=2000)] = None
     verification_status: RuleVerificationStatus
     verified_at: date | None = None
     description: Annotated[str | None, Field(max_length=2000)] = None

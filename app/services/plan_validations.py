@@ -73,7 +73,30 @@ class PlanValidationService(BaseService[PlanValidationCRUDRepository]):
         if existing is not None:
             return existing
 
-        self._validate_planting_references(plan=plan, checks=data.checks)
+        validation = await self.create_validation_for_plan(
+            plan=plan,
+            data=data,
+            planting_ids={planting.public_id for planting in plan.plantings},
+        )
+        await self.session.commit()
+        logger.info(
+            'Ревизия плана проверена: validation_id={}, plan_id={}, revision={}, status={}',
+            validation.id,
+            plan.id,
+            plan.revision,
+            validation.status,
+        )
+        return validation
+
+    async def create_validation_for_plan(
+        self,
+        plan: PlanModel,
+        data: PlanValidationPublishSchema,
+        planting_ids: set[UUID],
+    ) -> PlanValidationModel:
+        """Создаёт проверку в текущей транзакции без самостоятельного commit."""
+
+        self._validate_planting_references(planting_ids=planting_ids, checks=data.checks)
         config = await self.config_repository.get_obj_by_id(obj_id=plan.config_snapshot_id)
         if config is None:
             raise InvalidPlanValidationError('Снимок конфигурации плана недоступен')
@@ -84,7 +107,7 @@ class PlanValidationService(BaseService[PlanValidationCRUDRepository]):
                 CheckResultSchema(
                     check_type='normative_rules_status',
                     status=ValidationStatus.NEEDS_VERIFICATION,
-                    reason='Normative rules have not been verified',
+                    reason='Нормативный справочник не проверен',
                 )
             )
 
@@ -104,19 +127,10 @@ class PlanValidationService(BaseService[PlanValidationCRUDRepository]):
             )
         )
         plan.status = self._to_plan_status(status=status)
-        await self.session.commit()
-        logger.info(
-            'Ревизия плана проверена: validation_id={}, plan_id={}, revision={}, status={}',
-            validation.id,
-            plan.id,
-            plan.revision,
-            validation.status,
-        )
         return validation
 
     @staticmethod
-    def _validate_planting_references(plan: PlanModel, checks: list[CheckResultSchema]) -> None:
-        planting_ids: set[UUID] = {planting.public_id for planting in plan.plantings}
+    def _validate_planting_references(planting_ids: set[UUID], checks: list[CheckResultSchema]) -> None:
         checked_planting_ids = {check.planting_id for check in checks if check.planting_id is not None}
         unknown_ids = sorted(checked_planting_ids - planting_ids, key=str)
         if unknown_ids:

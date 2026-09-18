@@ -6,7 +6,7 @@ from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models.base_model import BaseModel
-from app.models.enums import CoordinateUnit, NormativeRulesStatus
+from app.models.enums import CoordinateUnit, NormativeRulesStatus, PlantCatalogStatus, TerritoryType
 
 if TYPE_CHECKING:
     from app.models.analysis import AnalysisModel
@@ -53,6 +53,17 @@ class ConfigSnapshotModel(BaseModel):
     boundary: Mapped[dict[str, object]] = mapped_column(JSONB, nullable=False)
     layer_mappings: Mapped[list[dict[str, object]]] = mapped_column(JSONB, nullable=False)
     generation: Mapped[dict[str, object]] = mapped_column(JSONB, nullable=False)
+    territory_type: Mapped[TerritoryType | None] = mapped_column(
+        Enum(
+            TerritoryType,
+            name='territory_type',
+            native_enum=False,
+            create_constraint=True,
+            length=32,
+            values_callable=lambda enum: [item.value for item in enum],
+        ),
+        nullable=True,
+    )
     rules_status: Mapped[NormativeRulesStatus] = mapped_column(
         Enum(
             NormativeRulesStatus,
@@ -66,6 +77,19 @@ class ConfigSnapshotModel(BaseModel):
     )
     rules_version: Mapped[str | None] = mapped_column(String(100), nullable=True)
     rules_sha256: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    plant_catalog_status: Mapped[PlantCatalogStatus | None] = mapped_column(
+        Enum(
+            PlantCatalogStatus,
+            name='plant_catalog_status',
+            native_enum=False,
+            create_constraint=True,
+            length=32,
+            values_callable=lambda enum: [item.value for item in enum],
+        ),
+        nullable=True,
+    )
+    plant_catalog_version: Mapped[str | None] = mapped_column(String(100), nullable=True)
+    plant_catalog_sha256: Mapped[str | None] = mapped_column(String(64), nullable=True)
     content_sha256: Mapped[str] = mapped_column(String(64), nullable=False)
 
     project: Mapped['ProjectModel'] = relationship(back_populates='config_snapshots')

@@ -58,6 +58,13 @@ class PlanService(BaseService[PlanCRUDRepository]):
         config = await self.config_repository.get_latest_for_project(project_id=project_id)
         if config is None or config.analysis_id != analysis.id:
             raise PlanPrerequisiteError(f'У проекта с id={project_id} отсутствует конфигурация текущего анализа')
+        if (
+            config.territory_type is None
+            or config.plant_catalog_status is None
+            or config.plant_catalog_version is None
+            or config.plant_catalog_sha256 is None
+        ):
+            raise PlanPrerequisiteError('Сохраните новую конфигурацию с выбранным типом территории')
 
         active_job = await self.job_repository.get_active_plan_generation(
             project_id=project_id,
@@ -82,6 +89,10 @@ class PlanService(BaseService[PlanCRUDRepository]):
                 'rules_status': config.rules_status.value,
                 'rules_version': config.rules_version,
                 'rules_sha256': config.rules_sha256,
+                'territory_type': config.territory_type.value,
+                'plant_catalog_status': config.plant_catalog_status.value,
+                'plant_catalog_version': config.plant_catalog_version,
+                'plant_catalog_sha256': config.plant_catalog_sha256,
             },
         )
 

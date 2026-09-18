@@ -5,7 +5,7 @@ from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
-from app.models import NormativeRulesStatus, ValidationStatus
+from app.models import NormativeRulesStatus, PlantCatalogStatus, ValidationStatus
 
 NonNegativeInt = Annotated[int, Field(ge=0)]
 
@@ -79,6 +79,9 @@ class PlanValidationReadSchema(BaseModel):
     rules_status: NormativeRulesStatus
     rules_version: str | None
     rules_sha256: Annotated[str | None, Field(min_length=64, max_length=64)]
+    plant_catalog_status: PlantCatalogStatus | None
+    plant_catalog_version: str | None
+    plant_catalog_sha256: Annotated[str | None, Field(min_length=64, max_length=64)]
     created_at: datetime
 
     model_config = ConfigDict(from_attributes=True)

@@ -69,6 +69,7 @@ def config_payload() -> dict[str, object]:
 
     return {
         'coordinate_unit': 'millimeter',
+        'territory_type': 'courtyard',
         'boundary': {
             'type': 'Polygon',
             'coordinate_space': 'local_meters',
@@ -108,12 +109,16 @@ async def test_save_config_snapshot(
     assert data['project_id'] == project.id
     assert data['analysis_id'] == analysis.id
     assert data['version'] == 1
-    assert data['schema_version'] == 1
+    assert data['schema_version'] == 2
     assert data['coordinate_unit'] == 'millimeter'
     assert float(data['unit_scale_to_meters']) == 0.001
     assert data['rules_status'] == 'needs_verification'
     assert data['rules_version'] == 'draft-empty'
     assert len(data['rules_sha256']) == 64
+    assert data['territory_type'] == 'courtyard'
+    assert data['plant_catalog_status'] == 'needs_verification'
+    assert data['plant_catalog_version'] == 'moscow-assortment-3709b4ca24b2'
+    assert len(data['plant_catalog_sha256']) == 64
     assert len(data['content_sha256']) == 64
     assert data['boundary']['coordinate_space'] == 'local_meters'
 

@@ -32,6 +32,7 @@ def build_dispatcher() -> JobDispatcher:
                 session_factory=async_db.async_session_maker,
                 storage=storage,
                 rules_path=settings.NORMATIVE_RULES_PATH,
+                plant_catalog_path=settings.PLANT_CATALOG_PATH,
                 curve_tolerance_m=settings.GEOMETRY_CURVE_TOLERANCE_M,
             ),
         }

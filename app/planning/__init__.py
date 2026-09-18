@@ -6,6 +6,7 @@ from app.planning.generator import (
     generate_plantings,
 )
 from app.planning.planting_validation import PlantingCandidate, PlantingValidationError, validate_planting_set
+from app.planning.species import SpeciesSelectionError, assign_species
 from app.planning.validator import VALIDATOR_VERSION, ValidationPlanting, validate_plan_geometry
 
 __all__ = (
@@ -15,8 +16,10 @@ __all__ = (
     'PlantingGenerationError',
     'PlantingGenerationResult',
     'PlantingValidationError',
+    'SpeciesSelectionError',
     'VALIDATOR_VERSION',
     'ValidationPlanting',
+    'assign_species',
     'generate_plantings',
     'validate_plan_geometry',
     'validate_planting_set',

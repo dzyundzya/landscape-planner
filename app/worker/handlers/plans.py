@@ -9,12 +9,12 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 from app.cad import normalize_dxf
 from app.domain import NormalizationOptions
 from app.geometry import build_restriction_zones, prepare_project_geometry
-from app.models import JobModel, ProjectFileFormat, ProjectFileStatus
-from app.planning import ValidationPlanting, generate_plantings, validate_plan_geometry
+from app.models import JobModel, ProjectFileFormat, ProjectFileStatus, TerritoryType
+from app.planning import ValidationPlanting, assign_species, generate_plantings, validate_plan_geometry
 from app.repositories.crud.analyses import AnalysisCRUDRepository
 from app.repositories.crud.config_snapshots import ConfigSnapshotCRUDRepository
 from app.repositories.crud.project_files import ProjectFileCRUDRepository
-from app.rules import load_rule_set
+from app.rules import load_plant_catalog, load_rule_set
 from app.schemas.config_snapshot import GenerationParametersSchema
 from app.schemas.plan import PlanGenerationSummarySchema
 from app.schemas.plan_validation import PlanValidationPublishSchema
@@ -37,6 +37,9 @@ class _PlanGenerationInput:
     generation: dict[str, object]
     rules_version: str
     rules_sha256: str
+    territory_type: TerritoryType
+    plant_catalog_version: str
+    plant_catalog_sha256: str
 
 
 @dataclass(frozen=True, slots=True)
@@ -58,11 +61,13 @@ class PlanGenerationJobHandler:
         session_factory: async_sessionmaker[AsyncSession],
         storage: LocalFileStorage,
         rules_path: Path,
+        plant_catalog_path: Path,
         curve_tolerance_m: float,
     ) -> None:
         self.session_factory = session_factory
         self.storage = storage
         self.rules_path = rules_path
+        self.plant_catalog_path = plant_catalog_path
         self.curve_tolerance_m = curve_tolerance_m
 
     async def execute(self, job: JobModel, ensure_ownership: OwnershipGuard) -> None:
@@ -116,11 +121,17 @@ class PlanGenerationJobHandler:
             'rules_status': config.rules_status.value,
             'rules_version': config.rules_version,
             'rules_sha256': config.rules_sha256,
+            'territory_type': config.territory_type.value if config.territory_type else None,
+            'plant_catalog_status': config.plant_catalog_status.value if config.plant_catalog_status else None,
+            'plant_catalog_version': config.plant_catalog_version,
+            'plant_catalog_sha256': config.plant_catalog_sha256,
         }
         if any(job.input_data.get(key) != value for key, value in expected.items()):
             raise InvalidPlanError('Снимок входов генерации не соответствует поставленной задаче')
         if config.rules_version is None or config.rules_sha256 is None:
             raise InvalidPlanError('В конфигурации отсутствует снимок нормативного справочника')
+        if config.territory_type is None or config.plant_catalog_version is None or config.plant_catalog_sha256 is None:
+            raise InvalidPlanError('В конфигурации отсутствует снимок справочника растений')
 
         return _PlanGenerationInput(
             source_path=self.storage.get_path(project_file.storage_key),
@@ -130,12 +141,21 @@ class PlanGenerationJobHandler:
             generation=config.generation,
             rules_version=config.rules_version,
             rules_sha256=config.rules_sha256,
+            territory_type=config.territory_type,
+            plant_catalog_version=config.plant_catalog_version,
+            plant_catalog_sha256=config.plant_catalog_sha256,
         )
 
     def _generate(self, data: _PlanGenerationInput) -> _PlanGenerationOutput:
         rule_set = load_rule_set(self.rules_path)
         if rule_set.data.version != data.rules_version or rule_set.sha256 != data.rules_sha256:
             raise InvalidPlanError('Нормативный справочник изменился после сохранения конфигурации')
+        plant_catalog = load_plant_catalog(self.plant_catalog_path)
+        if (
+            plant_catalog.data.version != data.plant_catalog_version
+            or plant_catalog.sha256 != data.plant_catalog_sha256
+        ):
+            raise InvalidPlanError('Справочник растений изменился после сохранения конфигурации')
 
         source_tolerance = self.curve_tolerance_m / data.unit_scale_to_meters
         normalization = normalize_dxf(
@@ -151,11 +171,21 @@ class PlanGenerationJobHandler:
         restrictions = build_restriction_zones(project=project, rule_set=rule_set)
         parameters = GenerationParametersSchema.model_validate(data.generation)
         result = generate_plantings(restrictions=restrictions, parameters=parameters)
+        species = assign_species(
+            planting_types=(planting.type for planting in result.plantings),
+            catalog=plant_catalog,
+            territory_type=data.territory_type,
+        )
 
         planting_ids = [uuid4() for _ in result.plantings]
         plantings = [
-            PlantingCreateSchema(type=planting.type, x_m=planting.x_m, y_m=planting.y_m)
-            for planting in result.plantings
+            PlantingCreateSchema(
+                type=planting.type,
+                x_m=planting.x_m,
+                y_m=planting.y_m,
+                species=plant_name,
+            )
+            for planting, plant_name in zip(result.plantings, species, strict=True)
         ]
         validation = validate_plan_geometry(
             project=project,

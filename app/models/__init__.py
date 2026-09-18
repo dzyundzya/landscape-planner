@@ -9,11 +9,13 @@ from app.models.enums import (
     JobType,
     NormativeRulesStatus,
     PlanStatus,
+    PlantCatalogStatus,
     PlantingSource,
     PlantingType,
     ProjectFileFormat,
     ProjectFileStatus,
     SemanticObjectType,
+    TerritoryType,
     ValidationStatus,
 )
 from app.models.export import ExportModel
@@ -38,6 +40,7 @@ __all__ = (
     'JobStatus',
     'JobType',
     'NormativeRulesStatus',
+    'PlantCatalogStatus',
     'PlanModel',
     'PlanStatus',
     'PlanValidationModel',
@@ -49,5 +52,6 @@ __all__ = (
     'ProjectFileStatus',
     'ProjectModel',
     'SemanticObjectType',
+    'TerritoryType',
     'ValidationStatus',
 )

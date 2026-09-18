@@ -10,6 +10,7 @@ from app.models import (
     FileArtifactKind,
     JobStatus,
     NormativeRulesStatus,
+    PlantCatalogStatus,
     ProjectModel,
     ValidationStatus,
 )
@@ -35,6 +36,7 @@ async def create_verified_plan(
     config.rules_status = NormativeRulesStatus.VERIFIED
     config.rules_version = 'TEST_ONLY/1'
     config.rules_sha256 = 'c' * 64
+    config.plant_catalog_status = PlantCatalogStatus.VERIFIED
     await db_session.commit()
 
     response = await client.post(f'/api/projects/{project.id}/plans')

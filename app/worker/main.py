@@ -7,7 +7,10 @@ from loguru import logger
 from app.core.config.logger import configure_logger
 from app.core.config.manager import settings
 from app.core.db.database import async_db
+from app.models import JobType
+from app.storage import LocalFileStorage
 from app.worker.dispatcher import JobDispatcher
+from app.worker.handlers import AnalysisJobHandler
 from app.worker.lock import WorkerAdvisoryLock
 from app.worker.runner import WorkerExitReason, WorkerRunner
 
@@ -15,7 +18,18 @@ from app.worker.runner import WorkerExitReason, WorkerRunner
 def build_dispatcher() -> JobDispatcher:
     """Создаёт registry реализованных обработчиков фоновых задач."""
 
-    return JobDispatcher()
+    storage = LocalFileStorage(
+        root=settings.FILE_STORAGE_ROOT,
+        max_size_bytes=settings.MAX_UPLOAD_SIZE_BYTES,
+    )
+    return JobDispatcher(
+        {
+            JobType.ANALYZE: AnalysisJobHandler(
+                session_factory=async_db.async_session_maker,
+                storage=storage,
+            )
+        }
+    )
 
 
 async def run_worker() -> WorkerExitReason:

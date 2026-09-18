@@ -84,6 +84,8 @@ class FileArtifactService(BaseService[FileArtifactCRUDRepository]):
         source: BinaryIO,
         project_file_id: int | None = None,
         download_name: str | None = None,
+        *,
+        commit: bool = True,
     ) -> FileArtifactModel:
         """Атомарно публикует неизменяемый файл, сформированный worker."""
 
@@ -112,7 +114,8 @@ class FileArtifactService(BaseService[FileArtifactCRUDRepository]):
                     sha256=stored_file.sha256,
                 )
             )
-            await self.session.commit()
+            if commit:
+                await self.session.commit()
         except Exception:
             await to_thread.run_sync(self.storage.delete, stored_file.storage_key)
             raise

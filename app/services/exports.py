@@ -4,6 +4,7 @@ from loguru import logger
 from pydantic import ValidationError
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.config.manager import settings
 from app.models import (
     ExportModel,
     FileArtifactKind,
@@ -13,6 +14,7 @@ from app.models import (
     PlanStatus,
     ValidationStatus,
 )
+from app.repositories.crud.config_snapshots import ConfigSnapshotCRUDRepository
 from app.repositories.crud.exports import ExportCRUDRepository
 from app.repositories.crud.file_artifacts import FileArtifactCRUDRepository
 from app.repositories.crud.jobs import JobCRUDRepository
@@ -20,6 +22,7 @@ from app.repositories.crud.plan_validations import PlanValidationCRUDRepository
 from app.repositories.crud.plans import PlanCRUDRepository
 from app.repositories.crud.project_files import ProjectFileCRUDRepository
 from app.schemas.export import (
+    ExportConfigSnapshotSchema,
     ExportJobInputSchema,
     ExportManifestItemSchema,
     ExportPlanSnapshotSchema,
@@ -49,6 +52,7 @@ class ExportService(BaseService[ExportCRUDRepository]):
     def __init__(self, async_session: AsyncSession) -> None:
         super().__init__(async_session=async_session)
         self.plan_repository = PlanCRUDRepository(async_session=async_session)
+        self.config_repository = ConfigSnapshotCRUDRepository(async_session=async_session)
         self.validation_repository = PlanValidationCRUDRepository(async_session=async_session)
         self.project_file_repository = ProjectFileCRUDRepository(async_session=async_session)
         self.job_repository = JobCRUDRepository(async_session=async_session)
@@ -92,6 +96,17 @@ class ExportService(BaseService[ExportCRUDRepository]):
         project_file = await self.project_file_repository.get_obj_by_id(obj_id=plan.project_file_id)
         if project_file is None or project_file.project_id != project_id:
             raise InvalidExportError('Исходный файл плана недоступен')
+        config = await self.config_repository.get_obj_by_id(obj_id=plan.config_snapshot_id)
+        if (
+            config is None
+            or config.territory_type is None
+            or config.rules_version is None
+            or config.rules_sha256 is None
+            or config.plant_catalog_status is None
+            or config.plant_catalog_version is None
+            or config.plant_catalog_sha256 is None
+        ):
+            raise InvalidExportError('Неизменяемая конфигурация плана неполна для экспорта')
 
         job_input = ExportJobInputSchema(
             plan_id=plan.id,
@@ -99,6 +114,20 @@ class ExportService(BaseService[ExportCRUDRepository]):
             project_file_id=project_file.id,
             project_file_sha256=project_file.sha256,
             config_snapshot_id=plan.config_snapshot_id,
+            config=ExportConfigSnapshotSchema(
+                content_sha256=config.content_sha256,
+                coordinate_unit=config.coordinate_unit,
+                unit_scale_to_meters=config.unit_scale_to_meters,
+                boundary=config.boundary,
+                layer_mappings=config.layer_mappings,
+                territory_type=config.territory_type,
+                rules_status=config.rules_status,
+                rules_version=config.rules_version,
+                rules_sha256=config.rules_sha256,
+                plant_catalog_status=config.plant_catalog_status,
+                plant_catalog_version=config.plant_catalog_version,
+                plant_catalog_sha256=config.plant_catalog_sha256,
+            ),
             plan=ExportPlanSnapshotSchema(
                 generator_version=plan.generator_version,
                 generation_summary=plan.generation_summary,
@@ -198,7 +227,15 @@ class ExportService(BaseService[ExportCRUDRepository]):
             'export_id': export.id,
             'plan_id': export.plan_id,
             'plan_revision': export.plan_revision,
-            'artifacts': [{'artifact_id': item.artifact_id, 'kind': item.kind.value} for item in manifest],
+            'artifacts': [
+                {
+                    'artifact_id': item.artifact_id,
+                    'kind': item.kind.value,
+                    'download_name': item.download_name,
+                    'download_url': (f'{settings.API_PREFIX}/projects/{job.project_id}/artifacts/{item.artifact_id}'),
+                }
+                for item in manifest
+            ],
         }
         job.error = None
         job.finished_at = datetime.now(UTC)

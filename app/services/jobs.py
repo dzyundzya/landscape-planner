@@ -1,3 +1,4 @@
+from collections.abc import Collection
 from copy import deepcopy
 from datetime import UTC, datetime
 
@@ -66,10 +67,10 @@ class JobService(BaseService[JobCRUDRepository]):
         logger.info('Задача поставлена в очередь: id={}, type={}, project_id={}', job.id, job.type, project_id)
         return job
 
-    async def claim_next_job(self) -> JobModel | None:
+    async def claim_next_job(self, job_types: Collection[JobType] | None = None) -> JobModel | None:
         """Захватывает следующую задачу для обработки worker."""
 
-        job = await self.repository.claim_next_queued()
+        job = await self.repository.claim_next_queued(job_types=job_types)
         await self.session.commit()
         if job is not None:
             logger.info('Задача запущена: id={}, type={}', job.id, job.type)

@@ -1,0 +1,4633 @@
+schema_version: 1
+version: moscow-assortment-3709b4ca24b2
+source:
+  title: Основной ассортимент деревьев, кустарников и лиан, рекомендуемый для озеленения различных категорий территорий города
+    Москвы
+  file_name: Osnovnoiidopolnitelniiassortimentderevevkystarnikovilian(posolesokrasheniyaprimech).docx
+  file_sha256: 3709b4ca24b2c5bfd101c871b1b6e9ff2a9e34430535dffc81356d1f3f63ffc5
+  verification_status: needs_verification
+  document: null
+  edition: null
+  source_url: null
+  verified_at: null
+territory_definitions:
+- id: courtyard
+  name_ru: Дворовые территории
+  source_heading: Дворовые территории
+- id: preschool
+  name_ru: Дошкольные учреждения
+  source_heading: Дошкольные учреждения
+- id: education_and_sport
+  name_ru: Общеобразовательные и спортивные учреждения
+  source_heading: Общеобразовательные и спортивные учреждения (школы, колледжи)
+- id: healthcare
+  name_ru: Учреждения здравоохранения и реабилитационные центры
+  source_heading: Учреждения здравоохранения и реабилитационные центры
+- id: roads
+  name_ru: Магистрали, внутриквартальные улицы и местные проезды
+  source_heading: Магистрали (в т.ч. шоссе, проспекты, улицы с высокоскоростным движением, кольцевые дороги и хорды) *Внутриквартальные
+    улицы и проезды местного значения
+- id: public_and_commercial
+  name_ru: Площади и общественно-деловые и торгово-развлекательные пространства
+  source_heading: Площади, пространства общественно-делового и торгово-развлекательного назначения (запечатанные и полузапечатанные
+    поверхности)
+- id: parks_and_public_green
+  name_ru: Парки, бульвары, скверы, набережные и сады
+  source_heading: Парки *Бульвары, скверы, набережные, сады
+- id: industrial_and_protection
+  name_ru: Производственные, охранные и санитарно-защитные территории
+  source_heading: Территории производственного назначения *Озелененные территории охранных и санитарно-защитных зон
+notes:
+- code: '1'
+  text: Разрешён на всех территориях, кроме ООЗТ и ПТ, с контролем распространения (п. 5 ПП №369-ПП)
+- code: '2'
+  text: Не высаживать вблизи детских и спортивных площадок, мест массового пребывания детей
+- code: '3'
+  text: 'Требует особого ухода: защита корневой системы от травм, весеннее дождевание кроны (при посадке у дорог), мульчирование,
+    рыхление'
+- code: '4'
+  text: Требует дренированных, рыхлых, незасоленных, неуплотнённых почв. Не высаживать в зонах с застойным увлажнением и на
+    уплотнённых грунтах
+- code: '5'
+  text: Чувствительно к противогололёдным реагентам и выхлопным газам
+- code: '6'
+  text: Не высаживать вблизи плодовых культур (яблоня, груша, айва) из-за риска распространения ржавчинных грибов
+- code: '7'
+  text: Вид с потенциалом самосева и неконтролируемого распространения. За пределами ООЗТ посадка допускается на расстоянии
+    от 1 до 2 км от их границ при условии регулярного контроля
+scope_notes:
+- На территориях ботанических, зоологических садов, кладбищ, мемориальных комплексов и религиозных организаций породный состав
+  для озеленения определяется балансодержателем. В границах особо охраняемых природных территорий, особо охраняемых зеленых
+  территорий, природных территорий на участках, занятых естественными растительными сообществами, породный состав определяется
+  на основании проекта мероприятий по сохранению, развитию и воспроизводству насаждений.
+- На территориях инклюзивных площадок для людей с ограниченными возможностями породный состав определяется на основании проекта
+  мероприятий по сохранению, развитию и воспроизводству насаждений.
+- На территориях высших учебных заведений породный состав определяется на основании проекта мероприятий по сохранению, развитию
+  и воспроизводству насаждений.
+- '*Обозначенный перечень территорий озеленения вне границ ООЗТ, на которых возможна высадка рекомендуемого растения при условии
+  контроля его распространения.'
+plants:
+- id: primary-coniferous-tree-001
+  name_ru: Ель колючая
+  source_name: Ель колючая (формы и сорта)
+  assortment: primary
+  group: coniferous_tree
+  forms_and_cultivars: true
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 13
+  source_number: 1
+- id: primary-coniferous-tree-002
+  name_ru: Ель обыкновенная/европейская
+  source_name: Ель обыкновенная/европейская [3], [4], [5] (формы и сорта)
+  assortment: primary
+  group: coniferous_tree
+  forms_and_cultivars: true
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes:
+  - '3'
+  - '4'
+  - '5'
+  source_row: 14
+  source_number: 2
+- id: primary-coniferous-tree-003
+  name_ru: Лиственница американская
+  source_name: Лиственница американская
+  assortment: primary
+  group: coniferous_tree
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: not_recommended
+  note_codes: []
+  source_row: 15
+  source_number: 3
+- id: primary-coniferous-tree-004
+  name_ru: Лиственница даурская (Гмелина)
+  source_name: Лиственница даурская (Гмелина)
+  assortment: primary
+  group: coniferous_tree
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: not_recommended
+  note_codes: []
+  source_row: 16
+  source_number: 4
+- id: primary-coniferous-tree-005
+  name_ru: Лиственница европейская (опадающая)
+  source_name: Лиственница европейская (опадающая) (формы и сорта)
+  assortment: primary
+  group: coniferous_tree
+  forms_and_cultivars: true
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: not_recommended
+  note_codes: []
+  source_row: 17
+  source_number: 5
+- id: primary-coniferous-tree-006
+  name_ru: Лиственница сибирская
+  source_name: Лиственница сибирская
+  assortment: primary
+  group: coniferous_tree
+  forms_and_cultivars: false
+  territories:
+    courtyard: not_recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: not_recommended
+  note_codes: []
+  source_row: 18
+  source_number: 6
+- id: primary-coniferous-tree-007
+  name_ru: Сосна обыкновенная
+  source_name: Сосна обыкновенная [3], [4], [5] (формы и сорта)
+  assortment: primary
+  group: coniferous_tree
+  forms_and_cultivars: true
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes:
+  - '3'
+  - '4'
+  - '5'
+  source_row: 19
+  source_number: 7
+- id: primary-coniferous-shrub-001
+  name_ru: Можжевельник виргинский
+  source_name: Можжевельник виргинский [2], [5], [6] (формы и сорта)
+  assortment: primary
+  group: coniferous_shrub
+  forms_and_cultivars: true
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: not_recommended
+    healthcare: not_recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: not_recommended
+  note_codes:
+  - '2'
+  - '5'
+  - '6'
+  source_row: 21
+  source_number: 1
+- id: primary-coniferous-shrub-002
+  name_ru: Можжевельник горизонтальный
+  source_name: Можжевельник горизонтальный [2], [5], [6] (формы и сорта)
+  assortment: primary
+  group: coniferous_shrub
+  forms_and_cultivars: true
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: not_recommended
+    healthcare: not_recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: not_recommended
+  note_codes:
+  - '2'
+  - '5'
+  - '6'
+  source_row: 22
+  source_number: 2
+- id: primary-coniferous-shrub-003
+  name_ru: Можжевельник казацкий
+  source_name: Можжевельник казацкий [2], [5], [6] (формы и сорта)
+  assortment: primary
+  group: coniferous_shrub
+  forms_and_cultivars: true
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: not_recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes:
+  - '2'
+  - '5'
+  - '6'
+  source_row: 23
+  source_number: 3
+- id: primary-coniferous-shrub-004
+  name_ru: Можжевельник средний Пфитцериана
+  source_name: Можжевельник средний Пфитцериана [2], [5], [6] (формы и сорта)
+  assortment: primary
+  group: coniferous_shrub
+  forms_and_cultivars: true
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: not_recommended
+    healthcare: not_recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: not_recommended
+  note_codes:
+  - '2'
+  - '5'
+  - '6'
+  source_row: 24
+  source_number: 4
+- id: primary-coniferous-shrub-005
+  name_ru: Можжевельник скальный
+  source_name: Можжевельник скальный [2], [5], [6] (формы и сорта)
+  assortment: primary
+  group: coniferous_shrub
+  forms_and_cultivars: true
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: not_recommended
+    healthcare: not_recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: not_recommended
+  note_codes:
+  - '2'
+  - '5'
+  - '6'
+  source_row: 25
+  source_number: 5
+- id: primary-coniferous-shrub-006
+  name_ru: Сосна горная
+  source_name: Сосна горная (формы и сорта) [5]
+  assortment: primary
+  group: coniferous_shrub
+  forms_and_cultivars: true
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes:
+  - '5'
+  source_row: 26
+  source_number: 6
+- id: primary-deciduous-tree-001
+  name_ru: Бархат Амурский
+  source_name: Бархат Амурский
+  assortment: primary
+  group: deciduous_tree
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: not_recommended
+  note_codes: []
+  source_row: 28
+  source_number: 1
+- id: primary-deciduous-tree-002
+  name_ru: Береза повислая/плакучая
+  source_name: Береза повислая/плакучая (формы и сорта)
+  assortment: primary
+  group: deciduous_tree
+  forms_and_cultivars: true
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: not_recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 29
+  source_number: 2
+- id: primary-deciduous-tree-003
+  name_ru: Береза пушистая
+  source_name: Береза пушистая (формы и сорта)
+  assortment: primary
+  group: deciduous_tree
+  forms_and_cultivars: true
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: not_recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 30
+  source_number: 3
+- id: primary-deciduous-tree-004
+  name_ru: Боярышник Арнольда
+  source_name: Боярышник Арнольда [2]
+  assortment: primary
+  group: deciduous_tree
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes:
+  - '2'
+  source_row: 31
+  source_number: 4
+- id: primary-deciduous-tree-005
+  name_ru: Боярышник крупноколючковый
+  source_name: Боярышник крупноколючковый [2]
+  assortment: primary
+  group: deciduous_tree
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes:
+  - '2'
+  source_row: 32
+  source_number: 5
+- id: primary-deciduous-tree-006
+  name_ru: Боярышник перистонадрезанный
+  source_name: Боярышник перистонадрезанный [2]
+  assortment: primary
+  group: deciduous_tree
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes:
+  - '2'
+  source_row: 33
+  source_number: 6
+- id: primary-deciduous-tree-007
+  name_ru: Боярышник полумягкий/мягковатый
+  source_name: Боярышник полумягкий/мягковатый [2]
+  assortment: primary
+  group: deciduous_tree
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes:
+  - '2'
+  source_row: 34
+  source_number: 7
+- id: primary-deciduous-tree-008
+  name_ru: Боярышник сливолистный
+  source_name: Боярышник сливолистный [2]
+  assortment: primary
+  group: deciduous_tree
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes:
+  - '2'
+  source_row: 35
+  source_number: 8
+- id: primary-deciduous-tree-009
+  name_ru: Боярышник точечный
+  source_name: Боярышник точечный [2]
+  assortment: primary
+  group: deciduous_tree
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes:
+  - '2'
+  source_row: 36
+  source_number: 9
+- id: primary-deciduous-tree-010
+  name_ru: Боярышник чёрный
+  source_name: Боярышник чёрный [2]
+  assortment: primary
+  group: deciduous_tree
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes:
+  - '2'
+  source_row: 37
+  source_number: 10
+- id: primary-deciduous-tree-011
+  name_ru: Вишня обыкновенная
+  source_name: Вишня обыкновенная [2]
+  assortment: primary
+  group: deciduous_tree
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: not_recommended
+  note_codes:
+  - '2'
+  source_row: 38
+  source_number: 11
+- id: primary-deciduous-tree-012
+  name_ru: Вяз гибридный Резиста
+  source_name: Вяз гибридный Резиста
+  assortment: primary
+  group: deciduous_tree
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 39
+  source_number: 12
+- id: primary-deciduous-tree-013
+  name_ru: Вяз перисто-ветвистый
+  source_name: Вяз перисто-ветвистый
+  assortment: primary
+  group: deciduous_tree
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 40
+  source_number: 13
+- id: primary-deciduous-tree-014
+  name_ru: Вяз приземистый
+  source_name: Вяз приземистый
+  assortment: primary
+  group: deciduous_tree
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 41
+  source_number: 14
+- id: primary-deciduous-tree-015
+  name_ru: Груша уссурийская
+  source_name: Груша уссурийская [2]
+  assortment: primary
+  group: deciduous_tree
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: not_recommended
+  note_codes:
+  - '2'
+  source_row: 42
+  source_number: 15
+- id: primary-deciduous-tree-016
+  name_ru: Дуб красный
+  source_name: Дуб красный [1]
+  assortment: primary
+  group: deciduous_tree
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: not_recommended
+  note_codes:
+  - '1'
+  source_row: 43
+  source_number: 16
+- id: primary-deciduous-tree-017
+  name_ru: Дуб черешчатый
+  source_name: Дуб черешчатый (формы и сорта)
+  assortment: primary
+  group: deciduous_tree
+  forms_and_cultivars: true
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: not_recommended
+  note_codes: []
+  source_row: 44
+  source_number: 17
+- id: primary-deciduous-tree-018
+  name_ru: Ива белая
+  source_name: Ива белая (формы и сорта)
+  assortment: primary
+  group: deciduous_tree
+  forms_and_cultivars: true
+  territories:
+    courtyard: not_recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 45
+  source_number: 18
+- id: primary-deciduous-tree-019
+  name_ru: Ива ломкая ф. «Bullata»
+  source_name: Ива ломкая ф. «Bullata»
+  assortment: primary
+  group: deciduous_tree
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 46
+  source_number: 19
+- id: primary-deciduous-tree-020
+  name_ru: Ива прутовидная
+  source_name: Ива прутовидная
+  assortment: primary
+  group: deciduous_tree
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 47
+  source_number: 20
+- id: primary-deciduous-tree-021
+  name_ru: Ивы свердловской селекции
+  source_name: Ивы свердловской селекции (формы и сорта)
+  assortment: primary
+  group: deciduous_tree
+  forms_and_cultivars: true
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 48
+  source_number: 21
+- id: primary-deciduous-tree-022
+  name_ru: Ива Шверина
+  source_name: Ива Шверина
+  assortment: primary
+  group: deciduous_tree
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: not_recommended
+  note_codes: []
+  source_row: 49
+  source_number: 22
+- id: primary-deciduous-tree-023
+  name_ru: Кладрастис желтый
+  source_name: Кладрастис желтый
+  assortment: primary
+  group: deciduous_tree
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 50
+  source_number: 23
+- id: primary-deciduous-tree-024
+  name_ru: Клен гиннала/приречный
+  source_name: Клен гиннала/приречный
+  assortment: primary
+  group: deciduous_tree
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 51
+  source_number: 24
+- id: primary-deciduous-tree-025
+  name_ru: Клен красный
+  source_name: Клен красный (формы и сорта)
+  assortment: primary
+  group: deciduous_tree
+  forms_and_cultivars: true
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: not_recommended
+  note_codes: []
+  source_row: 52
+  source_number: 25
+- id: primary-deciduous-tree-026
+  name_ru: Клен остролистный
+  source_name: Клен остролистный (формы и сорта)
+  assortment: primary
+  group: deciduous_tree
+  forms_and_cultivars: true
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 53
+  source_number: 26
+- id: primary-deciduous-tree-027
+  name_ru: Клен сахаристый/серебристый
+  source_name: Клен сахаристый/серебристый (формы и сорта)
+  assortment: primary
+  group: deciduous_tree
+  forms_and_cultivars: true
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: not_recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 54
+  source_number: 27
+- id: primary-deciduous-tree-028
+  name_ru: Клен татарский
+  source_name: Клен татарский
+  assortment: primary
+  group: deciduous_tree
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 55
+  source_number: 28
+- id: primary-deciduous-tree-029
+  name_ru: Конский каштан восьмитычинковый
+  source_name: Конский каштан восьмитычинковый
+  assortment: primary
+  group: deciduous_tree
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: not_recommended
+  note_codes: []
+  source_row: 56
+  source_number: 29
+- id: primary-deciduous-tree-030
+  name_ru: Конский каштан мясо-красный
+  source_name: Конский каштан мясо-красный
+  assortment: primary
+  group: deciduous_tree
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: not_recommended
+  note_codes: []
+  source_row: 57
+  source_number: 30
+- id: primary-deciduous-tree-031
+  name_ru: Липа американская
+  source_name: Липа американская [3]
+  assortment: primary
+  group: deciduous_tree
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: not_recommended
+  note_codes:
+  - '3'
+  source_row: 58
+  source_number: 31
+- id: primary-deciduous-tree-032
+  name_ru: Липа крупнолистная
+  source_name: Липа крупнолистная [3] (формы и сорта)
+  assortment: primary
+  group: deciduous_tree
+  forms_and_cultivars: true
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes:
+  - '3'
+  source_row: 59
+  source_number: 32
+- id: primary-deciduous-tree-033
+  name_ru: Липа мелколистная/сердцевидная
+  source_name: Липа мелколистная/сердцевидная [3] (формы и сорта)
+  assortment: primary
+  group: deciduous_tree
+  forms_and_cultivars: true
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes:
+  - '3'
+  source_row: 60
+  source_number: 33
+- id: primary-deciduous-tree-034
+  name_ru: Липа обыкновенная/европейская
+  source_name: Липа обыкновенная/европейская [3] (формы и сорта)
+  assortment: primary
+  group: deciduous_tree
+  forms_and_cultivars: true
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes:
+  - '3'
+  source_row: 61
+  source_number: 34
+- id: primary-deciduous-tree-035
+  name_ru: Ольха серая
+  source_name: Ольха серая (формы и сорта)
+  assortment: primary
+  group: deciduous_tree
+  forms_and_cultivars: true
+  territories:
+    courtyard: not_recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: not_recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: not_recommended
+  note_codes: []
+  source_row: 62
+  source_number: 35
+- id: primary-deciduous-tree-036
+  name_ru: Ольха черная
+  source_name: Ольха черная (формы и сорта)
+  assortment: primary
+  group: deciduous_tree
+  forms_and_cultivars: true
+  territories:
+    courtyard: not_recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: not_recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: not_recommended
+  note_codes: []
+  source_row: 63
+  source_number: 36
+- id: primary-deciduous-tree-037
+  name_ru: Орех маньчжурский
+  source_name: Орех маньчжурский [1]
+  assortment: primary
+  group: deciduous_tree
+  forms_and_cultivars: false
+  territories:
+    courtyard: not_recommended
+    preschool: not_recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: not_recommended
+    parks_and_public_green: not_recommended
+    industrial_and_protection: recommended
+  note_codes:
+  - '1'
+  source_row: 64
+  source_number: 37
+- id: primary-deciduous-tree-038
+  name_ru: Орех серый
+  source_name: Орех серый
+  assortment: primary
+  group: deciduous_tree
+  forms_and_cultivars: false
+  territories:
+    courtyard: not_recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: not_recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: not_recommended
+  note_codes: []
+  source_row: 65
+  source_number: 38
+- id: primary-deciduous-tree-039
+  name_ru: Робиния лжеакация/акация белая
+  source_name: Робиния лжеакация/акация белая [1]
+  assortment: primary
+  group: deciduous_tree
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: not_recommended
+    industrial_and_protection: not_recommended
+  note_codes:
+  - '1'
+  source_row: 66
+  source_number: 39
+- id: primary-deciduous-tree-040
+  name_ru: Рябина ария
+  source_name: Рябина ария [2] (формы и сорта)
+  assortment: primary
+  group: deciduous_tree
+  forms_and_cultivars: true
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes:
+  - '2'
+  source_row: 67
+  source_number: 40
+- id: primary-deciduous-tree-041
+  name_ru: Рябина гибридная
+  source_name: Рябина гибридная [2] (формы и сорта)
+  assortment: primary
+  group: deciduous_tree
+  forms_and_cultivars: true
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes:
+  - '2'
+  source_row: 68
+  source_number: 41
+- id: primary-deciduous-tree-042
+  name_ru: Рябина обыкновенная
+  source_name: Рябина обыкновенная [2] (формы и сорта)
+  assortment: primary
+  group: deciduous_tree
+  forms_and_cultivars: true
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes:
+  - '2'
+  source_row: 69
+  source_number: 42
+- id: primary-deciduous-tree-043
+  name_ru: Рябина промежуточная
+  source_name: Рябина промежуточная [2] (формы и сорта)
+  assortment: primary
+  group: deciduous_tree
+  forms_and_cultivars: true
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes:
+  - '2'
+  source_row: 70
+  source_number: 43
+- id: primary-deciduous-tree-044
+  name_ru: Рябина тюрингская/дуболистная
+  source_name: Рябина тюрингская/дуболистная [2] (формы и сорта)
+  assortment: primary
+  group: deciduous_tree
+  forms_and_cultivars: true
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes:
+  - '2'
+  source_row: 71
+  source_number: 44
+- id: primary-deciduous-tree-045
+  name_ru: Слива домашняя
+  source_name: Слива домашняя [2] (формы и сорта)
+  assortment: primary
+  group: deciduous_tree
+  forms_and_cultivars: true
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: not_recommended
+  note_codes:
+  - '2'
+  source_row: 72
+  source_number: 45
+- id: primary-deciduous-tree-046
+  name_ru: Слива колючая/терн
+  source_name: Слива колючая/терн [2]
+  assortment: primary
+  group: deciduous_tree
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes:
+  - '2'
+  source_row: 73
+  source_number: 46
+- id: primary-deciduous-tree-047
+  name_ru: Слива растопыренная
+  source_name: Слива растопыренная [2]
+  assortment: primary
+  group: deciduous_tree
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes:
+  - '2'
+  source_row: 74
+  source_number: 47
+- id: primary-deciduous-tree-048
+  name_ru: Тополь бальзамический (муж. клоны)
+  source_name: Тополь бальзамический (муж. клоны)
+  assortment: primary
+  group: deciduous_tree
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 75
+  source_number: 48
+- id: primary-deciduous-tree-049
+  name_ru: Тополь белый/серебристый (муж. клоны)
+  source_name: Тополь белый/серебристый (муж. клоны) (формы и сорта)
+  assortment: primary
+  group: deciduous_tree
+  forms_and_cultivars: true
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 76
+  source_number: 49
+- id: primary-deciduous-tree-050
+  name_ru: Тополь берлинский (муж. клоны)
+  source_name: Тополь берлинский (муж. клоны)
+  assortment: primary
+  group: deciduous_tree
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 77
+  source_number: 50
+- id: primary-deciduous-tree-051
+  name_ru: Тополь дрожащий/осина (муж. клоны)
+  source_name: Тополь дрожащий/осина (муж. клоны)
+  assortment: primary
+  group: deciduous_tree
+  forms_and_cultivars: false
+  territories:
+    courtyard: not_recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: not_recommended
+    roads: recommended
+    public_and_commercial: not_recommended
+    parks_and_public_green: not_recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 78
+  source_number: 51
+- id: primary-deciduous-tree-052
+  name_ru: Тополь канадский (муж. клоны)
+  source_name: Тополь канадский (муж. клоны)
+  assortment: primary
+  group: deciduous_tree
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 79
+  source_number: 52
+- id: primary-deciduous-tree-053
+  name_ru: Тополь Симона (муж. клоны)
+  source_name: Тополь Симона (муж. клоны) (формы и сорта)
+  assortment: primary
+  group: deciduous_tree
+  forms_and_cultivars: true
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 80
+  source_number: 53
+- id: primary-deciduous-tree-054
+  name_ru: Тополь советский Пирамидальный (муж. клоны)
+  source_name: Тополь советский Пирамидальный (муж. клоны)
+  assortment: primary
+  group: deciduous_tree
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 81
+  source_number: 54
+- id: primary-deciduous-tree-055
+  name_ru: Черемуха виргинская
+  source_name: Черемуха виргинская [1] (формы и сорта)
+  assortment: primary
+  group: deciduous_tree
+  forms_and_cultivars: true
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: not_recommended
+  note_codes:
+  - '1'
+  source_row: 82
+  source_number: 55
+- id: primary-deciduous-tree-056
+  name_ru: Черемуха Маака
+  source_name: Черемуха Маака [2]
+  assortment: primary
+  group: deciduous_tree
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes:
+  - '2'
+  source_row: 83
+  source_number: 56
+- id: primary-deciduous-tree-057
+  name_ru: Черемуха обыкновенная
+  source_name: Черемуха обыкновенная [2] (формы и сорта)
+  assortment: primary
+  group: deciduous_tree
+  forms_and_cultivars: true
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes:
+  - '2'
+  source_row: 84
+  source_number: 57
+- id: primary-deciduous-tree-058
+  name_ru: Черемуха поздняя
+  source_name: Черемуха поздняя [2] (формы и сорта)
+  assortment: primary
+  group: deciduous_tree
+  forms_and_cultivars: true
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: not_recommended
+  note_codes:
+  - '2'
+  source_row: 85
+  source_number: 58
+- id: primary-deciduous-tree-059
+  name_ru: Яблоня Недзведцкого
+  source_name: Яблоня Недзведцкого [2]
+  assortment: primary
+  group: deciduous_tree
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes:
+  - '2'
+  source_row: 86
+  source_number: 59
+- id: primary-deciduous-tree-060
+  name_ru: Яблоня обильноцветущая
+  source_name: Яблоня обильноцветущая [2]
+  assortment: primary
+  group: deciduous_tree
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes:
+  - '2'
+  source_row: 87
+  source_number: 60
+- id: primary-deciduous-tree-061
+  name_ru: Яблоня сливолистная
+  source_name: Яблоня сливолистная [2]
+  assortment: primary
+  group: deciduous_tree
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes:
+  - '2'
+  source_row: 88
+  source_number: 61
+- id: primary-deciduous-tree-062
+  name_ru: Яблоня ягодная
+  source_name: Яблоня ягодная [2] (формы и сорта)
+  assortment: primary
+  group: deciduous_tree
+  forms_and_cultivars: true
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes:
+  - '2'
+  source_row: 89
+  source_number: 62
+- id: primary-deciduous-shrub-001
+  name_ru: Аморфа кустарниковая
+  source_name: Аморфа кустарниковая [1]
+  assortment: primary
+  group: deciduous_shrub
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes:
+  - '1'
+  source_row: 91
+  source_number: 1
+- id: primary-deciduous-shrub-002
+  name_ru: Арония черноплодная/Мичурина
+  source_name: Арония черноплодная/Мичурина [2] (формы и сорта)
+  assortment: primary
+  group: deciduous_shrub
+  forms_and_cultivars: true
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes:
+  - '2'
+  source_row: 92
+  source_number: 2
+- id: primary-deciduous-shrub-003
+  name_ru: Барбарис амурский
+  source_name: Барбарис амурский [2]
+  assortment: primary
+  group: deciduous_shrub
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes:
+  - '2'
+  source_row: 93
+  source_number: 3
+- id: primary-deciduous-shrub-004
+  name_ru: Барбарис обыкновенный
+  source_name: Барбарис обыкновенный [2] (формы и сорта)
+  assortment: primary
+  group: deciduous_shrub
+  forms_and_cultivars: true
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes:
+  - '2'
+  source_row: 94
+  source_number: 4
+- id: primary-deciduous-shrub-005
+  name_ru: Барбарис оттавский
+  source_name: Барбарис оттавский [2] (формы и сорта)
+  assortment: primary
+  group: deciduous_shrub
+  forms_and_cultivars: true
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: not_recommended
+  note_codes:
+  - '2'
+  source_row: 95
+  source_number: 5
+- id: primary-deciduous-shrub-006
+  name_ru: Барбарис Тунберга
+  source_name: Барбарис Тунберга [2] (формы и сорта)
+  assortment: primary
+  group: deciduous_shrub
+  forms_and_cultivars: true
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes:
+  - '2'
+  source_row: 96
+  source_number: 6
+- id: primary-deciduous-shrub-007
+  name_ru: Бересклет бородавчатый
+  source_name: Бересклет бородавчатый [2]
+  assortment: primary
+  group: deciduous_shrub
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: not_recommended
+  note_codes:
+  - '2'
+  source_row: 97
+  source_number: 7
+- id: primary-deciduous-shrub-008
+  name_ru: Бересклет европейский
+  source_name: Бересклет европейский [2] (формы и сорта)
+  assortment: primary
+  group: deciduous_shrub
+  forms_and_cultivars: true
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: not_recommended
+  note_codes:
+  - '2'
+  source_row: 98
+  source_number: 8
+- id: primary-deciduous-shrub-009
+  name_ru: Бересклет крылатый
+  source_name: Бересклет крылатый [2] (формы и сорта)
+  assortment: primary
+  group: deciduous_shrub
+  forms_and_cultivars: true
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: not_recommended
+  note_codes:
+  - '2'
+  source_row: 99
+  source_number: 9
+- id: primary-deciduous-shrub-010
+  name_ru: Бересклет Маака
+  source_name: Бересклет Маака [2]
+  assortment: primary
+  group: deciduous_shrub
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: not_recommended
+  note_codes:
+  - '2'
+  source_row: 100
+  source_number: 10
+- id: primary-deciduous-shrub-011
+  name_ru: Бирючина обыкновенная
+  source_name: Бирючина обыкновенная [2] (формы и сорта)
+  assortment: primary
+  group: deciduous_shrub
+  forms_and_cultivars: true
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: not_recommended
+  note_codes:
+  - '2'
+  source_row: 101
+  source_number: 11
+- id: primary-deciduous-shrub-012
+  name_ru: Боярышник Арнольда
+  source_name: Боярышник Арнольда [2]
+  assortment: primary
+  group: deciduous_shrub
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes:
+  - '2'
+  source_row: 102
+  source_number: 12
+- id: primary-deciduous-shrub-013
+  name_ru: Боярышник кроваво-красный
+  source_name: Боярышник кроваво-красный [2]
+  assortment: primary
+  group: deciduous_shrub
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes:
+  - '2'
+  source_row: 103
+  source_number: 13
+- id: primary-deciduous-shrub-014
+  name_ru: Боярышник обыкновенный/колючий
+  source_name: Боярышник обыкновенный/колючий [2]
+  assortment: primary
+  group: deciduous_shrub
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes:
+  - '2'
+  source_row: 104
+  source_number: 14
+- id: primary-deciduous-shrub-015
+  name_ru: Боярышник однопестичный
+  source_name: Боярышник однопестичный [2] (формы и сорта)
+  assortment: primary
+  group: deciduous_shrub
+  forms_and_cultivars: true
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes:
+  - '2'
+  source_row: 105
+  source_number: 15
+- id: primary-deciduous-shrub-016
+  name_ru: Боярышник перистонадрезанный
+  source_name: Боярышник перистонадрезанный [2]
+  assortment: primary
+  group: deciduous_shrub
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes:
+  - '2'
+  source_row: 106
+  source_number: 16
+- id: primary-deciduous-shrub-017
+  name_ru: Боярышник полумягкий/мягковатый
+  source_name: Боярышник полумягкий/мягковатый [2]
+  assortment: primary
+  group: deciduous_shrub
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes:
+  - '2'
+  source_row: 107
+  source_number: 17
+- id: primary-deciduous-shrub-018
+  name_ru: Боярышник сливолистный
+  source_name: Боярышник сливолистный [2]
+  assortment: primary
+  group: deciduous_shrub
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes:
+  - '2'
+  source_row: 108
+  source_number: 18
+- id: primary-deciduous-shrub-019
+  name_ru: Бузина канадская «Аurea»
+  source_name: Бузина канадская «Аurea»
+  assortment: primary
+  group: deciduous_shrub
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 109
+  source_number: 19
+- id: primary-deciduous-shrub-020
+  name_ru: Бузина красная/кистистая
+  source_name: Бузина красная/кистистая [2]
+  assortment: primary
+  group: deciduous_shrub
+  forms_and_cultivars: false
+  territories:
+    courtyard: not_recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: not_recommended
+    roads: not_recommended
+    public_and_commercial: not_recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes:
+  - '2'
+  source_row: 110
+  source_number: 20
+- id: primary-deciduous-shrub-021
+  name_ru: Бузина черная
+  source_name: Бузина черная (формы и сорта)
+  assortment: primary
+  group: deciduous_shrub
+  forms_and_cultivars: true
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 111
+  source_number: 21
+- id: primary-deciduous-shrub-022
+  name_ru: Гортензия Бреттшнейдера
+  source_name: Гортензия Бреттшнейдера
+  assortment: primary
+  group: deciduous_shrub
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 112
+  source_number: 22
+- id: primary-deciduous-shrub-023
+  name_ru: Гортензия древовидная
+  source_name: Гортензия древовидная (формы и сорта)
+  assortment: primary
+  group: deciduous_shrub
+  forms_and_cultivars: true
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 113
+  source_number: 23
+- id: primary-deciduous-shrub-024
+  name_ru: Гортензия метельчатая
+  source_name: Гортензия метельчатая (формы и сорта)
+  assortment: primary
+  group: deciduous_shrub
+  forms_and_cultivars: true
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 114
+  source_number: 24
+- id: primary-deciduous-shrub-025
+  name_ru: Дерен белый/сибирский
+  source_name: Дерен белый/сибирский [1] (формы и сорта)
+  assortment: primary
+  group: deciduous_shrub
+  forms_and_cultivars: true
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes:
+  - '1'
+  source_row: 115
+  source_number: 25
+- id: primary-deciduous-shrub-026
+  name_ru: Дерен кроваво-красный
+  source_name: Дерен кроваво-красный (формы и сорта)
+  assortment: primary
+  group: deciduous_shrub
+  forms_and_cultivars: true
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 116
+  source_number: 26
+- id: primary-deciduous-shrub-027
+  name_ru: Дерен отпрысковый ф. «Флавирамея»
+  source_name: Дерен отпрысковый ф. «Флавирамея»
+  assortment: primary
+  group: deciduous_shrub
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 117
+  source_number: 27
+- id: primary-deciduous-shrub-028
+  name_ru: Жимолость альпийская
+  source_name: Жимолость альпийская
+  assortment: primary
+  group: deciduous_shrub
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 118
+  source_number: 28
+- id: primary-deciduous-shrub-029
+  name_ru: Жимолость золотистая
+  source_name: Жимолость золотистая
+  assortment: primary
+  group: deciduous_shrub
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 119
+  source_number: 29
+- id: primary-deciduous-shrub-030
+  name_ru: Жимолость Королькова
+  source_name: Жимолость Королькова
+  assortment: primary
+  group: deciduous_shrub
+  forms_and_cultivars: false
+  territories:
+    courtyard: not_recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 120
+  source_number: 30
+- id: primary-deciduous-shrub-031
+  name_ru: Жимолость Маака
+  source_name: Жимолость Маака
+  assortment: primary
+  group: deciduous_shrub
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 121
+  source_number: 31
+- id: primary-deciduous-shrub-032
+  name_ru: Жимолость Максимовича
+  source_name: Жимолость Максимовича
+  assortment: primary
+  group: deciduous_shrub
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 122
+  source_number: 32
+- id: primary-deciduous-shrub-033
+  name_ru: Жимолость обыкновенная
+  source_name: Жимолость обыкновенная
+  assortment: primary
+  group: deciduous_shrub
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: not_recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: not_recommended
+  note_codes: []
+  source_row: 123
+  source_number: 33
+- id: primary-deciduous-shrub-034
+  name_ru: Жимолость татарская
+  source_name: Жимолость татарская (формы и сорта)
+  assortment: primary
+  group: deciduous_shrub
+  forms_and_cultivars: true
+  territories:
+    courtyard: not_recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 124
+  source_number: 34
+- id: primary-deciduous-shrub-035
+  name_ru: Ива пурпурная ф. «Nana»
+  source_name: Ива пурпурная ф. «Nana»
+  assortment: primary
+  group: deciduous_shrub
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: not_recommended
+  note_codes: []
+  source_row: 125
+  source_number: 35
+- id: primary-deciduous-shrub-036
+  name_ru: Ирга канадская/Ирга Ламарка
+  source_name: Ирга канадская/Ирга Ламарка
+  assortment: primary
+  group: deciduous_shrub
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 126
+  source_number: 36
+- id: primary-deciduous-shrub-037
+  name_ru: Ирга колосистая
+  source_name: Ирга колосистая [1]
+  assortment: primary
+  group: deciduous_shrub
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes:
+  - '1'
+  source_row: 127
+  source_number: 37
+- id: primary-deciduous-shrub-038
+  name_ru: Ирга круглолистная
+  source_name: Ирга круглолистная [7]
+  assortment: primary
+  group: deciduous_shrub
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: not_recommended
+  note_codes:
+  - '7'
+  source_row: 128
+  source_number: 38
+- id: primary-deciduous-shrub-039
+  name_ru: Калина гордовина
+  source_name: Калина гордовина (формы и сорта)
+  assortment: primary
+  group: deciduous_shrub
+  forms_and_cultivars: true
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: not_recommended
+  note_codes: []
+  source_row: 129
+  source_number: 39
+- id: primary-deciduous-shrub-040
+  name_ru: Калина обыкновенная
+  source_name: Калина обыкновенная (формы и сорта)
+  assortment: primary
+  group: deciduous_shrub
+  forms_and_cultivars: true
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: not_recommended
+  note_codes: []
+  source_row: 130
+  source_number: 40
+- id: primary-deciduous-shrub-041
+  name_ru: Калина Саржента
+  source_name: Калина Саржента (формы и сорта)
+  assortment: primary
+  group: deciduous_shrub
+  forms_and_cultivars: true
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: not_recommended
+  note_codes: []
+  source_row: 131
+  source_number: 41
+- id: primary-deciduous-shrub-042
+  name_ru: Карагана древовидная/акация желтая
+  source_name: Карагана древовидная/акация желтая (формы и сорта)
+  assortment: primary
+  group: deciduous_shrub
+  forms_and_cultivars: true
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: not_recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 132
+  source_number: 42
+- id: primary-deciduous-shrub-043
+  name_ru: Карагана кустарниковая
+  source_name: Карагана кустарниковая
+  assortment: primary
+  group: deciduous_shrub
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 133
+  source_number: 43
+- id: primary-deciduous-shrub-044
+  name_ru: Кизильник блестящий
+  source_name: Кизильник блестящий
+  assortment: primary
+  group: deciduous_shrub
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 134
+  source_number: 44
+- id: primary-deciduous-shrub-045
+  name_ru: Лапчатка кустарниковая
+  source_name: Лапчатка кустарниковая (формы и сорта)
+  assortment: primary
+  group: deciduous_shrub
+  forms_and_cultivars: true
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 135
+  source_number: 45
+- id: primary-deciduous-shrub-046
+  name_ru: Лещина обыкновенная
+  source_name: Лещина обыкновенная (формы и сорта)
+  assortment: primary
+  group: deciduous_shrub
+  forms_and_cultivars: true
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: not_recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 136
+  source_number: 46
+- id: primary-deciduous-shrub-047
+  name_ru: Лещина пурпурнолистная
+  source_name: Лещина пурпурнолистная
+  assortment: primary
+  group: deciduous_shrub
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: not_recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 137
+  source_number: 47
+- id: primary-deciduous-shrub-048
+  name_ru: Лох серебристый
+  source_name: Лох серебристый
+  assortment: primary
+  group: deciduous_shrub
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 138
+  source_number: 48
+- id: primary-deciduous-shrub-049
+  name_ru: Лох узколистный
+  source_name: Лох узколистный
+  assortment: primary
+  group: deciduous_shrub
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 139
+  source_number: 49
+- id: primary-deciduous-shrub-050
+  name_ru: Магония падуболистная
+  source_name: Магония падуболистная (формы и сорта)
+  assortment: primary
+  group: deciduous_shrub
+  forms_and_cultivars: true
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: not_recommended
+  note_codes: []
+  source_row: 140
+  source_number: 50
+- id: primary-deciduous-shrub-051
+  name_ru: Пузыреплодник калинолистный
+  source_name: Пузыреплодник калинолистный [1] (формы и сорта)
+  assortment: primary
+  group: deciduous_shrub
+  forms_and_cultivars: true
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes:
+  - '1'
+  source_row: 141
+  source_number: 51
+- id: primary-deciduous-shrub-052
+  name_ru: Роза бедренцеволистная
+  source_name: Роза бедренцеволистная
+  assortment: primary
+  group: deciduous_shrub
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 142
+  source_number: 52
+- id: primary-deciduous-shrub-053
+  name_ru: Роза морщинистая
+  source_name: Роза морщинистая [1] (формы и сорта)
+  assortment: primary
+  group: deciduous_shrub
+  forms_and_cultivars: true
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: not_recommended
+    industrial_and_protection: recommended
+  note_codes:
+  - '1'
+  source_row: 143
+  source_number: 53
+- id: primary-deciduous-shrub-054
+  name_ru: Роза сизая
+  source_name: Роза сизая
+  assortment: primary
+  group: deciduous_shrub
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 144
+  source_number: 54
+- id: primary-deciduous-shrub-055
+  name_ru: Роза собачья
+  source_name: Роза собачья
+  assortment: primary
+  group: deciduous_shrub
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 145
+  source_number: 55
+- id: primary-deciduous-shrub-056
+  name_ru: Рябинник рябинолистный
+  source_name: Рябинник рябинолистный [1] (формы и сорта)
+  assortment: primary
+  group: deciduous_shrub
+  forms_and_cultivars: true
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes:
+  - '1'
+  source_row: 146
+  source_number: 56
+- id: primary-deciduous-shrub-057
+  name_ru: Сирень амурская
+  source_name: Сирень амурская
+  assortment: primary
+  group: deciduous_shrub
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: not_recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: not_recommended
+  note_codes: []
+  source_row: 147
+  source_number: 57
+- id: primary-deciduous-shrub-058
+  name_ru: Сирень венгерская
+  source_name: Сирень венгерская
+  assortment: primary
+  group: deciduous_shrub
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 148
+  source_number: 58
+- id: primary-deciduous-shrub-059
+  name_ru: Сирень обыкновенная
+  source_name: Сирень обыкновенная (формы и сорта)
+  assortment: primary
+  group: deciduous_shrub
+  forms_and_cultivars: true
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 149
+  source_number: 59
+- id: primary-deciduous-shrub-060
+  name_ru: Сирень Престон (сорта)
+  source_name: Сирень Престон (сорта)
+  assortment: primary
+  group: deciduous_shrub
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 150
+  source_number: 60
+- id: primary-deciduous-shrub-061
+  name_ru: Смородина альпийская
+  source_name: Смородина альпийская (формы и сорта)
+  assortment: primary
+  group: deciduous_shrub
+  forms_and_cultivars: true
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 151
+  source_number: 61
+- id: primary-deciduous-shrub-062
+  name_ru: Смородина железистая
+  source_name: Смородина железистая
+  assortment: primary
+  group: deciduous_shrub
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 152
+  source_number: 62
+- id: primary-deciduous-shrub-063
+  name_ru: Смородина золотистая
+  source_name: Смородина золотистая
+  assortment: primary
+  group: deciduous_shrub
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 153
+  source_number: 63
+- id: primary-deciduous-shrub-064
+  name_ru: Смородина красная
+  source_name: Смородина красная
+  assortment: primary
+  group: deciduous_shrub
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: not_recommended
+  note_codes: []
+  source_row: 154
+  source_number: 64
+- id: primary-deciduous-shrub-065
+  name_ru: Снежноягодник белый
+  source_name: Снежноягодник белый [7] (формы и сорта)
+  assortment: primary
+  group: deciduous_shrub
+  forms_and_cultivars: true
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: not_recommended
+    industrial_and_protection: recommended
+  note_codes:
+  - '7'
+  source_row: 155
+  source_number: 65
+- id: primary-deciduous-shrub-066
+  name_ru: Спирея березолистная
+  source_name: Спирея березолистная (формы и сорта)
+  assortment: primary
+  group: deciduous_shrub
+  forms_and_cultivars: true
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 156
+  source_number: 66
+- id: primary-deciduous-shrub-067
+  name_ru: Спирея Билларда
+  source_name: Спирея Билларда (формы и сорта)
+  assortment: primary
+  group: deciduous_shrub
+  forms_and_cultivars: true
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 157
+  source_number: 67
+- id: primary-deciduous-shrub-068
+  name_ru: Спирея Бумальда
+  source_name: Спирея Бумальда (формы и сорта)
+  assortment: primary
+  group: deciduous_shrub
+  forms_and_cultivars: true
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 158
+  source_number: 68
+- id: primary-deciduous-shrub-069
+  name_ru: Спирея Вангутта
+  source_name: Спирея Вангутта (формы и сорта)
+  assortment: primary
+  group: deciduous_shrub
+  forms_and_cultivars: true
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 159
+  source_number: 69
+- id: primary-deciduous-shrub-070
+  name_ru: Спирея дубравколистная
+  source_name: Спирея дубравколистная
+  assortment: primary
+  group: deciduous_shrub
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 160
+  source_number: 70
+- id: primary-deciduous-shrub-071
+  name_ru: Спирея Дугласа
+  source_name: Спирея Дугласа (формы и сорта)
+  assortment: primary
+  group: deciduous_shrub
+  forms_and_cultivars: true
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 161
+  source_number: 71
+- id: primary-deciduous-shrub-072
+  name_ru: Спирея иволистная
+  source_name: Спирея иволистная (формы и сорта)
+  assortment: primary
+  group: deciduous_shrub
+  forms_and_cultivars: true
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 162
+  source_number: 72
+- id: primary-deciduous-shrub-073
+  name_ru: Спирея ниппонская
+  source_name: Спирея ниппонская (формы и сорта)
+  assortment: primary
+  group: deciduous_shrub
+  forms_and_cultivars: true
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 163
+  source_number: 73
+- id: primary-deciduous-shrub-074
+  name_ru: Спирея острозубчатая
+  source_name: Спирея острозубчатая
+  assortment: primary
+  group: deciduous_shrub
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 164
+  source_number: 74
+- id: primary-deciduous-shrub-075
+  name_ru: Спирея серая
+  source_name: Спирея серая (формы и сорта)
+  assortment: primary
+  group: deciduous_shrub
+  forms_and_cultivars: true
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 165
+  source_number: 75
+- id: primary-deciduous-shrub-076
+  name_ru: Спирея средняя
+  source_name: Спирея средняя (формы и сорта)
+  assortment: primary
+  group: deciduous_shrub
+  forms_and_cultivars: true
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 166
+  source_number: 76
+- id: primary-deciduous-shrub-077
+  name_ru: Спирея трехлопастная
+  source_name: Спирея трехлопастная
+  assortment: primary
+  group: deciduous_shrub
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 167
+  source_number: 77
+- id: primary-deciduous-shrub-078
+  name_ru: Спирея японская
+  source_name: Спирея японская (формы и сорта)
+  assortment: primary
+  group: deciduous_shrub
+  forms_and_cultivars: true
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 168
+  source_number: 78
+- id: primary-deciduous-shrub-079
+  name_ru: Форзиция обратнояйцевидная
+  source_name: Форзиция обратнояйцевидная
+  assortment: primary
+  group: deciduous_shrub
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: not_recommended
+  note_codes: []
+  source_row: 169
+  source_number: 79
+- id: primary-deciduous-shrub-080
+  name_ru: Хеномелес японский
+  source_name: Хеномелес японский
+  assortment: primary
+  group: deciduous_shrub
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: not_recommended
+  note_codes: []
+  source_row: 170
+  source_number: 80
+- id: primary-deciduous-shrub-081
+  name_ru: Чубушник венечный
+  source_name: Чубушник венечный (формы и сорта)
+  assortment: primary
+  group: deciduous_shrub
+  forms_and_cultivars: true
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 171
+  source_number: 81
+- id: primary-deciduous-shrub-082
+  name_ru: Чубушник Лемуана
+  source_name: Чубушник Лемуана (формы и сорта)
+  assortment: primary
+  group: deciduous_shrub
+  forms_and_cultivars: true
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 172
+  source_number: 82
+- id: primary-deciduous-shrub-083
+  name_ru: Чубушник мелколистный
+  source_name: Чубушник мелколистный
+  assortment: primary
+  group: deciduous_shrub
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 173
+  source_number: 83
+- id: primary-vine-001
+  name_ru: Актинидия коломикта
+  source_name: Актинидия коломикта
+  assortment: primary
+  group: vine
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: not_recommended
+  note_codes: []
+  source_row: 175
+  source_number: 1
+- id: primary-vine-002
+  name_ru: Виноград амурский
+  source_name: Виноград амурский
+  assortment: primary
+  group: vine
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: not_recommended
+  note_codes: []
+  source_row: 176
+  source_number: 2
+- id: primary-vine-003
+  name_ru: Девичий виноград пятилисточковый
+  source_name: Девичий виноград пятилисточковый [1]
+  assortment: primary
+  group: vine
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: not_recommended
+  note_codes:
+  - '1'
+  source_row: 177
+  source_number: 3
+- id: primary-vine-004
+  name_ru: Жимолость каприфоль
+  source_name: Жимолость каприфоль
+  assortment: primary
+  group: vine
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 178
+  source_number: 4
+- id: primary-vine-005
+  name_ru: Клематис сибирский
+  source_name: Клематис сибирский
+  assortment: primary
+  group: vine
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: not_recommended
+  note_codes: []
+  source_row: 179
+  source_number: 5
+- id: primary-vine-006
+  name_ru: Лимонник китайский
+  source_name: Лимонник китайский
+  assortment: primary
+  group: vine
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: not_recommended
+  note_codes: []
+  source_row: 180
+  source_number: 6
+- id: additional-coniferous-tree-001
+  name_ru: Ель канадская/сизая
+  source_name: Ель канадская/сизая (формы и сорта)
+  assortment: additional
+  group: coniferous_tree
+  forms_and_cultivars: true
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: not_recommended
+  note_codes: []
+  source_row: 190
+  source_number: 1
+- id: additional-coniferous-tree-002
+  name_ru: Ель сербская
+  source_name: Ель сербская [4] (формы и сорта)
+  assortment: additional
+  group: coniferous_tree
+  forms_and_cultivars: true
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes:
+  - '4'
+  source_row: 191
+  source_number: 2
+- id: additional-coniferous-tree-003
+  name_ru: Ель шероховатая
+  source_name: Ель шероховатая [4]
+  assortment: additional
+  group: coniferous_tree
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes:
+  - '4'
+  source_row: 192
+  source_number: 3
+- id: additional-coniferous-tree-004
+  name_ru: Ель Энгельмана
+  source_name: Ель Энгельмана
+  assortment: additional
+  group: coniferous_tree
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: not_recommended
+  note_codes: []
+  source_row: 193
+  source_number: 4
+- id: additional-coniferous-tree-005
+  name_ru: Кипарисовик горохоплодный
+  source_name: Кипарисовик горохоплодный
+  assortment: additional
+  group: coniferous_tree
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: not_recommended
+  note_codes: []
+  source_row: 194
+  source_number: 5
+- id: additional-coniferous-tree-006
+  name_ru: Лиственница Кемфера
+  source_name: Лиственница Кемфера
+  assortment: additional
+  group: coniferous_tree
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 195
+  source_number: 6
+- id: additional-coniferous-tree-007
+  name_ru: Лиственница Сукачева
+  source_name: Лиственница Сукачева
+  assortment: additional
+  group: coniferous_tree
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 196
+  source_number: 7
+- id: additional-coniferous-tree-008
+  name_ru: Пихта бальзамическая
+  source_name: Пихта бальзамическая [3], [4], [5] (формы и сорта)
+  assortment: additional
+  group: coniferous_tree
+  forms_and_cultivars: true
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: not_recommended
+  note_codes:
+  - '3'
+  - '4'
+  - '5'
+  source_row: 197
+  source_number: 8
+- id: additional-coniferous-tree-009
+  name_ru: Пихта Вича
+  source_name: Пихта Вича
+  assortment: additional
+  group: coniferous_tree
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: not_recommended
+  note_codes: []
+  source_row: 198
+  source_number: 9
+- id: additional-coniferous-tree-010
+  name_ru: Пихта одноцветная
+  source_name: Пихта одноцветная (формы и сорта)
+  assortment: additional
+  group: coniferous_tree
+  forms_and_cultivars: true
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: not_recommended
+  note_codes: []
+  source_row: 199
+  source_number: 10
+- id: additional-coniferous-tree-011
+  name_ru: Пихта сибирская
+  source_name: Пихта сибирская [3], [4], [5]
+  assortment: additional
+  group: coniferous_tree
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: not_recommended
+  note_codes:
+  - '3'
+  - '4'
+  - '5'
+  source_row: 200
+  source_number: 11
+- id: additional-coniferous-tree-012
+  name_ru: Псевдотсуга Мензиса сизая
+  source_name: Псевдотсуга Мензиса сизая
+  assortment: additional
+  group: coniferous_tree
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: not_recommended
+  note_codes: []
+  source_row: 201
+  source_number: 12
+- id: additional-coniferous-tree-013
+  name_ru: Сосна Веймутова
+  source_name: Сосна Веймутова [4] (формы и сорта)
+  assortment: additional
+  group: coniferous_tree
+  forms_and_cultivars: true
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: not_recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: not_recommended
+  note_codes:
+  - '4'
+  source_row: 202
+  source_number: 13
+- id: additional-coniferous-tree-014
+  name_ru: Сосна кедровая европейская
+  source_name: Сосна кедровая европейская
+  assortment: additional
+  group: coniferous_tree
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: not_recommended
+  note_codes: []
+  source_row: 203
+  source_number: 14
+- id: additional-coniferous-tree-015
+  name_ru: Сосна кедровая корейская
+  source_name: Сосна кедровая корейская
+  assortment: additional
+  group: coniferous_tree
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: not_recommended
+  note_codes: []
+  source_row: 204
+  source_number: 15
+- id: additional-coniferous-tree-016
+  name_ru: Сосна кедровая сибирская
+  source_name: Сосна кедровая сибирская
+  assortment: additional
+  group: coniferous_tree
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: not_recommended
+  note_codes: []
+  source_row: 205
+  source_number: 16
+- id: additional-coniferous-tree-017
+  name_ru: Сосна кедровая стланиковая (кедровый стланик)
+  source_name: Сосна кедровая стланиковая (кедровый стланик)
+  assortment: additional
+  group: coniferous_tree
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: not_recommended
+  note_codes: []
+  source_row: 206
+  source_number: 17
+- id: additional-coniferous-tree-018
+  name_ru: Сосна румелийская
+  source_name: Сосна румелийская (формы и сорта)
+  assortment: additional
+  group: coniferous_tree
+  forms_and_cultivars: true
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: not_recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: not_recommended
+  note_codes: []
+  source_row: 207
+  source_number: 18
+- id: additional-coniferous-tree-019
+  name_ru: Сосна черная австрийская
+  source_name: Сосна черная австрийская
+  assortment: additional
+  group: coniferous_tree
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 208
+  source_number: 19
+- id: additional-coniferous-tree-020
+  name_ru: Туя западная
+  source_name: Туя западная (формы и сорта)
+  assortment: additional
+  group: coniferous_tree
+  forms_and_cultivars: true
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 209
+  source_number: 20
+- id: additional-coniferous-shrub-001
+  name_ru: Микробиота перекрёстнопарная
+  source_name: Микробиота перекрёстнопарная
+  assortment: additional
+  group: coniferous_shrub
+  forms_and_cultivars: false
+  territories:
+    courtyard: not_recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 211
+  source_number: 1
+- id: additional-coniferous-shrub-002
+  name_ru: Можжевельник китайский
+  source_name: Можжевельник китайский [5], [6] (формы и сорта)
+  assortment: additional
+  group: coniferous_shrub
+  forms_and_cultivars: true
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: not_recommended
+  note_codes:
+  - '5'
+  - '6'
+  source_row: 212
+  source_number: 2
+- id: additional-coniferous-shrub-003
+  name_ru: Можжевельник чешуйчатый
+  source_name: Можжевельник чешуйчатый [5], [6] (формы и сорта)
+  assortment: additional
+  group: coniferous_shrub
+  forms_and_cultivars: true
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: not_recommended
+  note_codes:
+  - '5'
+  - '6'
+  source_row: 213
+  source_number: 3
+- id: additional-deciduous-tree-001
+  name_ru: Багряник японский
+  source_name: Багряник японский
+  assortment: additional
+  group: deciduous_tree
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 215
+  source_number: 1
+- id: additional-deciduous-tree-002
+  name_ru: Береза бумажная
+  source_name: Береза бумажная
+  assortment: additional
+  group: deciduous_tree
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 216
+  source_number: 2
+- id: additional-deciduous-tree-003
+  name_ru: Берёза вишнёвая
+  source_name: Берёза вишнёвая
+  assortment: additional
+  group: deciduous_tree
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 217
+  source_number: 3
+- id: additional-deciduous-tree-004
+  name_ru: Береза ребристая
+  source_name: Береза ребристая (формы и сорта)
+  assortment: additional
+  group: deciduous_tree
+  forms_and_cultivars: true
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 218
+  source_number: 4
+- id: additional-deciduous-tree-005
+  name_ru: Береза черная
+  source_name: Береза черная (формы и сорта)
+  assortment: additional
+  group: deciduous_tree
+  forms_and_cultivars: true
+  territories:
+    courtyard: not_recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: not_recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: not_recommended
+  note_codes: []
+  source_row: 219
+  source_number: 5
+- id: additional-deciduous-tree-006
+  name_ru: Береза Эрмана/каменная
+  source_name: Береза Эрмана/каменная (формы и сорта)
+  assortment: additional
+  group: deciduous_tree
+  forms_and_cultivars: true
+  territories:
+    courtyard: not_recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: not_recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: not_recommended
+  note_codes: []
+  source_row: 220
+  source_number: 6
+- id: additional-deciduous-tree-007
+  name_ru: Боярышник зеленомясый
+  source_name: Боярышник зеленомясый
+  assortment: additional
+  group: deciduous_tree
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 221
+  source_number: 7
+- id: additional-deciduous-tree-008
+  name_ru: Вяз шершавый
+  source_name: Вяз шершавый (формы и сорта)
+  assortment: additional
+  group: deciduous_tree
+  forms_and_cultivars: true
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 222
+  source_number: 8
+- id: additional-deciduous-tree-009
+  name_ru: Груша иволистная
+  source_name: Груша иволистная (формы и сорта)
+  assortment: additional
+  group: deciduous_tree
+  forms_and_cultivars: true
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 223
+  source_number: 9
+- id: additional-deciduous-tree-010
+  name_ru: Груша обыкновенная
+  source_name: Груша обыкновенная
+  assortment: additional
+  group: deciduous_tree
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: not_recommended
+  note_codes: []
+  source_row: 224
+  source_number: 10
+- id: additional-deciduous-tree-011
+  name_ru: Дуб монгольский
+  source_name: Дуб монгольский
+  assortment: additional
+  group: deciduous_tree
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: not_recommended
+  note_codes: []
+  source_row: 225
+  source_number: 11
+- id: additional-deciduous-tree-012
+  name_ru: Ива козья
+  source_name: Ива козья (формы и сорта)
+  assortment: additional
+  group: deciduous_tree
+  forms_and_cultivars: true
+  territories:
+    courtyard: not_recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: not_recommended
+    roads: not_recommended
+    public_and_commercial: not_recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 226
+  source_number: 12
+- id: additional-deciduous-tree-013
+  name_ru: Ива пятитычинковая
+  source_name: Ива пятитычинковая
+  assortment: additional
+  group: deciduous_tree
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 227
+  source_number: 13
+- id: additional-deciduous-tree-014
+  name_ru: Ива росистая
+  source_name: Ива росистая
+  assortment: additional
+  group: deciduous_tree
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 228
+  source_number: 14
+- id: additional-deciduous-tree-015
+  name_ru: Ива цельнолистная
+  source_name: Ива цельнолистная
+  assortment: additional
+  group: deciduous_tree
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 229
+  source_number: 15
+- id: additional-deciduous-tree-016
+  name_ru: Клен зеленокорый
+  source_name: Клен зеленокорый
+  assortment: additional
+  group: deciduous_tree
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 230
+  source_number: 16
+- id: additional-deciduous-tree-017
+  name_ru: Клён колосистый
+  source_name: Клён колосистый
+  assortment: additional
+  group: deciduous_tree
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 231
+  source_number: 17
+- id: additional-deciduous-tree-018
+  name_ru: Клен ложнозибольдов
+  source_name: Клен ложнозибольдов
+  assortment: additional
+  group: deciduous_tree
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 232
+  source_number: 18
+- id: additional-deciduous-tree-019
+  name_ru: Клен маньчжурский
+  source_name: Клен маньчжурский
+  assortment: additional
+  group: deciduous_tree
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 233
+  source_number: 19
+- id: additional-deciduous-tree-020
+  name_ru: Клён мелколистный
+  source_name: Клён мелколистный
+  assortment: additional
+  group: deciduous_tree
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 234
+  source_number: 20
+- id: additional-deciduous-tree-021
+  name_ru: Липа войлочная/серебристая
+  source_name: Липа войлочная/серебристая [3]
+  assortment: additional
+  group: deciduous_tree
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes:
+  - '3'
+  source_row: 235
+  source_number: 21
+- id: additional-deciduous-tree-022
+  name_ru: Липа монгольская
+  source_name: Липа монгольская [3]
+  assortment: additional
+  group: deciduous_tree
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes:
+  - '3'
+  source_row: 236
+  source_number: 22
+- id: additional-deciduous-tree-023
+  name_ru: Маакия амурская
+  source_name: Маакия амурская
+  assortment: additional
+  group: deciduous_tree
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: not_recommended
+  note_codes: []
+  source_row: 237
+  source_number: 23
+- id: additional-deciduous-tree-024
+  name_ru: Рябина Арнольда (сорта)
+  source_name: Рябина Арнольда (сорта)
+  assortment: additional
+  group: deciduous_tree
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: not_recommended
+  note_codes: []
+  source_row: 238
+  source_number: 24
+- id: additional-deciduous-tree-025
+  name_ru: Рябина бузинолистная
+  source_name: Рябина бузинолистная
+  assortment: additional
+  group: deciduous_tree
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 239
+  source_number: 25
+- id: additional-deciduous-tree-026
+  name_ru: Рябина кашмирская
+  source_name: Рябина кашмирская
+  assortment: additional
+  group: deciduous_tree
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 240
+  source_number: 26
+- id: additional-deciduous-tree-027
+  name_ru: Рябина Мужо
+  source_name: Рябина Мужо
+  assortment: additional
+  group: deciduous_tree
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 241
+  source_number: 27
+- id: additional-deciduous-tree-028
+  name_ru: Тополь лавролистный
+  source_name: Тополь лавролистный
+  assortment: additional
+  group: deciduous_tree
+  forms_and_cultivars: false
+  territories:
+    courtyard: not_recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: not_recommended
+    roads: recommended
+    public_and_commercial: not_recommended
+    parks_and_public_green: not_recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 242
+  source_number: 28
+- id: additional-deciduous-tree-029
+  name_ru: Тополь Максимовича (муж. клоны)
+  source_name: Тополь Максимовича (муж. клоны)
+  assortment: additional
+  group: deciduous_tree
+  forms_and_cultivars: false
+  territories:
+    courtyard: not_recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: not_recommended
+    roads: recommended
+    public_and_commercial: not_recommended
+    parks_and_public_green: not_recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 243
+  source_number: 29
+- id: additional-deciduous-tree-030
+  name_ru: Тополь черный (муж. клоны)
+  source_name: Тополь черный (муж. клоны)
+  assortment: additional
+  group: deciduous_tree
+  forms_and_cultivars: false
+  territories:
+    courtyard: not_recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: not_recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 244
+  source_number: 30
+- id: additional-deciduous-tree-031
+  name_ru: Черемуха пенсильванская
+  source_name: Черемуха пенсильванская
+  assortment: additional
+  group: deciduous_tree
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 245
+  source_number: 31
+- id: additional-deciduous-tree-032
+  name_ru: Яблоня Зибольда
+  source_name: Яблоня Зибольда
+  assortment: additional
+  group: deciduous_tree
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 246
+  source_number: 32
+- id: additional-deciduous-tree-033
+  name_ru: Яблоня Саржента
+  source_name: Яблоня Саржента
+  assortment: additional
+  group: deciduous_tree
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 247
+  source_number: 33
+- id: additional-deciduous-tree-034
+  name_ru: Ясень маньчжурский
+  source_name: Ясень маньчжурский
+  assortment: additional
+  group: deciduous_tree
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: not_recommended
+  note_codes: []
+  source_row: 248
+  source_number: 34
+- id: additional-deciduous-shrub-001
+  name_ru: Барбарис Вильсон
+  source_name: Барбарис Вильсон [2]
+  assortment: additional
+  group: deciduous_shrub
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes:
+  - '2'
+  source_row: 250
+  source_number: 1
+- id: additional-deciduous-shrub-002
+  name_ru: Бересклет Форчуна
+  source_name: Бересклет Форчуна [2] (формы и сорта)
+  assortment: additional
+  group: deciduous_shrub
+  forms_and_cultivars: true
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: not_recommended
+  note_codes:
+  - '2'
+  source_row: 251
+  source_number: 2
+- id: additional-deciduous-shrub-003
+  name_ru: Боярышник Максимовича
+  source_name: Боярышник Максимовича
+  assortment: additional
+  group: deciduous_shrub
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 252
+  source_number: 3
+- id: additional-deciduous-shrub-004
+  name_ru: Вейгела Миддендорфа
+  source_name: Вейгела Миддендорфа
+  assortment: additional
+  group: deciduous_shrub
+  forms_and_cultivars: false
+  territories:
+    courtyard: not_recommended
+    preschool: not_recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: not_recommended
+  note_codes: []
+  source_row: 253
+  source_number: 4
+- id: additional-deciduous-shrub-005
+  name_ru: Вишня войлочная
+  source_name: Вишня войлочная
+  assortment: additional
+  group: deciduous_shrub
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 254
+  source_number: 5
+- id: additional-deciduous-shrub-006
+  name_ru: Дёрен Бейли
+  source_name: Дёрен Бейли
+  assortment: additional
+  group: deciduous_shrub
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 255
+  source_number: 6
+- id: additional-deciduous-shrub-007
+  name_ru: Дёрен Вальтера
+  source_name: Дёрен Вальтера
+  assortment: additional
+  group: deciduous_shrub
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 256
+  source_number: 7
+- id: additional-deciduous-shrub-008
+  name_ru: Жёстер даурский
+  source_name: Жёстер даурский
+  assortment: additional
+  group: deciduous_shrub
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: not_recommended
+  note_codes: []
+  source_row: 257
+  source_number: 8
+- id: additional-deciduous-shrub-009
+  name_ru: Жимолость Максимовича
+  source_name: Жимолость Максимовича
+  assortment: additional
+  group: deciduous_shrub
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 258
+  source_number: 9
+- id: additional-deciduous-shrub-010
+  name_ru: Жимолость покрывальная
+  source_name: Жимолость покрывальная
+  assortment: additional
+  group: deciduous_shrub
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 259
+  source_number: 10
+- id: additional-deciduous-shrub-011
+  name_ru: Кизильник горизонтальный
+  source_name: Кизильник горизонтальный
+  assortment: additional
+  group: deciduous_shrub
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 260
+  source_number: 11
+- id: additional-deciduous-shrub-012
+  name_ru: Миндаль низкий/степной
+  source_name: Миндаль низкий/степной
+  assortment: additional
+  group: deciduous_shrub
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 261
+  source_number: 12
+- id: additional-deciduous-shrub-013
+  name_ru: Ракитник русский
+  source_name: Ракитник русский [2]
+  assortment: additional
+  group: deciduous_shrub
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes:
+  - '2'
+  source_row: 262
+  source_number: 13
+- id: additional-deciduous-shrub-014
+  name_ru: Рододендрон даурский
+  source_name: Рододендрон даурский
+  assortment: additional
+  group: deciduous_shrub
+  forms_and_cultivars: false
+  territories:
+    courtyard: not_recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: not_recommended
+  note_codes: []
+  source_row: 263
+  source_number: 14
+- id: additional-deciduous-shrub-015
+  name_ru: Сирень Вольфа
+  source_name: Сирень Вольфа
+  assortment: additional
+  group: deciduous_shrub
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: not_recommended
+  note_codes: []
+  source_row: 264
+  source_number: 15
+- id: additional-deciduous-shrub-016
+  name_ru: Сирень Комарова
+  source_name: Сирень Комарова
+  assortment: additional
+  group: deciduous_shrub
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 265
+  source_number: 16
+- id: additional-deciduous-shrub-017
+  name_ru: Скумпия обыкновенная/кожевенная
+  source_name: Скумпия обыкновенная/кожевенная (формы и сорта)
+  assortment: additional
+  group: deciduous_shrub
+  forms_and_cultivars: true
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: not_recommended
+  note_codes: []
+  source_row: 266
+  source_number: 17
+- id: additional-deciduous-shrub-018
+  name_ru: Снежноягодник Доренбоза
+  source_name: Снежноягодник Доренбоза
+  assortment: additional
+  group: deciduous_shrub
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: recommended
+    roads: recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 267
+  source_number: 18
+- id: additional-deciduous-shrub-019
+  name_ru: Стефанандра надрезаннолистная
+  source_name: Стефанандра надрезаннолистная
+  assortment: additional
+  group: deciduous_shrub
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: not_recommended
+  note_codes: []
+  source_row: 268
+  source_number: 19
+- id: additional-deciduous-shrub-020
+  name_ru: Стефанандра Танаки
+  source_name: Стефанандра Танаки
+  assortment: additional
+  group: deciduous_shrub
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: not_recommended
+  note_codes: []
+  source_row: 269
+  source_number: 20
+- id: additional-deciduous-shrub-021
+  name_ru: Экзохорда тяньшанская
+  source_name: Экзохорда тяньшанская
+  assortment: additional
+  group: deciduous_shrub
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: recommended
+  note_codes: []
+  source_row: 270
+  source_number: 21
+- id: additional-vine-001
+  name_ru: Аристолохия крупнолистная
+  source_name: Аристолохия крупнолистная
+  assortment: additional
+  group: vine
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: not_recommended
+  note_codes: []
+  source_row: 272
+  source_number: 1
+- id: additional-vine-002
+  name_ru: Аристолохия маньчжурская
+  source_name: Аристолохия маньчжурская
+  assortment: additional
+  group: vine
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: not_recommended
+  note_codes: []
+  source_row: 273
+  source_number: 2
+- id: additional-vine-003
+  name_ru: Гортензия черешковая
+  source_name: Гортензия черешковая
+  assortment: additional
+  group: vine
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: not_recommended
+  note_codes: []
+  source_row: 274
+  source_number: 3
+- id: additional-vine-004
+  name_ru: Древогубец круглолистный
+  source_name: Древогубец круглолистный [7]
+  assortment: additional
+  group: vine
+  forms_and_cultivars: false
+  territories:
+    courtyard: not_recommended
+    preschool: not_recommended
+    education_and_sport: not_recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: not_recommended
+  note_codes:
+  - '7'
+  source_row: 275
+  source_number: 4
+- id: additional-vine-005
+  name_ru: Жимолость вьющаяся
+  source_name: Жимолость вьющаяся
+  assortment: additional
+  group: vine
+  forms_and_cultivars: false
+  territories:
+    courtyard: unspecified
+    preschool: unspecified
+    education_and_sport: unspecified
+    healthcare: unspecified
+    roads: unspecified
+    public_and_commercial: unspecified
+    parks_and_public_green: unspecified
+    industrial_and_protection: unspecified
+  note_codes: []
+  source_row: 276
+  source_number: 5
+- id: additional-vine-006
+  name_ru: Клематис тангутский
+  source_name: Клематис тангутский
+  assortment: additional
+  group: vine
+  forms_and_cultivars: false
+  territories:
+    courtyard: recommended
+    preschool: recommended
+    education_and_sport: recommended
+    healthcare: recommended
+    roads: not_recommended
+    public_and_commercial: recommended
+    parks_and_public_green: recommended
+    industrial_and_protection: not_recommended
+  note_codes: []
+  source_row: 277
+  source_number: 6

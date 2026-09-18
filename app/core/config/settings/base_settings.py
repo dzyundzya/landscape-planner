@@ -49,6 +49,7 @@ class BackendSettings(BaseSettings):
     MAX_UPLOAD_SIZE_BYTES: int = 50 * 1024 * 1024
     MAX_ARTIFACT_SIZE_BYTES: int = 200 * 1024 * 1024
     NORMATIVE_RULES_PATH: Path = Path('config/normative_rules.yaml')
+    PLANT_CATALOG_PATH: Path = Path('config/plant_catalog.yaml')
     GEOMETRY_CURVE_TOLERANCE_M: float = 0.01
 
     WORKER_ADVISORY_LOCK_ID: int = 1_196_578_126

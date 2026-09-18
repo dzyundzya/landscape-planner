@@ -1,4 +1,5 @@
 from app.domain.geometry import (
+    CoordinateTransform,
     GeometryProvenance,
     NormalizationIssue,
     NormalizationOptions,
@@ -9,6 +10,7 @@ from app.domain.geometry import (
 
 __all__ = (
     'GeometryProvenance',
+    'CoordinateTransform',
     'NormalizationIssue',
     'NormalizationOptions',
     'NormalizationResult',

@@ -49,6 +49,10 @@ class BackendSettings(BaseSettings):
     MAX_UPLOAD_SIZE_BYTES: int = 50 * 1024 * 1024
     MAX_ARTIFACT_SIZE_BYTES: int = 200 * 1024 * 1024
 
+    WORKER_ADVISORY_LOCK_ID: int = 1_196_578_126
+    WORKER_POLL_INTERVAL_SECONDS: float = 1.0
+    WORKER_LOCK_CHECK_INTERVAL_SECONDS: float = 1.0
+
     model_config = SettingsConfigDict(
         env_file='.env',
         env_file_encoding='utf-8',

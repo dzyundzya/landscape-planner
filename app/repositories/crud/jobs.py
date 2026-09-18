@@ -1,3 +1,4 @@
+from collections.abc import Collection
 from datetime import UTC, datetime
 
 from sqlalchemy import select, update
@@ -60,15 +61,18 @@ class JobCRUDRepository(BaseCRUDRepository[JobModel]):
 
         return await self.session.scalar(select(JobModel).where(JobModel.id == job_id).with_for_update())
 
-    async def claim_next_queued(self) -> JobModel | None:
+    async def claim_next_queued(self, job_types: Collection[JobType] | None = None) -> JobModel | None:
         """Атомарно захватывает следующую задачу очереди."""
 
+        query = select(JobModel).where(JobModel.status == JobStatus.QUEUED)
+        if job_types is not None:
+            supported_types = tuple(job_types)
+            if not supported_types:
+                return None
+            query = query.where(JobModel.type.in_(supported_types))
+
         job = await self.session.scalar(
-            select(JobModel)
-            .where(JobModel.status == JobStatus.QUEUED)
-            .order_by(JobModel.created_at, JobModel.id)
-            .limit(1)
-            .with_for_update(skip_locked=True)
+            query.order_by(JobModel.created_at, JobModel.id).limit(1).with_for_update(skip_locked=True)
         )
         if job is None:
             return None

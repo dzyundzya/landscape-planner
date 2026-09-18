@@ -1,5 +1,6 @@
 from datetime import UTC, datetime
 from decimal import Decimal
+from uuid import UUID
 
 from loguru import logger
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -16,12 +17,14 @@ from app.repositories.crud.project_files import ProjectFileCRUDRepository
 from app.repositories.crud.projects import ProjectCRUDRepository
 from app.schemas.config_snapshot import GenerationParametersSchema
 from app.schemas.plan import PlanGenerationSummarySchema
+from app.schemas.plan_validation import PlanValidationPublishSchema
 from app.schemas.planting import PlantingCreateSchema
 from app.services.base import BaseService
 from app.services.exceptions.jobs import JobNotFoundError, JobStateConflictError
 from app.services.exceptions.plans import InvalidPlanError, PlanNotFoundError, PlanPrerequisiteError
 from app.services.exceptions.projects import ProjectNotFoundError
 from app.services.jobs import JobService
+from app.services.plan_validations import PlanValidationService
 
 
 class PlanService(BaseService[PlanCRUDRepository]):
@@ -100,6 +103,8 @@ class PlanService(BaseService[PlanCRUDRepository]):
         generator_version: str,
         generation_summary: PlanGenerationSummarySchema,
         plantings: list[PlantingCreateSchema],
+        planting_ids: list[UUID] | None = None,
+        validation_data: PlanValidationPublishSchema | None = None,
     ) -> PlanModel:
         """Атомарно публикует план и завершает задачу генерации."""
 
@@ -131,6 +136,11 @@ class PlanService(BaseService[PlanCRUDRepository]):
             boundary=config.boundary,
             generation=config.generation,
         )
+        self._validate_atomic_validation_inputs(
+            plantings=plantings,
+            planting_ids=planting_ids,
+            validation_data=validation_data,
+        )
 
         analysis = await self.analysis_repository.get_obj_by_id(obj_id=analysis_id)
         if analysis is None or analysis.project_id != project_id or analysis.project_file_id != project_file_id:
@@ -149,22 +159,24 @@ class PlanService(BaseService[PlanCRUDRepository]):
                 generation_summary=generation_summary.model_dump(mode='json'),
             )
         )
-        await self.planting_repository.create_many(
-            plantings=[
-                PlantingModel(
-                    plan_id=plan.id,
-                    type=planting.type,
-                    source=PlantingSource.GENERATED,
-                    x_m=Decimal(str(planting.x_m)),
-                    y_m=Decimal(str(planting.y_m)),
-                    species=planting.species,
-                )
-                for planting in plantings
-            ]
+        planting_models = self._build_planting_models(
+            plan_id=plan.id,
+            plantings=plantings,
+            planting_ids=planting_ids,
         )
+        await self.planting_repository.create_many(plantings=planting_models)
+        validation = None
+        if validation_data is not None:
+            validation = await PlanValidationService(self.session).create_validation_for_plan(
+                plan=plan,
+                data=validation_data,
+                planting_ids={planting.public_id for planting in planting_models},
+            )
         job.status = JobStatus.SUCCEEDED
         job.stage = 'completed'
         job.result = {'plan_id': plan.id, 'revision': plan.revision}
+        if validation is not None:
+            job.result['validation_id'] = validation.id
         job.error = None
         job.finished_at = datetime.now(UTC)
         await self.session.commit()
@@ -177,6 +189,41 @@ class PlanService(BaseService[PlanCRUDRepository]):
             plan.revision,
         )
         return plan
+
+    @staticmethod
+    def _validate_atomic_validation_inputs(
+        plantings: list[PlantingCreateSchema],
+        planting_ids: list[UUID] | None,
+        validation_data: PlanValidationPublishSchema | None,
+    ) -> None:
+        if (planting_ids is None) != (validation_data is None):
+            raise InvalidPlanError('ID посадок и результат Validator должны передаваться вместе')
+        if planting_ids is not None:
+            if len(planting_ids) != len(plantings):
+                raise InvalidPlanError('Количество ID посадок не соответствует результату генератора')
+            if len(planting_ids) != len(set(planting_ids)):
+                raise InvalidPlanError('ID сгенерированных посадок не должны повторяться')
+
+    @staticmethod
+    def _build_planting_models(
+        plan_id: int,
+        plantings: list[PlantingCreateSchema],
+        planting_ids: list[UUID] | None,
+    ) -> list[PlantingModel]:
+        models = []
+        for index, planting in enumerate(plantings):
+            model = PlantingModel(
+                plan_id=plan_id,
+                type=planting.type,
+                source=PlantingSource.GENERATED,
+                x_m=Decimal(str(planting.x_m)),
+                y_m=Decimal(str(planting.y_m)),
+                species=planting.species,
+            )
+            if planting_ids is not None:
+                model.public_id = planting_ids[index]
+            models.append(model)
+        return models
 
     @staticmethod
     def _ensure_job_matches(

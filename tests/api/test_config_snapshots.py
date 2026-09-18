@@ -112,8 +112,8 @@ async def test_save_config_snapshot(
     assert data['coordinate_unit'] == 'millimeter'
     assert float(data['unit_scale_to_meters']) == 0.001
     assert data['rules_status'] == 'needs_verification'
-    assert data['rules_version'] is None
-    assert data['rules_sha256'] is None
+    assert data['rules_version'] == 'draft-empty'
+    assert len(data['rules_sha256']) == 64
     assert len(data['content_sha256']) == 64
     assert data['boundary']['coordinate_space'] == 'local_meters'
 

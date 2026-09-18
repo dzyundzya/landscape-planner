@@ -25,7 +25,7 @@ class PlanGenerationSummarySchema(BaseModel):
         """Проверяет согласованность количества кандидатов и посадок."""
 
         if self.tree_count + self.bush_count + self.rejected_candidate_count > self.candidate_count:
-            raise ValueError('Selected and rejected counts must not exceed candidate count')
+            raise ValueError('Сумма выбранных и отклонённых кандидатов не должна превышать их общее количество')
         return self
 
 

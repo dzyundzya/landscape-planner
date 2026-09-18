@@ -27,7 +27,7 @@ class CoordinateTransform:
             self.local_origin_m.y,
         )
         if not all(isfinite(value) for value in values) or self.scale_to_meters <= 0:
-            raise ValueError('Coordinate transform must contain finite values and positive scale')
+            raise ValueError('Преобразование координат должно содержать конечные значения и положительный масштаб')
 
     def to_local_meters(self, point: Point2D) -> Point2D:
         """Переводит точку исходного DXF в локальные метры."""
@@ -95,6 +95,6 @@ class NormalizationOptions:
 
     def __post_init__(self) -> None:
         if not isfinite(self.curve_tolerance) or self.curve_tolerance <= 0:
-            raise ValueError('Curve tolerance must be positive')
+            raise ValueError('Погрешность аппроксимации кривых должна быть положительной')
         if not 1 <= self.max_insert_depth <= 64:
-            raise ValueError('Max insert depth must be between 1 and 64')
+            raise ValueError('Максимальная глубина INSERT должна быть от 1 до 64')

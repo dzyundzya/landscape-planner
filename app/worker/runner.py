@@ -33,7 +33,7 @@ class WorkerRunner:
         lock_check_interval_seconds: float = 1.0,
     ) -> None:
         if poll_interval_seconds <= 0 or lock_check_interval_seconds <= 0:
-            raise ValueError('Worker intervals must be positive')
+            raise ValueError('Интервалы worker должны быть положительными')
         self.session_factory = session_factory
         self.dispatcher = dispatcher
         self.advisory_lock = advisory_lock

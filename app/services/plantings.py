@@ -142,7 +142,7 @@ class PlantingService(BaseService[PlantingCRUDRepository]):
     async def _validate_candidates(self, plan: PlanModel, candidates: list[PlantingCandidate]) -> None:
         config = await self.config_repository.get_obj_by_id(obj_id=plan.config_snapshot_id)
         if config is None:
-            raise PlantingValidationError('Plan config snapshot is unavailable')
+            raise PlantingValidationError('Снимок конфигурации плана недоступен')
         try:
             validate_planting_set(
                 candidates=candidates,

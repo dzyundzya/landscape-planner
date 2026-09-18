@@ -18,6 +18,7 @@ asyncpg = "^0.31.0"
 alembic = "^1.20.0"
 ezdxf = "^1.4.4"
 shapely = ">=2,<3"
+pyyaml = "^6.0.3"
 
 
 [tool.poetry.group.dev.dependencies]

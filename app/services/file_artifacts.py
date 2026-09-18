@@ -160,7 +160,7 @@ class FileArtifactService(BaseService[FileArtifactCRUDRepository]):
         if job is None:
             raise JobNotFoundError(job_id=job_id)
         if job.project_id != project_id:
-            raise InvalidFileArtifactError(f'Job with id={job_id} does not belong to project id={project_id}')
+            raise InvalidFileArtifactError(f'Задача с id={job_id} не принадлежит проекту с id={project_id}')
         if job.status is not JobStatus.RUNNING:
             raise JobStateConflictError(job_id=job.id, status=job.status)
         if await self.repository.get_artifact_by_job_and_kind(job_id=job_id, kind=kind) is not None:
@@ -169,10 +169,10 @@ class FileArtifactService(BaseService[FileArtifactCRUDRepository]):
         if project_file_id is not None:
             project_file = await self.project_file_repository.get_obj_by_id(obj_id=project_file_id)
             if project_file is None:
-                raise InvalidFileArtifactError(f'Project file with id={project_file_id} not found')
+                raise InvalidFileArtifactError(f'Исходный файл с id={project_file_id} не найден')
             if project_file.project_id != project_id:
                 raise InvalidFileArtifactError(
-                    f'Project file with id={project_file_id} does not belong to project id={project_id}'
+                    f'Исходный файл с id={project_file_id} не принадлежит проекту с id={project_id}'
                 )
 
     async def _save_file(
@@ -193,7 +193,7 @@ class FileArtifactService(BaseService[FileArtifactCRUDRepository]):
         except StorageFileTooLargeError as exc:
             raise FileArtifactTooLargeError(max_size_bytes=exc.max_size_bytes) from exc
         except EmptyStorageFileError as exc:
-            raise InvalidFileArtifactError('Artifact file is empty') from exc
+            raise InvalidFileArtifactError('Файл артефакта пуст') from exc
 
     @staticmethod
     def _get_download_name(kind: FileArtifactKind, download_name: str | None) -> str:
@@ -201,7 +201,7 @@ class FileArtifactService(BaseService[FileArtifactCRUDRepository]):
         safe_name = Path(name.replace('\\', '/')).name.strip()
         file_format = ARTIFACT_FORMATS[kind]
         if not safe_name or '\x00' in safe_name or len(safe_name) > 255:
-            raise InvalidFileArtifactError('Invalid artifact download name')
+            raise InvalidFileArtifactError('Некорректное имя файла артефакта для скачивания')
         if Path(safe_name).suffix.lower() not in ALLOWED_SUFFIXES[file_format]:
-            raise InvalidFileArtifactError(f'Artifact download name must match format={file_format.value}')
+            raise InvalidFileArtifactError(f'Имя файла артефакта должно соответствовать формату {file_format.value}')
         return safe_name

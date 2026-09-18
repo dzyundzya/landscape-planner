@@ -5,7 +5,7 @@ class PlanValidationUnavailableError(AppError):
     """Для текущей ревизии плана ещё нет результата Validator."""
 
     def __init__(self, plan_id: int, plan_revision: int) -> None:
-        super().__init__(f'Plan with id={plan_id} has no validation for revision={plan_revision}')
+        super().__init__(f'У плана с id={plan_id} отсутствует проверка ревизии {plan_revision}')
 
 
 class InvalidPlanValidationError(AppError):

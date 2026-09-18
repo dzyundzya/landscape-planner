@@ -9,4 +9,4 @@ class ProjectFileTooLargeError(AppError):
     """Исходный файл превышает допустимый размер."""
 
     def __init__(self, max_size_bytes: int) -> None:
-        super().__init__(f'File size exceeds {max_size_bytes} bytes')
+        super().__init__(f'Размер файла превышает {max_size_bytes} байт')

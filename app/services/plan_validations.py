@@ -76,7 +76,7 @@ class PlanValidationService(BaseService[PlanValidationCRUDRepository]):
         self._validate_planting_references(plan=plan, checks=data.checks)
         config = await self.config_repository.get_obj_by_id(obj_id=plan.config_snapshot_id)
         if config is None:
-            raise InvalidPlanValidationError('Plan config snapshot is unavailable')
+            raise InvalidPlanValidationError('Снимок конфигурации плана недоступен')
 
         checks = list(data.checks)
         if config.rules_status is NormativeRulesStatus.NEEDS_VERIFICATION:
@@ -120,10 +120,10 @@ class PlanValidationService(BaseService[PlanValidationCRUDRepository]):
         checked_planting_ids = {check.planting_id for check in checks if check.planting_id is not None}
         unknown_ids = sorted(checked_planting_ids - planting_ids, key=str)
         if unknown_ids:
-            raise InvalidPlanValidationError(f'Validation references unknown planting id={unknown_ids[0]}')
+            raise InvalidPlanValidationError(f'Проверка ссылается на неизвестную посадку с id={unknown_ids[0]}')
         missing_ids = sorted(planting_ids - checked_planting_ids, key=str)
         if missing_ids:
-            raise InvalidPlanValidationError(f'Validation has no checks for planting id={missing_ids[0]}')
+            raise InvalidPlanValidationError(f'В проверке отсутствуют результаты для посадки с id={missing_ids[0]}')
 
     @staticmethod
     def _build_summary(checks: list[CheckResultSchema]) -> ValidationSummarySchema:

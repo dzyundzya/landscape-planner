@@ -100,7 +100,7 @@ class ProjectFileService(BaseService[ProjectFileCRUDRepository]):
         except StorageFileTooLargeError as exc:
             raise ProjectFileTooLargeError(max_size_bytes=exc.max_size_bytes) from exc
         except EmptyStorageFileError as exc:
-            raise InvalidProjectFileError('Uploaded file is empty') from exc
+            raise InvalidProjectFileError('Загруженный файл пуст') from exc
 
     @staticmethod
     async def _validate_file(file_format: ProjectFileFormat, path: Path) -> None:
@@ -110,9 +110,9 @@ class ProjectFileService(BaseService[ProjectFileCRUDRepository]):
             else:
                 await to_thread.run_sync(validate_dwf, path)
         except InvalidDxfError as exc:
-            raise InvalidProjectFileError('Uploaded DXF file is invalid') from exc
+            raise InvalidProjectFileError('Загруженный DXF-файл некорректен') from exc
         except InvalidDwfError as exc:
-            raise InvalidProjectFileError('Uploaded DWF file is invalid') from exc
+            raise InvalidProjectFileError('Загруженный DWF-файл некорректен') from exc
 
     @staticmethod
     def _get_file_format(original_name: str) -> ProjectFileFormat:
@@ -120,19 +120,19 @@ class ProjectFileService(BaseService[ProjectFileCRUDRepository]):
         try:
             return ProjectFileFormat(suffix)
         except ValueError as exc:
-            raise InvalidProjectFileError('Only DXF and DWF files are supported') from exc
+            raise InvalidProjectFileError('Поддерживаются только файлы DXF и DWF') from exc
 
     @staticmethod
     def _sanitize_original_name(original_name: str) -> str:
         safe_name = Path(original_name.replace('\\', '/')).name.strip()
         if not safe_name or '\x00' in safe_name or len(safe_name) > 255:
-            raise InvalidProjectFileError('Invalid source file name')
+            raise InvalidProjectFileError('Некорректное имя исходного файла')
         return safe_name
 
     @staticmethod
     def _validate_content_type(content_type: str | None) -> None:
         if content_type is not None and len(content_type) > 100:
-            raise InvalidProjectFileError('Invalid source file content type')
+            raise InvalidProjectFileError('Некорректный тип содержимого исходного файла')
 
     @staticmethod
     def _get_status(file_format: ProjectFileFormat) -> ProjectFileStatus:

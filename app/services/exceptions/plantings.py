@@ -7,7 +7,7 @@ class PlantingNotFoundError(NotFoundError):
     """Посадка не найдена в плане."""
 
     def __init__(self, planting_id: UUID) -> None:
-        AppError.__init__(self, f'Planting with id={planting_id} not found')
+        AppError.__init__(self, f'Посадка с id={planting_id} не найдена')
 
 
 class PlantingValidationError(AppError):
@@ -18,7 +18,7 @@ class PlanRevisionConflictError(AppError):
     """План был изменён после получения клиентом."""
 
     def __init__(self, expected: int, actual: int) -> None:
-        super().__init__(f'Plan revision conflict: expected={expected}, actual={actual}')
+        super().__init__(f'Конфликт ревизии плана: ожидалась {expected}, фактическая {actual}')
 
 
 class PlanRevisionRequiredError(AppError):

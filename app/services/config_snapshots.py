@@ -52,11 +52,11 @@ class ConfigSnapshotService(BaseService[ConfigSnapshotCRUDRepository]):
 
         project_file = await self.project_file_repository.get_latest_for_project(project_id=project_id)
         if project_file is None:
-            raise ConfigPrerequisiteError(f'Project with id={project_id} has no source file')
+            raise ConfigPrerequisiteError(f'У проекта с id={project_id} отсутствует исходный файл')
 
         analysis = await self.analysis_repository.get_latest_for_project_file(project_file_id=project_file.id)
         if analysis is None:
-            raise ConfigPrerequisiteError(f'Project with id={project_id} has no analysis for the current source file')
+            raise ConfigPrerequisiteError(f'У проекта с id={project_id} отсутствует анализ текущего исходного файла')
 
         self._validate_boundary(data=data)
         self._validate_layer_mappings(data=data, analysis_result=analysis.result)
@@ -117,7 +117,7 @@ class ConfigSnapshotService(BaseService[ConfigSnapshotCRUDRepository]):
             mapping.layer for mapping in data.layer_mappings if mapping.layer.casefold() not in analysis_layers
         ]
         if unknown_layers:
-            raise InvalidConfigSnapshotError(f'Layer mappings reference unknown layers: {", ".join(unknown_layers)}')
+            raise InvalidConfigSnapshotError(f'Mapping ссылается на неизвестные слои: {", ".join(unknown_layers)}')
 
     @staticmethod
     def _build_payload(

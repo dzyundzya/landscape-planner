@@ -14,6 +14,7 @@ from app.services.exceptions.file_artifacts import (
 from app.services.exceptions.jobs import InvalidJobError, JobStateConflictError
 from app.services.exceptions.plan_validations import (
     InvalidPlanValidationError,
+    PlanValidationAlreadyExistsError,
     PlanValidationUnavailableError,
 )
 from app.services.exceptions.plans import InvalidPlanError, PlanPrerequisiteError
@@ -297,5 +298,18 @@ def register_exception_handlers(app: FastAPI) -> None:
         logger.info('Некорректная проверка плана: path={}, detail={}', request.url.path, str(exc))
         return JSONResponse(
             status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+            content={'detail': str(exc)},
+        )
+
+    @app.exception_handler(PlanValidationAlreadyExistsError)
+    async def plan_validation_exists_handler(
+        request: Request,
+        exc: PlanValidationAlreadyExistsError,
+    ) -> JSONResponse:
+        """Преобразует повторный запуск готовой проверки в HTTP 409."""
+
+        logger.info('Ревизия плана уже проверена: path={}, detail={}', request.url.path, str(exc))
+        return JSONResponse(
+            status_code=status.HTTP_409_CONFLICT,
             content={'detail': str(exc)},
         )

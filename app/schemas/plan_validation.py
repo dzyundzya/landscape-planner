@@ -6,6 +6,8 @@ from uuid import UUID
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from app.models import NormativeRulesStatus, PlantCatalogStatus, ValidationStatus
+from app.schemas.config_snapshot import CalculationConfigSnapshotSchema
+from app.schemas.planting import PlantingReadSchema
 
 NonNegativeInt = Annotated[int, Field(ge=0)]
 
@@ -45,6 +47,21 @@ class PlanValidationPublishSchema(BaseModel):
     checks: Annotated[list[CheckResultSchema], Field(min_length=1)]
 
     model_config = ConfigDict(extra='forbid', str_strip_whitespace=True)
+
+
+class PlanValidationJobInputSchema(BaseModel):
+    """Полный снимок входов повторной проверки ревизии плана."""
+
+    validation_schema_version: Annotated[int, Field(ge=1)] = 1
+    plan_id: Annotated[int, Field(ge=1)]
+    plan_revision: Annotated[int, Field(ge=1)]
+    project_file_id: Annotated[int, Field(ge=1)]
+    project_file_sha256: Annotated[str, Field(min_length=64, max_length=64)]
+    config_snapshot_id: Annotated[int, Field(ge=1)]
+    config: CalculationConfigSnapshotSchema
+    plantings: list[PlantingReadSchema]
+
+    model_config = ConfigDict(extra='forbid')
 
 
 class ValidationSummarySchema(BaseModel):

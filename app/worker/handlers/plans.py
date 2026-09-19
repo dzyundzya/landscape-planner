@@ -10,7 +10,13 @@ from app.cad import normalize_dxf
 from app.domain import NormalizationOptions
 from app.geometry import build_restriction_zones, prepare_project_geometry
 from app.models import JobModel, ProjectFileFormat, ProjectFileStatus, TerritoryType
-from app.planning import ValidationPlanting, assign_species, generate_plantings, validate_plan_geometry
+from app.planning import (
+    ValidationPlanting,
+    assign_species,
+    build_plan_preview,
+    generate_plantings,
+    validate_plan_geometry,
+)
 from app.repositories.crud.analyses import AnalysisCRUDRepository
 from app.repositories.crud.config_snapshots import ConfigSnapshotCRUDRepository
 from app.repositories.crud.project_files import ProjectFileCRUDRepository
@@ -19,6 +25,7 @@ from app.schemas.config_snapshot import GenerationParametersSchema
 from app.schemas.plan import PlanGenerationSummarySchema
 from app.schemas.plan_validation import PlanValidationPublishSchema
 from app.schemas.planting import PlantingCreateSchema
+from app.schemas.preview import PlanPreviewGeometrySchema
 from app.services.exceptions.plans import InvalidPlanError
 from app.services.jobs import JobService
 from app.services.plans import PlanService
@@ -51,6 +58,7 @@ class _PlanGenerationOutput:
     plantings: list[PlantingCreateSchema]
     planting_ids: list[UUID]
     validation: PlanValidationPublishSchema
+    preview: PlanPreviewGeometrySchema
 
 
 class PlanGenerationJobHandler:
@@ -90,6 +98,7 @@ class PlanGenerationJobHandler:
                 plantings=output.plantings,
                 planting_ids=output.planting_ids,
                 validation_data=output.validation,
+                preview_geometry=output.preview,
             )
 
     async def _load_input(self, session: AsyncSession, job: JobModel) -> _PlanGenerationInput:
@@ -201,6 +210,7 @@ class PlanGenerationJobHandler:
             ],
             parameters=parameters,
         )
+        preview = build_plan_preview(project=project, restrictions=restrictions)
         return _PlanGenerationOutput(
             generator_version=result.generator_version,
             summary=PlanGenerationSummarySchema(
@@ -218,6 +228,7 @@ class PlanGenerationJobHandler:
             plantings=plantings,
             planting_ids=planting_ids,
             validation=validation,
+            preview=preview,
         )
 
     @staticmethod

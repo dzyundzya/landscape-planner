@@ -65,6 +65,7 @@ class PlanModel(BaseModel):
     )
     generator_version: Mapped[str] = mapped_column(String(100), nullable=False)
     generation_summary: Mapped[dict[str, object]] = mapped_column(JSONB, nullable=False)
+    preview_geometry: Mapped[dict[str, object] | None] = mapped_column(JSONB, nullable=True)
 
     project: Mapped['ProjectModel'] = relationship(back_populates='plans')
     project_file: Mapped['ProjectFileModel'] = relationship(back_populates='plans')

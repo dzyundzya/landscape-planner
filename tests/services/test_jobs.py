@@ -100,7 +100,7 @@ async def test_interrupted_jobs_are_failed(db_session: AsyncSession, project: Pr
     assert count == 1
     assert recovered_job.status is JobStatus.FAILED
     assert recovered_job.stage == 'interrupted'
-    assert recovered_job.error == 'Worker stopped before the job completed'
+    assert recovered_job.error == 'Воркер остановился до завершения задачи'
     assert recovered_job.finished_at is not None
 
 

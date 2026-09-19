@@ -90,7 +90,7 @@ class DxfGeometryNormalizer:
                 self._issues.append(
                     NormalizationIssue(
                         code='unsupported_entity',
-                        message=f'Entity type {entity_type} is not supported by geometry normalization',
+                        message=f'Тип сущности {entity_type} не поддерживается нормализацией геометрии',
                         source_object_id=source_object_id,
                     )
                 )
@@ -110,7 +110,7 @@ class DxfGeometryNormalizer:
             self._issues.append(
                 NormalizationIssue(
                     code='insert_depth_exceeded',
-                    message=f'INSERT nesting exceeds {self.options.max_insert_depth} levels',
+                    message=f'Глубина вложенности INSERT превышает {self.options.max_insert_depth} уровней',
                     source_object_id=source_object_id,
                 )
             )
@@ -119,7 +119,7 @@ class DxfGeometryNormalizer:
             self._issues.append(
                 NormalizationIssue(
                     code='cyclic_insert',
-                    message=f'Cyclic INSERT reference detected for block {block_name}',
+                    message=f'Обнаружена циклическая ссылка INSERT на блок {block_name}',
                     source_object_id=source_object_id,
                 )
             )
@@ -139,18 +139,18 @@ class DxfGeometryNormalizer:
                 self._issues.append(
                     NormalizationIssue(
                         code='insert_transformation_failed',
-                        message=f'INSERT transformation failed: {exc.__class__.__name__}',
+                        message=f'Не удалось преобразовать INSERT: {exc.__class__.__name__}',
                         source_object_id=source_object_id,
                     )
                 )
                 continue
 
-            for skipped_entity, reason in skipped:
+            for skipped_entity, _reason in skipped:
                 skipped_id, _ = self._get_source_identity(skipped_entity, child_path, 0)
                 self._issues.append(
                     NormalizationIssue(
                         code='insert_entity_skipped',
-                        message=f'INSERT entity transformation was skipped: {reason}',
+                        message='Преобразование сущности внутри INSERT было пропущено',
                         source_object_id=skipped_id,
                     )
                 )
@@ -177,7 +177,7 @@ class DxfGeometryNormalizer:
             self._issues.append(
                 NormalizationIssue(
                     code='geometry_conversion_failed',
-                    message=f'Geometry conversion failed: {exc.__class__.__name__}',
+                    message=f'Не удалось преобразовать геометрию: {exc.__class__.__name__}',
                     source_object_id=source_object_id,
                 )
             )
@@ -187,7 +187,7 @@ class DxfGeometryNormalizer:
             self._issues.append(
                 NormalizationIssue(
                     code='invalid_geometry_coordinates',
-                    message='Geometry has insufficient or non-finite coordinates',
+                    message='Геометрия содержит недостаточно координат или неконечные значения',
                     source_object_id=source_object_id,
                 )
             )

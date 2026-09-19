@@ -19,9 +19,15 @@ from app.schemas.config_snapshot import GenerationParametersSchema
 from app.schemas.plan import PlanGenerationSummarySchema
 from app.schemas.plan_validation import PlanValidationPublishSchema
 from app.schemas.planting import PlantingCreateSchema
+from app.schemas.preview import PlanPreviewGeometrySchema, PlanPreviewReadSchema
 from app.services.base import BaseService
 from app.services.exceptions.jobs import JobNotFoundError, JobStateConflictError
-from app.services.exceptions.plans import InvalidPlanError, PlanNotFoundError, PlanPrerequisiteError
+from app.services.exceptions.plans import (
+    InvalidPlanError,
+    PlanNotFoundError,
+    PlanPrerequisiteError,
+    PlanPreviewUnavailableError,
+)
 from app.services.exceptions.projects import ProjectNotFoundError
 from app.services.jobs import JobService
 from app.services.plan_validations import PlanValidationService
@@ -104,6 +110,20 @@ class PlanService(BaseService[PlanCRUDRepository]):
             raise PlanNotFoundError(plan_id=plan_id)
         return plan
 
+    async def get_preview(self, project_id: int, plan_id: int) -> PlanPreviewReadSchema:
+        """Возвращает подготовленную геометрию и посадки текущей ревизии."""
+
+        plan = await self.get_plan(project_id=project_id, plan_id=plan_id)
+        if plan.preview_geometry is None:
+            raise PlanPreviewUnavailableError(plan_id=plan.id)
+        geometry = PlanPreviewGeometrySchema.model_validate(plan.preview_geometry)
+        return PlanPreviewReadSchema(
+            **geometry.model_dump(mode='python'),
+            plan_id=plan.id,
+            plan_revision=plan.revision,
+            plantings=plan.plantings,
+        )
+
     async def publish_plan(
         self,
         project_id: int,
@@ -116,6 +136,7 @@ class PlanService(BaseService[PlanCRUDRepository]):
         plantings: list[PlantingCreateSchema],
         planting_ids: list[UUID] | None = None,
         validation_data: PlanValidationPublishSchema | None = None,
+        preview_geometry: PlanPreviewGeometrySchema | None = None,
     ) -> PlanModel:
         """Атомарно публикует план и завершает задачу генерации."""
 
@@ -168,6 +189,7 @@ class PlanService(BaseService[PlanCRUDRepository]):
                 status=PlanStatus.NEEDS_VERIFICATION,
                 generator_version=normalized_generator_version,
                 generation_summary=generation_summary.model_dump(mode='json'),
+                preview_geometry=preview_geometry.model_dump(mode='json') if preview_geometry is not None else None,
             )
         )
         planting_models = self._build_planting_models(
@@ -208,7 +230,7 @@ class PlanService(BaseService[PlanCRUDRepository]):
         validation_data: PlanValidationPublishSchema | None,
     ) -> None:
         if (planting_ids is None) != (validation_data is None):
-            raise InvalidPlanError('ID посадок и результат Validator должны передаваться вместе')
+            raise InvalidPlanError('ID посадок и результат валидатора должны передаваться вместе')
         if planting_ids is not None:
             if len(planting_ids) != len(plantings):
                 raise InvalidPlanError('Количество ID посадок не соответствует результату генератора')

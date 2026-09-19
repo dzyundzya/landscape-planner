@@ -143,7 +143,9 @@ class ConfigSnapshotService(BaseService[ConfigSnapshotCRUDRepository]):
             mapping.layer for mapping in data.layer_mappings if mapping.layer.casefold() not in analysis_layers
         ]
         if unknown_layers:
-            raise InvalidConfigSnapshotError(f'Mapping ссылается на неизвестные слои: {", ".join(unknown_layers)}')
+            raise InvalidConfigSnapshotError(
+                f'Сопоставление ссылается на неизвестные слои: {", ".join(unknown_layers)}'
+            )
 
     @staticmethod
     def _build_payload(

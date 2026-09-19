@@ -116,7 +116,7 @@ class JobService(BaseService[JobCRUDRepository]):
     async def fail_interrupted_jobs(self) -> int:
         """Закрывает задачи, прерванные предыдущим запуском worker."""
 
-        count = await self.repository.fail_interrupted(error='Worker stopped before the job completed')
+        count = await self.repository.fail_interrupted(error='Воркер остановился до завершения задачи')
         await self.session.commit()
         if count:
             logger.warning('Прерванные задачи закрыты с ошибкой: count={}', count)

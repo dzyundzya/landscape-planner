@@ -155,7 +155,7 @@ def _build_warnings(
         warnings.append(
             AnalysisWarningSchema(
                 code='units_unspecified',
-                message='DXF drawing units are not specified and require user confirmation',
+                message='Единицы измерения чертежа DXF не заданы и требуют подтверждения пользователя',
                 severity=AnalysisWarningSeverity.BLOCKING,
             )
         )
@@ -163,7 +163,7 @@ def _build_warnings(
         warnings.append(
             AnalysisWarningSchema(
                 code='external_references',
-                message='DXF contains external references that must be resolved before verification',
+                message='DXF содержит внешние ссылки, которые нужно разрешить до проверки',
                 severity=AnalysisWarningSeverity.BLOCKING,
             )
         )
@@ -171,7 +171,7 @@ def _build_warnings(
         warnings.append(
             AnalysisWarningSchema(
                 code='unsupported_entities',
-                message='DXF contains entity types unsupported by the geometry pipeline',
+                message='DXF содержит типы сущностей, которые не поддерживаются обработкой геометрии',
                 severity=AnalysisWarningSeverity.BLOCKING,
             )
         )
@@ -179,7 +179,7 @@ def _build_warnings(
         warnings.append(
             AnalysisWarningSchema(
                 code='empty_drawing',
-                message='DXF layouts do not contain graphical entities',
+                message='Листы DXF не содержат графических сущностей',
                 severity=AnalysisWarningSeverity.WARNING,
             )
         )
@@ -187,7 +187,7 @@ def _build_warnings(
         warnings.append(
             AnalysisWarningSchema(
                 code='bounds_unavailable',
-                message='Modelspace bounds could not be calculated completely',
+                message='Не удалось полностью вычислить границы пространства модели',
                 severity=AnalysisWarningSeverity.WARNING,
             )
         )

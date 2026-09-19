@@ -210,7 +210,7 @@ async def test_incomplete_handler_is_failed_by_runner(
 
     assert reason is WorkerExitReason.STOPPED
     assert job.status is JobStatus.FAILED
-    assert job.error == 'Worker handler returned without completing the job'
+    assert job.error == 'Обработчик воркера завершился, не завершив задачу'
 
 
 async def test_lock_loss_stops_worker_without_publishing_job_state(

@@ -130,7 +130,7 @@ def prepare_project_geometry(
         issues.append(
             ProjectGeometryIssue(
                 code='unmapped_layer',
-                message=f'Layer {layer} has geometry but no confirmed semantic mapping',
+                message=f'Слой {layer} содержит геометрию, но не имеет подтверждённого смыслового назначения',
             )
         )
 
@@ -160,16 +160,16 @@ def _build_mapping_index(layer_mappings: Iterable[dict[str, object]]) -> dict[st
         object_type = raw_mapping.get('object_type')
         attributes = raw_mapping.get('attributes', {})
         if not isinstance(layer, str) or not layer.strip() or not isinstance(object_type, str):
-            raise ProjectGeometryError('Mapping слоя содержит некорректный слой или тип объекта')
+            raise ProjectGeometryError('Сопоставление слоя содержит некорректный слой или тип объекта')
         if not isinstance(attributes, dict):
-            raise ProjectGeometryError(f'Атрибуты mapping некорректны для слоя {layer}')
+            raise ProjectGeometryError(f'Атрибуты сопоставления некорректны для слоя {layer}')
         try:
             geometry_role = GeometryRole(attributes.get('geometry_role', GeometryRole.LINE))
         except ValueError as exc:
             raise ProjectGeometryError(f'Для слоя {layer} указана некорректная роль геометрии') from exc
         key = layer.casefold()
         if key in mappings:
-            raise ProjectGeometryError(f'Для слоя {layer} задано несколько семантических mapping')
+            raise ProjectGeometryError(f'Для слоя {layer} задано несколько смысловых сопоставлений')
         mappings[key] = ConfirmedLayerMapping(
             layer=layer,
             object_type=object_type,
@@ -190,7 +190,7 @@ def _build_geometry(
         if not closed:
             return None, ProjectGeometryIssue(
                 code='open_area_geometry',
-                message='Geometry confirmed as area is not closed',
+                message='Геометрия, подтверждённая как площадной объект, не замкнута',
                 source_object_id=source_object_id,
             )
         geometry: BaseGeometry = Polygon(xy)
@@ -200,13 +200,13 @@ def _build_geometry(
     if geometry.is_empty or not geometry.is_valid:
         return None, ProjectGeometryIssue(
             code='invalid_prepared_geometry',
-            message='Geometry is empty or invalid after conversion to local meters',
+            message='После преобразования в локальные метры геометрия пуста или некорректна',
             source_object_id=source_object_id,
         )
     if (role is GeometryRole.AREA and geometry.area <= 0) or (role is GeometryRole.LINE and geometry.length <= 0):
         return None, ProjectGeometryIssue(
             code='degenerate_prepared_geometry',
-            message='Geometry has zero area or length after conversion to local meters',
+            message='После преобразования в локальные метры геометрия имеет нулевую площадь или длину',
             source_object_id=source_object_id,
         )
     return geometry, None

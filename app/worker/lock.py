@@ -19,7 +19,7 @@ class WorkerAdvisoryLock:
         """Пытается получить lock без ожидания и сохраняет выделенную сессию."""
 
         if self._connection is not None:
-            raise RuntimeError('Advisory lock worker уже получен')
+            raise RuntimeError('Advisory-блокировка воркера уже получена')
 
         connection = await self.engine.connect()
         try:
@@ -43,7 +43,7 @@ class WorkerAdvisoryLock:
 
         self._connection = connection
         self._backend_pid = int(backend_pid)
-        logger.info('Worker advisory lock получен: lock_id={}, backend_pid={}', self.lock_id, self._backend_pid)
+        logger.info('Advisory-блокировка воркера получена: lock_id={}, backend_pid={}', self.lock_id, self._backend_pid)
         return True
 
     async def ensure_owned(self) -> None:
@@ -104,13 +104,13 @@ class WorkerAdvisoryLock:
                     )
                     await connection.commit()
         except SQLAlchemyError:
-            logger.warning('Не удалось явно освободить worker advisory lock: lock_id={}', self.lock_id)
+            logger.warning('Не удалось явно освободить advisory-блокировку воркера: lock_id={}', self.lock_id)
         finally:
             await connection.close()
 
     async def __aenter__(self) -> 'WorkerAdvisoryLock':
         if not await self.acquire():
-            raise RuntimeError('Advisory lock worker уже удерживается')
+            raise RuntimeError('Advisory-блокировка воркера уже удерживается')
         return self
 
     async def __aexit__(
@@ -122,4 +122,4 @@ class WorkerAdvisoryLock:
         await self.release()
 
     def _lost_error(self) -> RuntimeError:
-        return RuntimeError(f'Worker потерял advisory lock: lock_id={self.lock_id}')
+        return RuntimeError(f'Воркер потерял advisory-блокировку: lock_id={self.lock_id}')

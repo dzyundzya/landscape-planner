@@ -3,7 +3,7 @@ from fastapi import APIRouter
 from app.api.dependencies.jobs import JobServiceDep
 from app.schemas.job import JobReadSchema
 
-router = APIRouter(prefix='/jobs', tags=['Фоновые задачи'])
+router = APIRouter(prefix='/jobs', tags=['Jobs'])
 
 
 @router.get('/{job_id}', response_model=JobReadSchema)

@@ -4,7 +4,7 @@ from app.api.dependencies.analyses import AnalysisServiceDep
 from app.schemas.analysis import AnalysisReadSchema
 from app.schemas.job import JobReadSchema
 
-router = APIRouter(prefix='/projects/{project_id}', tags=['Анализ'])
+router = APIRouter(prefix='/projects/{project_id}', tags=['Analyses'])
 
 
 @router.post('/analyze', response_model=JobReadSchema, status_code=status.HTTP_202_ACCEPTED)

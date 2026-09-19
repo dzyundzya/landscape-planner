@@ -6,7 +6,7 @@ from app.api.dependencies.plantings import PlantingServiceDep
 from app.core.dependencies.revision import ExpectedPlanRevisionDep
 from app.schemas.planting import PlantingCreateSchema, PlantingMutationReadSchema, PlantingPatchSchema
 
-router = APIRouter(prefix='/projects/{project_id}/plans/{plan_id}/plantings', tags=['Посадки'])
+router = APIRouter(prefix='/projects/{project_id}/plans/{plan_id}/plantings', tags=['Plantings'])
 
 
 @router.post('', response_model=PlantingMutationReadSchema, status_code=status.HTTP_201_CREATED)

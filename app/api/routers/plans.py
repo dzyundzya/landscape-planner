@@ -5,7 +5,7 @@ from app.schemas.job import JobReadSchema
 from app.schemas.plan import PlanReadSchema
 from app.schemas.preview import PlanPreviewReadSchema
 
-router = APIRouter(prefix='/projects/{project_id}/plans', tags=['Планы'])
+router = APIRouter(prefix='/projects/{project_id}/plans', tags=['Plans'])
 
 
 @router.post('', response_model=JobReadSchema, status_code=status.HTTP_202_ACCEPTED)

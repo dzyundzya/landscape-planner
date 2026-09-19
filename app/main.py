@@ -5,6 +5,7 @@ from pathlib import Path
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from loguru import logger
 
@@ -48,7 +49,11 @@ def init_backend_app() -> FastAPI:
 
     static_dir = Path(__file__).resolve().parent / 'static'
     if static_dir.exists():
-        app.mount('/static', StaticFiles(directory=static_dir), name='static')
+        app.mount('/static', StaticFiles(directory=static_dir, html=True), name='static')
+
+        @app.get('/', include_in_schema=False)
+        async def frontend() -> RedirectResponse:
+            return RedirectResponse(url='/static/')
 
     app.include_router(router=api_endpoint_router, prefix=settings.API_PREFIX)
 

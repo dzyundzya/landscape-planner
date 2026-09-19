@@ -230,7 +230,7 @@ class PlanService(BaseService[PlanCRUDRepository]):
         validation_data: PlanValidationPublishSchema | None,
     ) -> None:
         if (planting_ids is None) != (validation_data is None):
-            raise InvalidPlanError('ID посадок и результат Validator должны передаваться вместе')
+            raise InvalidPlanError('ID посадок и результат валидатора должны передаваться вместе')
         if planting_ids is not None:
             if len(planting_ids) != len(plantings):
                 raise InvalidPlanError('Количество ID посадок не соответствует результату генератора')

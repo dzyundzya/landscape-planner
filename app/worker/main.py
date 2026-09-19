@@ -70,12 +70,12 @@ async def run_worker() -> WorkerExitReason:
         poll_interval_seconds=settings.WORKER_POLL_INTERVAL_SECONDS,
         lock_check_interval_seconds=settings.WORKER_LOCK_CHECK_INTERVAL_SECONDS,
     )
-    logger.info('Worker Landscape planner запускается')
+    logger.info('Воркер Landscape planner запускается')
     try:
         return await runner.run(stop_event=stop_event)
     finally:
         await async_db.dispose()
-        logger.info('Worker Landscape planner остановлен')
+        logger.info('Воркер Landscape planner остановлен')
 
 
 def main() -> None:

@@ -3,7 +3,7 @@ from fastapi.responses import FileResponse
 
 from app.api.dependencies.file_artifacts import FileArtifactServiceDep
 
-router = APIRouter(prefix='/projects/{project_id}/artifacts', tags=['File artifacts'])
+router = APIRouter(prefix='/projects/{project_id}/artifacts', tags=['Файлы результата'])
 
 
 @router.get('/{artifact_id}', response_class=FileResponse)

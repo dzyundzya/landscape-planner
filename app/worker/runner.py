@@ -45,7 +45,7 @@ class WorkerRunner:
 
         stop = stop_event or asyncio.Event()
         if not await self.advisory_lock.acquire():
-            logger.warning('Worker уже запущен другим процессом')
+            logger.warning('Воркер уже запущен другим процессом')
             return WorkerExitReason.ALREADY_RUNNING
 
         try:
@@ -61,7 +61,7 @@ class WorkerRunner:
                     return WorkerExitReason.LOCK_LOST
             return WorkerExitReason.STOPPED
         except WorkerLockLostError:
-            logger.error('Worker остановлен после потери advisory lock')
+            logger.error('Воркер остановлен после потери advisory-блокировки')
             return WorkerExitReason.LOCK_LOST
         finally:
             await self.advisory_lock.release()
@@ -115,7 +115,7 @@ class WorkerRunner:
             if job.status is JobStatus.RUNNING:
                 await service.fail_job(
                     job_id=job.id,
-                    error='Worker handler returned without completing the job',
+                    error='Обработчик воркера завершился, не завершив задачу',
                 )
 
     async def _fail_job(self, job_id: int, error: str) -> None:
@@ -123,7 +123,7 @@ class WorkerRunner:
             try:
                 await JobService(async_session=session).fail_job(job_id=job_id, error=error)
             except JobStateConflictError:
-                logger.warning('Не удалось пометить задачу failed: её состояние уже изменилось, job_id={}', job_id)
+                logger.warning('Не удалось пометить задачу ошибочной: её состояние уже изменилось, job_id={}', job_id)
 
     async def _ensure_lock(self) -> None:
         try:

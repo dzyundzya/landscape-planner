@@ -83,7 +83,7 @@ def _build_markdown(job_input: ExportJobInputSchema, report: dict[str, object]) 
         f'- План: `{job_input.plan_id}`',
         f'- Ревизия: `{job_input.plan_revision}`',
         f'- Статус: `{job_input.validation.status.value}`',
-        f'- Validator: `{job_input.validation.validator_version}`',
+        f'- Валидатор: `{job_input.validation.validator_version}`',
         '',
         '## Сводка',
         '',

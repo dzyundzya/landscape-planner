@@ -5,7 +5,7 @@ from app.core.dependencies.revision import ExpectedPlanRevisionDep
 from app.schemas.job import JobReadSchema
 from app.schemas.plan_validation import PlanValidationReadSchema
 
-router = APIRouter(prefix='/projects/{project_id}/plans/{plan_id}', tags=['Plan validations'])
+router = APIRouter(prefix='/projects/{project_id}/plans/{plan_id}', tags=['Проверка планов'])
 
 
 @router.post('/validate', response_model=JobReadSchema, status_code=status.HTTP_202_ACCEPTED)

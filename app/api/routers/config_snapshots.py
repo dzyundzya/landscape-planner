@@ -3,7 +3,7 @@ from fastapi import APIRouter
 from app.api.dependencies.config_snapshots import ConfigSnapshotServiceDep
 from app.schemas.config_snapshot import ConfigSnapshotReadSchema, ConfigSnapshotUpsertSchema
 
-router = APIRouter(prefix='/projects/{project_id}/config', tags=['Project configuration'])
+router = APIRouter(prefix='/projects/{project_id}/config', tags=['Настройки проекта'])
 
 
 @router.put('', response_model=ConfigSnapshotReadSchema)

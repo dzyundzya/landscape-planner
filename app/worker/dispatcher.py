@@ -31,5 +31,5 @@ class JobDispatcher:
 
         handler = self._handlers.get(job.type)
         if handler is None:
-            raise UnsupportedJobTypeError(f'Для типа задачи {job.type.value} не зарегистрирован обработчик worker')
+            raise UnsupportedJobTypeError(f'Для типа задачи {job.type.value} не зарегистрирован обработчик воркера')
         await handler.execute(job=job, ensure_ownership=ensure_ownership)

@@ -125,7 +125,7 @@ class ConfigSnapshotUpsertSchema(BaseModel):
 
         normalized_layers = [mapping.layer.casefold() for mapping in self.layer_mappings]
         if len(normalized_layers) != len(set(normalized_layers)):
-            raise ValueError('Для каждого слоя DXF допускается только один mapping')
+            raise ValueError('Для каждого слоя DXF допускается только одно сопоставление')
         return self
 
 

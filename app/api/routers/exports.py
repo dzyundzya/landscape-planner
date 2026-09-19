@@ -5,7 +5,7 @@ from app.core.dependencies.revision import ExpectedPlanRevisionDep
 from app.schemas.export import ExportReadSchema
 from app.schemas.job import JobReadSchema
 
-router = APIRouter(prefix='/projects/{project_id}/plans/{plan_id}/exports', tags=['Exports'])
+router = APIRouter(prefix='/projects/{project_id}/plans/{plan_id}/exports', tags=['Экспорт'])
 
 
 @router.post('', response_model=JobReadSchema, status_code=status.HTTP_202_ACCEPTED)

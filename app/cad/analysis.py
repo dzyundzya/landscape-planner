@@ -1,3 +1,4 @@
+import logging
 from collections import Counter, defaultdict
 from heapq import heappush, heapreplace
 from itertools import islice
@@ -52,6 +53,13 @@ UNIT_SCALE_TO_METERS = {
 
 class DxfAnalysisError(Exception):
     """DXF не удалось безопасно прочитать или проанализировать."""
+
+
+class _TransientCopyWarningFilter(logging.Filter):
+    """Скрывает предупреждения копирования служебных данных при расчёте bbox."""
+
+    def filter(self, record: logging.LogRecord) -> bool:
+        return not record.getMessage().startswith('copy process ignored ')
 
 
 def analyze_dxf(path: Path) -> AnalysisResultSchema:
@@ -310,10 +318,15 @@ def _collect_common_entity_stats(
 
 
 def _get_modelspace_bounds(document: Drawing) -> tuple[AnalysisBoundsSchema | None, bool]:
+    dictionary_logger = logging.getLogger('ezdxf')
+    warning_filter = _TransientCopyWarningFilter()
+    dictionary_logger.addFilter(warning_filter)
     try:
-        extents = bbox.extents(document.modelspace(), cache=bbox.Cache())
+        extents = bbox.extents(document.modelspace(), fast=True, cache=bbox.Cache())
     except Exception:
         return None, True
+    finally:
+        dictionary_logger.removeFilter(warning_filter)
     if not extents.has_data:
         return None, False
     return (

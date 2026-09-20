@@ -113,7 +113,7 @@ async def test_save_config_snapshot(
     assert data['coordinate_unit'] == 'millimeter'
     assert float(data['unit_scale_to_meters']) == 0.001
     assert data['rules_status'] == 'needs_verification'
-    assert data['rules_version'] == 'draft-empty'
+    assert data['rules_version'] == 'draft-2026-09-19-sp42-2026-moscow-743'
     assert len(data['rules_sha256']) == 64
     assert data['territory_type'] == 'courtyard'
     assert data['plant_catalog_status'] == 'needs_verification'
@@ -152,7 +152,7 @@ async def test_save_config_requires_current_analysis(client: AsyncClient, projec
     response = await client.put(f'/api/projects/{project.id}/config', json=config_payload())
 
     assert response.status_code == 409
-    assert response.json() == {'detail': f'Project with id={project.id} has no source file'}
+    assert response.json() == {'detail': f'У проекта с id={project.id} отсутствует исходный файл'}
 
 
 async def test_save_config_rejects_unknown_layer(
@@ -169,7 +169,7 @@ async def test_save_config_rejects_unknown_layer(
     response = await client.put(f'/api/projects/{project.id}/config', json=payload)
 
     assert response.status_code == 422
-    assert response.json() == {'detail': 'Layer mappings reference unknown layers: UNKNOWN'}
+    assert response.json() == {'detail': 'Сопоставление ссылается на неизвестные слои: UNKNOWN'}
 
 
 async def test_save_config_rejects_open_boundary(

@@ -53,4 +53,4 @@ async def test_get_missing_job_returns_404(
     response = await client.get(f'/api/jobs/{missing_job_id}')
 
     assert response.status_code == 404
-    assert response.json() == {'detail': f'Job with id={missing_job_id} not found'}
+    assert response.json() == {'detail': f'Объект «фоновая задача» с id={missing_job_id} не найден'}

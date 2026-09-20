@@ -157,7 +157,7 @@ async def test_enqueue_export_requires_passed_validation(
 
     plan_without_validation = await publish_empty_plan(client=client, db_session=db_session, project=project)
     service = ExportService(async_session=db_session)
-    with pytest.raises(ExportPrerequisiteError, match='has no validation'):
+    with pytest.raises(ExportPrerequisiteError, match='отсутствует проверка'):
         await service.enqueue_export(
             project_id=project.id,
             plan_id=plan_without_validation,
@@ -181,7 +181,7 @@ async def test_enqueue_export_requires_passed_validation(
     )
     assert validation.status is ValidationStatus.NEEDS_VERIFICATION
 
-    with pytest.raises(ExportPrerequisiteError, match='is not verified'):
+    with pytest.raises(ExportPrerequisiteError, match='не проверен для экспорта'):
         await service.enqueue_export(
             project_id=project.id,
             plan_id=plan_without_validation,
@@ -259,7 +259,7 @@ async def test_publish_export_rejects_incomplete_artifacts(
         source=BytesIO(b'incomplete dxf'),
     )
 
-    with pytest.raises(InvalidExportError, match='must publish'):
+    with pytest.raises(InvalidExportError, match='должна опубликовать'):
         await ExportService(async_session=db_session).publish_export(
             job_id=job.id,
             export_version='dxf-export/1',

@@ -100,7 +100,7 @@ async def test_enqueue_analysis_requires_source(client: AsyncClient, project: Pr
     response = await client.post(f'/api/projects/{project.id}/analyze')
 
     assert response.status_code == 409
-    assert response.json() == {'detail': f'Project with id={project.id} has no source file'}
+    assert response.json() == {'detail': f'У проекта с id={project.id} отсутствует исходный файл'}
 
 
 async def test_enqueue_analysis_rejects_dwf(client: AsyncClient, project: ProjectModel) -> None:
@@ -115,7 +115,7 @@ async def test_enqueue_analysis_rejects_dwf(client: AsyncClient, project: Projec
     response = await client.post(f'/api/projects/{project.id}/analyze')
 
     assert response.status_code == 409
-    assert response.json() == {'detail': 'Current project source must be a ready DXF file'}
+    assert response.json() == {'detail': 'Текущий исходник проекта должен быть готовым DXF-файлом'}
 
 
 async def test_get_current_analysis(
@@ -153,4 +153,4 @@ async def test_new_source_invalidates_current_analysis(
     response = await client.get(f'/api/projects/{project.id}/analysis')
 
     assert response.status_code == 404
-    assert response.json() == {'detail': f'Analysis for project with id={project.id} not found'}
+    assert response.json() == {'detail': f'Объект «анализ проекта» с id={project.id} не найден'}

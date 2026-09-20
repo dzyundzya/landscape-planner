@@ -88,7 +88,7 @@ async def test_upload_rejects_unsupported_format(client: AsyncClient, project: P
     )
 
     assert response.status_code == 422
-    assert response.json() == {'detail': 'Only DXF and DWF files are supported'}
+    assert response.json() == {'detail': 'Поддерживаются только файлы DXF и DWF'}
 
 
 async def test_upload_rejects_invalid_dxf(
@@ -104,7 +104,7 @@ async def test_upload_rejects_invalid_dxf(
     )
 
     assert response.status_code == 422
-    assert response.json() == {'detail': 'Uploaded DXF file is invalid'}
+    assert response.json() == {'detail': 'Загруженный DXF-файл некорректен'}
     assert not list(file_storage_root.rglob('*.dxf'))
 
 
@@ -117,7 +117,7 @@ async def test_upload_rejects_invalid_dwf(client: AsyncClient, project: ProjectM
     )
 
     assert response.status_code == 422
-    assert response.json() == {'detail': 'Uploaded DWF file is invalid'}
+    assert response.json() == {'detail': 'Загруженный DWF-файл некорректен'}
 
 
 async def test_upload_rejects_empty_file(client: AsyncClient, project: ProjectModel) -> None:
@@ -129,7 +129,7 @@ async def test_upload_rejects_empty_file(client: AsyncClient, project: ProjectMo
     )
 
     assert response.status_code == 422
-    assert response.json() == {'detail': 'Uploaded file is empty'}
+    assert response.json() == {'detail': 'Загруженный файл пуст'}
 
 
 async def test_upload_rejects_file_above_limit(client: AsyncClient, project: ProjectModel) -> None:
@@ -141,7 +141,7 @@ async def test_upload_rejects_file_above_limit(client: AsyncClient, project: Pro
     )
 
     assert response.status_code == 413
-    assert response.json() == {'detail': 'File size exceeds 1048576 bytes'}
+    assert response.json() == {'detail': 'Размер файла превышает 1048576 байт'}
 
 
 async def test_upload_returns_404_for_missing_project(client: AsyncClient, project: ProjectModel) -> None:
@@ -154,4 +154,4 @@ async def test_upload_returns_404_for_missing_project(client: AsyncClient, proje
     )
 
     assert response.status_code == 404
-    assert response.json() == {'detail': f'Project with id={missing_project_id} not found'}
+    assert response.json() == {'detail': f'Объект «проект» с id={missing_project_id} не найден'}

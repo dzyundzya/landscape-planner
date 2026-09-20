@@ -116,7 +116,7 @@ async def test_publish_validation_rejects_stale_revision(
 
     plan_id = await publish_empty_plan(client=client, db_session=db_session, project=project)
 
-    with pytest.raises(PlanRevisionConflictError, match='expected=2, actual=1'):
+    with pytest.raises(PlanRevisionConflictError, match='ожидалась 2, фактическая 1'):
         await PlanValidationService(async_session=db_session).publish_validation(
             project_id=project.id,
             plan_id=plan_id,
@@ -137,7 +137,7 @@ async def test_publish_validation_rejects_unknown_planting(
 
     plan_id = await publish_empty_plan(client=client, db_session=db_session, project=project)
 
-    with pytest.raises(InvalidPlanValidationError, match='unknown planting'):
+    with pytest.raises(InvalidPlanValidationError, match='неизвестную посадку'):
         await PlanValidationService(async_session=db_session).publish_validation(
             project_id=project.id,
             plan_id=plan_id,
@@ -165,7 +165,7 @@ async def test_publish_validation_requires_check_for_every_planting(
 
     plan_id, _ = await publish_plan(client=client, db_session=db_session, project=project)
 
-    with pytest.raises(InvalidPlanValidationError, match='has no checks for planting'):
+    with pytest.raises(InvalidPlanValidationError, match='отсутствуют результаты для посадки'):
         await PlanValidationService(async_session=db_session).publish_validation(
             project_id=project.id,
             plan_id=plan_id,
@@ -180,7 +180,7 @@ async def test_publish_validation_requires_check_for_every_planting(
 def test_check_result_requires_complete_measurement() -> None:
     """Проверяет обязательность actual, required и unit как единого измерения."""
 
-    with pytest.raises(ValidationError, match='must be provided together'):
+    with pytest.raises(ValidationError, match='должны быть указаны вместе'):
         CheckResultSchema(
             check_type='source_clearance',
             status=ValidationStatus.FAILED,
@@ -192,5 +192,5 @@ def test_check_result_requires_complete_measurement() -> None:
 def test_validation_summary_rejects_inconsistent_total() -> None:
     """Проверяет согласованность суммы статусов с общим числом проверок."""
 
-    with pytest.raises(ValidationError, match='must equal total'):
+    with pytest.raises(ValidationError, match='должны соответствовать общему количеству'):
         ValidationSummarySchema(total=2, passed=1, failed=0, needs_verification=0)

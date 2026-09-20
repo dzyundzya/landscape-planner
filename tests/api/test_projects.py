@@ -29,7 +29,7 @@ async def test_get_missing_project_returns_404(client: AsyncClient, project: Pro
     response = await client.get(f'/api/projects/{missing_project_id}')
 
     assert response.status_code == 404
-    assert response.json() == {'detail': f'Project with id={missing_project_id} not found'}
+    assert response.json() == {'detail': f'Объект «проект» с id={missing_project_id} не найден'}
 
 
 async def test_get_projects_returns_page(client: AsyncClient, project: ProjectModel) -> None:

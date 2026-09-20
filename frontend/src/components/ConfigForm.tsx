@@ -482,9 +482,15 @@ function formatLayerCounts(layer: AnalysisLayer) {
     ? `${layer.entity_count} на листах · ${formatEntityCounts(layer.entity_counts)}`
     : 'нет объектов на листах'
   const blocks = layer.block_entity_count > 0
-    ? ` · ${layer.block_entity_count} внутри блоков`
+    ? ` · ${layer.block_entity_count} в используемых блоках${formatBlockNames(layer.block_names)}`
     : ''
   return `${direct}${blocks}`
+}
+
+function formatBlockNames(names: string[]) {
+  if (names.length === 0) return ''
+  const shown = names.slice(0, 2).join(', ')
+  return ` (${shown}${names.length > 2 ? ` и ещё ${names.length - 2}` : ''})`
 }
 
 function objectTypeLabel(value: SemanticObjectType) {

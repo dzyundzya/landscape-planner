@@ -46,6 +46,7 @@ class AnalysisLayerSchema(BaseModel):
     entity_counts: dict[str, NonNegativeInt] = Field(default_factory=dict)
     block_entity_count: NonNegativeInt = 0
     block_entity_counts: dict[str, NonNegativeInt] = Field(default_factory=dict)
+    block_names: list[Annotated[str, Field(min_length=1, max_length=255)]] = Field(default_factory=list)
     is_unused: bool = False
     suggestion: AnalysisLayerSuggestionSchema | None = None
 

@@ -63,9 +63,11 @@ def analyze_dxf(path: Path) -> AnalysisResultSchema:
         raise DxfAnalysisError('Не удалось прочитать исходный DXF') from exc
 
     block_layouts = [block for block in document.blocks if not block.is_any_layout]
+    reachable_blocks = _get_reachable_blocks(document)
     entity_counts: Counter[str] = Counter()
     layer_counts: dict[str, Counter[str]] = defaultdict(Counter)
     block_layer_counts: dict[str, Counter[str]] = defaultdict(Counter)
+    block_names_by_layer: dict[str, set[str]] = defaultdict(set)
     unsupported_counts: Counter[str] = Counter()
     block_references: Counter[str] = Counter()
     labels_count = 0
@@ -80,9 +82,11 @@ def analyze_dxf(path: Path) -> AnalysisResultSchema:
                 unsupported_counts=unsupported_counts,
                 block_references=block_references,
             )
-    for block in block_layouts:
+    for block in reachable_blocks:
         for entity in block:
-            block_layer_counts[entity.dxf.get('layer', '0')][entity.dxftype()] += 1
+            layer_name = entity.dxf.get('layer', '0')
+            block_layer_counts[layer_name][entity.dxftype()] += 1
+            block_names_by_layer[layer_name].add(block.name)
             labels_count += _collect_common_entity_stats(
                 entity=entity,
                 unsupported_counts=unsupported_counts,
@@ -91,7 +95,7 @@ def analyze_dxf(path: Path) -> AnalysisResultSchema:
 
     sorted_entity_counts = dict(sorted(entity_counts.items()))
     unsupported_entities = dict(sorted(unsupported_counts.items()))
-    external_references = _get_external_references(block_layouts)
+    external_references = _get_external_references(reachable_blocks)
     bounds, bounds_failed = _get_modelspace_bounds(document)
     warnings = _build_warnings(
         document=document,
@@ -109,6 +113,7 @@ def analyze_dxf(path: Path) -> AnalysisResultSchema:
             document=document,
             layer_counts=layer_counts,
             block_layer_counts=block_layer_counts,
+            block_names_by_layer=block_names_by_layer,
         ),
         boundary_candidates=_get_boundary_candidates(document),
         blocks=_get_block_references(block_layouts=block_layouts, references=block_references),
@@ -125,6 +130,7 @@ def _get_layers(
     document: Drawing,
     layer_counts: dict[str, Counter[str]],
     block_layer_counts: dict[str, Counter[str]],
+    block_names_by_layer: dict[str, set[str]],
 ) -> list[AnalysisLayerSchema]:
     layer_names = sorted({layer.dxf.name for layer in document.layers} | set(layer_counts) | set(block_layer_counts))
     layers = []
@@ -152,11 +158,33 @@ def _get_layers(
                 entity_counts=counts,
                 block_entity_count=sum(block_counts.values()),
                 block_entity_counts=block_counts,
+                block_names=sorted(block_names_by_layer[name], key=str.casefold),
                 is_unused=is_unused,
                 suggestion=suggestion,
             )
         )
     return layers
+
+
+def _get_reachable_blocks(document: Drawing) -> list:
+    """Находит определения блоков, достижимые из INSERT пространства модели."""
+
+    pending = [entity.dxf.get('name', '') for entity in document.modelspace().query('INSERT')]
+    visited = set()
+    blocks = []
+    while pending:
+        name = pending.pop()
+        key = name.casefold()
+        if not name or key in visited:
+            continue
+        visited.add(key)
+        try:
+            block = document.blocks.get(name)
+        except DXFError:
+            continue
+        blocks.append(block)
+        pending.extend(entity.dxf.get('name', '') for entity in block.query('INSERT'))
+    return blocks
 
 
 def _get_boundary_candidates(document: Drawing) -> list[AnalysisBoundaryCandidateSchema]:

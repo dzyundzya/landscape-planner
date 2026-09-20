@@ -65,6 +65,19 @@ class AnalysisLayerSchema(BaseModel):
     model_config = ConfigDict(extra='forbid')
 
 
+class AnalysisLayerGroupSchema(BaseModel):
+    """Группа слоёв для управляемого массового подтверждения."""
+
+    id: Annotated[str, Field(min_length=1, max_length=100)]
+    label: Annotated[str, Field(min_length=1, max_length=255)]
+    kind: Literal['suggested', 'family']
+    layer_names: Annotated[list[str], Field(min_length=1, max_length=100)]
+    suggestion: AnalysisLayerSuggestionSchema | None = None
+    reason: Annotated[str, Field(min_length=1, max_length=1000)]
+
+    model_config = ConfigDict(extra='forbid')
+
+
 class AnalysisBoundaryCandidateSchema(BaseModel):
     """Замкнутый контур, который пользователь может подтвердить как границу."""
 
@@ -94,6 +107,7 @@ class AnalysisResultSchema(BaseModel):
     drawing_units: Annotated[str | None, Field(max_length=64)] = None
     entity_counts: dict[str, NonNegativeInt] = Field(default_factory=dict)
     layers: list[AnalysisLayerSchema] = Field(default_factory=list)
+    layer_groups: list[AnalysisLayerGroupSchema] = Field(default_factory=list)
     boundary_candidates: list[AnalysisBoundaryCandidateSchema] = Field(default_factory=list)
     blocks: dict[str, NonNegativeInt] = Field(default_factory=dict)
     labels_count: NonNegativeInt = 0

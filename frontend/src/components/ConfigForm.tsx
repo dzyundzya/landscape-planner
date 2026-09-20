@@ -155,6 +155,15 @@ export function ConfigForm({ analysis, isSaving, savedConfig, onSave }: Props) {
         <fieldset className="form-section">
           <legend>Сопоставление слоёв</legend>
           <p className="field-hint">Каждый слой нужно классифицировать или явно исключить из расчёта.</p>
+          {configuredLayers === 0 && (
+            <article className="notice notice-warning mapping-notice">
+              <span className="notice-marker" />
+              <div>
+                <strong>Все слои исключены из расчёта</strong>
+                <p>План будет построен только внутри заданной границы, без учёта зданий, дорог и инженерных сетей.</p>
+              </div>
+            </article>
+          )}
           <div className="layer-table" role="table" aria-label="Сопоставление слоёв DXF">
             <div className="layer-row layer-header" role="row">
               <span>Слой и состав</span><span>Назначение</span><span>Геометрия</span>

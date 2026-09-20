@@ -61,7 +61,7 @@ def build_restriction_zones(
     project: PreparedProjectGeometry,
     rule_set: LoadedRuleSet,
 ) -> RestrictionResult:
-    """Применяет все подходящие проверенные правила к объектам проекта."""
+    """Применяет подходящие правила и сохраняет неопределённости их проверки."""
 
     zones = []
     issues = [
@@ -157,7 +157,6 @@ def _build_object_zones(
                     rule_id=rule.id,
                 )
             )
-            continue
         zones.append(
             RestrictionZone(
                 source_object_id=obj.provenance.source_object_id,

@@ -150,7 +150,16 @@ export function PlanWorkspace({ projectId, onProgress }: Props) {
   }
 
   if (generationJob.status !== 'succeeded' || !plan) {
-    return <JobPanel eyebrow="Шаг 5" title="Генерация плана" job={generationJobQuery.data ?? generationJob} error={actionError} />
+    return (
+      <JobPanel
+        eyebrow="Шаг 5"
+        title="Генерация плана"
+        job={generationJobQuery.data ?? generationJob}
+        error={actionError}
+        isRetrying={generationMutation.isLoading}
+        onRetry={() => generationMutation.mutate()}
+      />
+    )
   }
 
   return (
@@ -311,8 +320,8 @@ function ExportPanel({ projectId, plan, validation, job, exported, isStarting, o
   )
 }
 
-function JobPanel({ eyebrow, title, job, error }: { eyebrow: string; title: string; job: Job; error: unknown }) {
-  return <section className="panel compact-panel"><div className="panel-heading"><div><p className="eyebrow">{eyebrow}</p><h2>{title}</h2></div><span className={`status-pill status-${job.status}`}>{jobStatusLabel(job.status)}</span></div><div className="job-progress"><div className={`progress-track ${job.status === 'failed' ? 'progress-failed' : ''}`}><span className={job.status} /></div><div><strong>Задача #{job.id}</strong><p>{job.error ?? job.stage ?? jobStatusLabel(job.status)}</p></div>{['queued', 'running'].includes(job.status) && <span className="spinner" />}</div>{error !== null && error !== undefined && <InlineError error={error} />}</section>
+function JobPanel({ eyebrow, title, job, error, isRetrying = false, onRetry }: { eyebrow: string; title: string; job: Job; error: unknown; isRetrying?: boolean; onRetry?: () => void }) {
+  return <section className="panel compact-panel"><div className="panel-heading"><div><p className="eyebrow">{eyebrow}</p><h2>{title}</h2></div><span className={`status-pill status-${job.status}`}>{jobStatusLabel(job.status)}</span></div><div className="job-progress"><div className={`progress-track ${job.status === 'failed' ? 'progress-failed' : ''}`}><span className={job.status} /></div><div><strong>Задача #{job.id}</strong><p>{job.error ?? job.stage ?? jobStatusLabel(job.status)}</p></div>{['queued', 'running'].includes(job.status) && <span className="spinner" />}</div>{job.status === 'failed' && onRetry && <div className="retry-row"><button className="button button-primary" type="button" disabled={isRetrying} onClick={onRetry}>{isRetrying ? 'Ставим в очередь…' : 'Запустить повторно'}</button></div>}{error !== null && error !== undefined && <InlineError error={error} />}</section>
 }
 
 function InlineError({ error }: { error: unknown }) {

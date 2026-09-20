@@ -107,6 +107,7 @@ label small, .field-hint { color: var(--muted); font-size: 10px; font-weight: 50
 .global-error { display: flex; flex-direction: column; gap: 4px; color: #7d3028; background: #f8e8e4; border: 1px solid #e9c9c2; border-radius: 12px; margin-bottom: 20px; padding: 13px 16px; font-size: 12px; }.global-error strong { font-size: 11px; text-transform: uppercase; letter-spacing: .06em; }
 .inline-error { color: #7d3028; background: #f8e8e4; border: 1px solid #e9c9c2; border-radius: 10px; margin-top: 16px; padding: 11px 13px; font-size: 12px; line-height: 1.5; }
 .action-panel .panel-heading { align-items: center; margin-bottom: 0; }
+.retry-row { display: flex; justify-content: flex-end; margin-top: 16px; }
 .validation-needs_verification { color: #82611e; background: #f5edd8; }.validation-verified, .validation-passed { color: #3e7145; background: #e9f3e5; }.validation-invalid, .validation-failed { color: #923e34; background: #f7e6e2; }
 
 .plan-metrics, .validation-summary { display: grid; grid-template-columns: repeat(4, 1fr); border: 1px solid var(--line); border-radius: 11px; overflow: hidden; margin-bottom: 20px; }

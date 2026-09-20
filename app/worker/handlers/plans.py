@@ -3,7 +3,6 @@ from functools import partial
 from pathlib import Path
 from uuid import UUID, uuid4
 
-from anyio import to_thread
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from app.cad import normalize_dxf
@@ -31,6 +30,7 @@ from app.services.jobs import JobService
 from app.services.plans import PlanService
 from app.storage import LocalFileStorage
 from app.worker.dispatcher import OwnershipGuard
+from app.worker.metrics import run_measured_operation
 
 
 @dataclass(frozen=True, slots=True)
@@ -71,19 +71,32 @@ class PlanGenerationJobHandler:
         rules_path: Path,
         plant_catalog_path: Path,
         curve_tolerance_m: float,
+        preview_simplify_tolerance_m: float,
+        preview_max_objects: int,
+        preview_max_restrictions: int,
+        preview_max_coordinates: int,
     ) -> None:
         self.session_factory = session_factory
         self.storage = storage
         self.rules_path = rules_path
         self.plant_catalog_path = plant_catalog_path
         self.curve_tolerance_m = curve_tolerance_m
+        self.preview_simplify_tolerance_m = preview_simplify_tolerance_m
+        self.preview_max_objects = preview_max_objects
+        self.preview_max_restrictions = preview_max_restrictions
+        self.preview_max_coordinates = preview_max_coordinates
 
     async def execute(self, job: JobModel, ensure_ownership: OwnershipGuard) -> None:
         async with self.session_factory() as session:
             generation_input = await self._load_input(session=session, job=job)
             await JobService(session).update_stage(job_id=job.id, stage='generating_plan')
 
-        output = await to_thread.run_sync(partial(self._generate, generation_input))
+        output = await run_measured_operation(
+            partial(self._generate, generation_input),
+            job_id=job.id,
+            operation_name='generate_plan',
+            source_path=generation_input.source_path,
+        )
         await ensure_ownership()
 
         async with self.session_factory() as session:
@@ -210,7 +223,14 @@ class PlanGenerationJobHandler:
             ],
             parameters=parameters,
         )
-        preview = build_plan_preview(project=project, restrictions=restrictions)
+        preview = build_plan_preview(
+            project=project,
+            restrictions=restrictions,
+            simplify_tolerance_m=self.preview_simplify_tolerance_m,
+            max_objects=self.preview_max_objects,
+            max_restrictions=self.preview_max_restrictions,
+            max_coordinates=self.preview_max_coordinates,
+        )
         return _PlanGenerationOutput(
             generator_version=result.generator_version,
             summary=PlanGenerationSummarySchema(

@@ -34,6 +34,10 @@ def build_dispatcher() -> JobDispatcher:
                 rules_path=settings.NORMATIVE_RULES_PATH,
                 plant_catalog_path=settings.PLANT_CATALOG_PATH,
                 curve_tolerance_m=settings.GEOMETRY_CURVE_TOLERANCE_M,
+                preview_simplify_tolerance_m=settings.PREVIEW_SIMPLIFY_TOLERANCE_M,
+                preview_max_objects=settings.PREVIEW_MAX_OBJECTS,
+                preview_max_restrictions=settings.PREVIEW_MAX_RESTRICTIONS,
+                preview_max_coordinates=settings.PREVIEW_MAX_COORDINATES,
             ),
             JobType.VALIDATE_PLAN: PlanValidationJobHandler(
                 session_factory=async_db.async_session_maker,

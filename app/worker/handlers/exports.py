@@ -4,7 +4,6 @@ from io import BytesIO
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
-from anyio import to_thread
 from pydantic import ValidationError
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
@@ -22,6 +21,7 @@ from app.services.file_artifacts import FileArtifactService
 from app.services.jobs import JobService
 from app.storage import LocalFileStorage
 from app.worker.dispatcher import OwnershipGuard
+from app.worker.metrics import run_measured_operation
 
 
 @dataclass(frozen=True, slots=True)
@@ -36,7 +36,7 @@ class _ExportInput:
 class _ExportOutput:
     """Полный комплект сформированных файлов экспорта."""
 
-    result_dxf: bytes
+    result_dxf_path: Path
     documents: ExportDocuments
 
 
@@ -60,13 +60,20 @@ class ExportJobHandler:
             export_input = await self._load_input(session=session, job=job)
             await JobService(session).update_stage(job_id=job.id, stage='preparing_export')
 
-        output = await to_thread.run_sync(partial(self._build_output, job.project_id, export_input))
-        await ensure_ownership()
+        with TemporaryDirectory(prefix='greenplan-export-') as directory:
+            output_path = Path(directory) / 'result.dxf'
+            output = await run_measured_operation(
+                partial(self._build_output, job.project_id, export_input, output_path),
+                job_id=job.id,
+                operation_name='export_plan',
+                source_path=export_input.source_path,
+            )
+            await ensure_ownership()
 
-        async with self.session_factory() as session:
-            await JobService(session).update_stage(job_id=job.id, stage='publishing_export')
-        await ensure_ownership()
-        await self._publish(job=job, output=output)
+            async with self.session_factory() as session:
+                await JobService(session).update_stage(job_id=job.id, stage='publishing_export')
+            await ensure_ownership()
+            await self._publish(job=job, output=output)
 
     async def _load_input(self, session: AsyncSession, job: JobModel) -> _ExportInput:
         try:
@@ -86,7 +93,7 @@ class ExportJobHandler:
             snapshot=snapshot,
         )
 
-    def _build_output(self, project_id: int, data: _ExportInput) -> _ExportOutput:
+    def _build_output(self, project_id: int, data: _ExportInput, output_path: Path) -> _ExportOutput:
         snapshot = data.snapshot
         rule_set = load_rule_set(self.rules_path)
         if rule_set.data.version != snapshot.config.rules_version or rule_set.sha256 != snapshot.config.rules_sha256:
@@ -107,44 +114,42 @@ class ExportJobHandler:
         if restrictions.issues:
             raise InvalidExportError('При повторном расчёте зон обнаружены неразрешённые ограничения')
 
-        with TemporaryDirectory(prefix='greenplan-export-') as directory:
-            output_path = Path(directory) / 'result.dxf'
-            dxf_metadata = write_landscape_dxf(
-                source_path=data.source_path,
-                output_path=output_path,
-                plantings=snapshot.plan.plantings,
-                transform=project.transform,
-                restrictions=restrictions,
-            )
-            result_dxf = output_path.read_bytes()
+        dxf_metadata = write_landscape_dxf(
+            source_path=data.source_path,
+            output_path=output_path,
+            plantings=snapshot.plan.plantings,
+            transform=project.transform,
+            restrictions=restrictions,
+        )
         documents = build_export_documents(
             project_id=project_id,
             job_input=snapshot,
             dxf_metadata=dxf_metadata,
         )
-        return _ExportOutput(result_dxf=result_dxf, documents=documents)
+        return _ExportOutput(result_dxf_path=output_path, documents=documents)
 
     async def _publish(self, job: JobModel, output: _ExportOutput) -> None:
         published_keys = []
         async with self.session_factory() as session:
             artifact_service = FileArtifactService(async_session=session, storage=self.storage)
             try:
-                sources = (
-                    (FileArtifactKind.RESULT_DXF, output.result_dxf),
-                    (FileArtifactKind.PLAN_JSON, output.documents.plan_json),
-                    (FileArtifactKind.REPORT_JSON, output.documents.report_json),
-                    (FileArtifactKind.REPORT_MARKDOWN, output.documents.report_markdown),
-                )
-                for kind, content in sources:
-                    artifact = await artifact_service.create_artifact(
-                        project_id=job.project_id,
-                        project_file_id=job.project_file_id,
-                        job_id=job.id,
-                        kind=kind,
-                        source=BytesIO(content),
-                        commit=False,
+                with output.result_dxf_path.open('rb') as result_dxf:
+                    sources = (
+                        (FileArtifactKind.RESULT_DXF, result_dxf),
+                        (FileArtifactKind.PLAN_JSON, BytesIO(output.documents.plan_json)),
+                        (FileArtifactKind.REPORT_JSON, BytesIO(output.documents.report_json)),
+                        (FileArtifactKind.REPORT_MARKDOWN, BytesIO(output.documents.report_markdown)),
                     )
-                    published_keys.append(artifact.storage_key)
+                    for kind, source in sources:
+                        artifact = await artifact_service.create_artifact(
+                            project_id=job.project_id,
+                            project_file_id=job.project_file_id,
+                            job_id=job.id,
+                            kind=kind,
+                            source=source,
+                            commit=False,
+                        )
+                        published_keys.append(artifact.storage_key)
                 await ExportService(session).publish_export(
                     job_id=job.id,
                     export_version=EXPORT_DXF_VERSION,

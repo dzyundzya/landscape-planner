@@ -57,16 +57,31 @@ class PreviewIssueSchema(BaseModel):
     model_config = ConfigDict(extra='forbid')
 
 
+class PreviewSummarySchema(BaseModel):
+    """Сводка полноты облегчённой геометрии для браузера."""
+
+    object_count: Annotated[int, Field(ge=0)]
+    displayed_object_count: Annotated[int, Field(ge=0)]
+    restriction_count: Annotated[int, Field(ge=0)]
+    displayed_restriction_count: Annotated[int, Field(ge=0)]
+    source_coordinate_count: Annotated[int, Field(ge=0)]
+    displayed_coordinate_count: Annotated[int, Field(ge=0)]
+    simplified: bool
+
+    model_config = ConfigDict(extra='forbid')
+
+
 class PlanPreviewGeometrySchema(BaseModel):
     """Статическая геометрия, рассчитанная worker для плана."""
 
-    schema_version: Annotated[int, Field(ge=1)] = 1
+    schema_version: Annotated[int, Field(ge=1)] = 2
     coordinate_space: Literal['local_meters'] = 'local_meters'
     boundary: GeoJsonGeometry
     objects: list[PreviewObjectSchema]
     restrictions: list[PreviewRestrictionSchema]
     zones: PreviewZonesSchema
     issues: list[PreviewIssueSchema]
+    summary: PreviewSummarySchema | None = None
 
     model_config = ConfigDict(extra='forbid')
 

@@ -2,7 +2,6 @@ from dataclasses import dataclass
 from functools import partial
 from pathlib import Path
 
-from anyio import to_thread
 from pydantic import ValidationError
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
@@ -19,6 +18,7 @@ from app.services.jobs import JobService
 from app.services.plan_validations import PlanValidationService
 from app.storage import LocalFileStorage
 from app.worker.dispatcher import OwnershipGuard
+from app.worker.metrics import run_measured_operation
 
 
 @dataclass(frozen=True, slots=True)
@@ -49,7 +49,12 @@ class PlanValidationJobHandler:
             validation_input = await self._load_input(session=session, job=job)
             await JobService(session).update_stage(job_id=job.id, stage='validating_plan')
 
-        validation = await to_thread.run_sync(partial(self._validate, validation_input))
+        validation = await run_measured_operation(
+            partial(self._validate, validation_input),
+            job_id=job.id,
+            operation_name='validate_plan',
+            source_path=validation_input.source_path,
+        )
         await ensure_ownership()
 
         async with self.session_factory() as session:

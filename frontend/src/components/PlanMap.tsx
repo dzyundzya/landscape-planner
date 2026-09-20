@@ -106,6 +106,15 @@ export function PlanMap({ preview, selectedPlantingId, onSelectPlanting, onMoveP
         <span><i className="legend-object" />Объекты DXF</span>
         <span><i className="legend-zone" />Ограничения</span>
       </div>
+      {preview.summary && (
+        <p className="map-summary">
+          Показано объектов: {preview.summary.displayed_object_count.toLocaleString('ru-RU')}
+          {' из '}{preview.summary.object_count.toLocaleString('ru-RU')} · зон:{' '}
+          {preview.summary.displayed_restriction_count.toLocaleString('ru-RU')}
+          {' из '}{preview.summary.restriction_count.toLocaleString('ru-RU')}
+          {preview.summary.simplified ? ' · геометрия облегчена' : ''}
+        </p>
+      )}
       <p className="map-hint">Выберите посадку и перетащите её. Новая позиция сохранится только после проверки backend.</p>
     </div>
   )

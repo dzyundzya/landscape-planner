@@ -46,11 +46,15 @@ class BackendSettings(BaseSettings):
     LOGGERS: tuple[str, str] = ('uvicorn.asgi', 'uvicorn.access')
 
     FILE_STORAGE_ROOT: Path = Path('var/storage')
-    MAX_UPLOAD_SIZE_BYTES: int = 50 * 1024 * 1024
-    MAX_ARTIFACT_SIZE_BYTES: int = 200 * 1024 * 1024
+    MAX_UPLOAD_SIZE_BYTES: int = 300 * 1024 * 1024
+    MAX_ARTIFACT_SIZE_BYTES: int = 500 * 1024 * 1024
     NORMATIVE_RULES_PATH: Path = Path('config/normative_rules.yaml')
     PLANT_CATALOG_PATH: Path = Path('config/plant_catalog.yaml')
     GEOMETRY_CURVE_TOLERANCE_M: float = 0.01
+    PREVIEW_SIMPLIFY_TOLERANCE_M: float = 0.1
+    PREVIEW_MAX_OBJECTS: int = 2_000
+    PREVIEW_MAX_RESTRICTIONS: int = 2_000
+    PREVIEW_MAX_COORDINATES: int = 200_000
 
     WORKER_ADVISORY_LOCK_ID: int = 1_196_578_126
     WORKER_POLL_INTERVAL_SECONDS: float = 1.0

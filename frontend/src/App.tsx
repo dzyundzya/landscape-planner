@@ -195,7 +195,7 @@ export function App() {
           </aside>
         </div>
       </main>
-      <footer><span>Greenplan MVP</span><span>Расчёты выполняются локально</span></footer>
+      <footer><span>MVP by Дабл тим</span><span>Расчёты выполняются локально</span></footer>
     </div>
   )
 }

@@ -13,6 +13,7 @@ import type {
   TerritoryType,
 } from '../types'
 import { BoundaryPicker } from './BoundaryPicker'
+import { LayerPreview } from './LayerPreview'
 
 type Props = {
   analysis: Analysis
@@ -58,6 +59,7 @@ export function ConfigForm({ analysis, isSaving, savedConfig, onSave }: Props) {
   const [layerSearch, setLayerSearch] = useState('')
   const [layerView, setLayerView] = useState<LayerView>('active')
   const [bulkObjectType, setBulkObjectType] = useState<SemanticObjectType>('ignore')
+  const [previewLayerName, setPreviewLayerName] = useState<string | null>(null)
 
   const boundaryIsValid = bounds.maxX > bounds.minX && bounds.maxY > bounds.minY
   const includedLayers = useMemo(
@@ -87,6 +89,7 @@ export function ConfigForm({ analysis, isSaving, savedConfig, onSave }: Props) {
   const confidentSuggestionCount = analysis.result.layers.filter(
     (layer) => layer.suggestion?.confidence === 'high' && layer.suggestion.object_type !== 'ignore',
   ).length
+  const previewLayer = analysis.result.layers.find((layer) => layer.name === previewLayerName) ?? null
 
   function changeUnit(value: CoordinateUnit) {
     setCoordinateUnit(value)
@@ -332,9 +335,17 @@ export function ConfigForm({ analysis, isSaving, savedConfig, onSave }: Props) {
               </div>
             </article>
           )}
+          {previewLayer && (
+            <LayerPreview
+              boundary={boundaryCoordinates}
+              layer={previewLayer}
+              scale={scale}
+              onClose={() => setPreviewLayerName(null)}
+            />
+          )}
           <div className="layer-table" role="table" aria-label="Сопоставление слоёв DXF">
             <div className="layer-row layer-header" role="row">
-              <span>Слой и состав</span><span>Назначение</span><span>Геометрия</span>
+              <span>Слой и состав</span><span>Назначение</span><span>Геометрия</span><span>Просмотр</span>
             </div>
             {visibleLayers.map(({ layer, index }) => {
               const mapping = layerMappings[index]
@@ -365,6 +376,13 @@ export function ConfigForm({ analysis, isSaving, savedConfig, onSave }: Props) {
                     <option value="line">Линия</option>
                     <option value="area">Площадной объект</option>
                   </select>
+                  <button
+                    className={previewLayerName === layer.name ? 'button button-secondary layer-preview-button selected' : 'button button-secondary layer-preview-button'}
+                    type="button"
+                    onClick={() => setPreviewLayerName(layer.name)}
+                  >
+                    Показать
+                  </button>
                 </div>
               )
             })}

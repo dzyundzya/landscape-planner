@@ -1,4 +1,5 @@
 import math
+from collections import Counter
 from collections.abc import Iterable
 from functools import partial
 from pathlib import Path
@@ -46,12 +47,16 @@ class DxfGeometryNormalizer:
         self.options = options
         self._geometries: list[NormalizedPolyline] = []
         self._issues: list[NormalizationIssue] = []
+        self._geometry_counts: Counter[str] = Counter()
+        self._truncated_layers: set[str] = set()
 
     def normalize(self, document: Drawing) -> NormalizationResult:
         """Нормализует modelspace одного DXF-документа."""
 
         self._geometries = []
         self._issues = []
+        self._geometry_counts = Counter()
+        self._truncated_layers = set()
         self._walk_entities(
             entities=document.modelspace(),
             insert_path=(),
@@ -62,6 +67,7 @@ class DxfGeometryNormalizer:
         return NormalizationResult(
             geometries=tuple(self._geometries),
             issues=tuple(self._issues),
+            truncated_layers=frozenset(self._truncated_layers),
         )
 
     def _walk_entities(
@@ -100,7 +106,7 @@ class DxfGeometryNormalizer:
                     handle=handle,
                 )
             elif entity_type not in NON_GEOMETRY_ENTITY_TYPES:
-                self._issues.append(
+                self._add_issue(
                     NormalizationIssue(
                         code='unsupported_entity',
                         message=f'Тип сущности {entity_type} не поддерживается нормализацией геометрии',
@@ -120,7 +126,7 @@ class DxfGeometryNormalizer:
         block_name = insert.dxf.get('name', '')
         source_object_id, handle = self._get_source_identity(insert, insert_path, ordinal)
         if depth >= self.options.max_insert_depth:
-            self._issues.append(
+            self._add_issue(
                 NormalizationIssue(
                     code='insert_depth_exceeded',
                     message=f'Глубина вложенности INSERT превышает {self.options.max_insert_depth} уровней',
@@ -129,7 +135,7 @@ class DxfGeometryNormalizer:
             )
             return
         if block_name in active_blocks:
-            self._issues.append(
+            self._add_issue(
                 NormalizationIssue(
                     code='cyclic_insert',
                     message=f'Обнаружена циклическая ссылка INSERT на блок {block_name}',
@@ -153,7 +159,7 @@ class DxfGeometryNormalizer:
                     )
                 )
             except (DXFError, ValueError, ArithmeticError, TypeError) as exc:
-                self._issues.append(
+                self._add_issue(
                     NormalizationIssue(
                         code='insert_transformation_failed',
                         message=f'Не удалось преобразовать INSERT: {exc.__class__.__name__}',
@@ -164,7 +170,7 @@ class DxfGeometryNormalizer:
 
             for skipped_entity, _reason in skipped:
                 skipped_id, _ = self._get_source_identity(skipped_entity, child_path, 0)
-                self._issues.append(
+                self._add_issue(
                     NormalizationIssue(
                         code='insert_entity_skipped',
                         message='Преобразование сущности внутри INSERT было пропущено',
@@ -187,11 +193,15 @@ class DxfGeometryNormalizer:
         source_object_id: str,
         handle: str | None,
     ) -> None:
+        limit = self.options.max_geometries_per_layer
+        if limit is not None and self._geometry_counts[effective_layer] >= limit:
+            self._truncated_layers.add(effective_layer)
+            return
         try:
             path = make_path(entity)
             vertices = tuple(path.flattening(distance=self.options.curve_tolerance, segments=4))
         except (DXFError, ValueError, ArithmeticError, TypeError, NotImplementedError) as exc:
-            self._issues.append(
+            self._add_issue(
                 NormalizationIssue(
                     code='geometry_conversion_failed',
                     message=f'Не удалось преобразовать геометрию: {exc.__class__.__name__}',
@@ -201,7 +211,7 @@ class DxfGeometryNormalizer:
             return
 
         if len(vertices) < 2 or any(not all(math.isfinite(value) for value in vertex.xyz) for vertex in vertices):
-            self._issues.append(
+            self._add_issue(
                 NormalizationIssue(
                     code='invalid_geometry_coordinates',
                     message='Геометрия содержит недостаточно координат или неконечные значения',
@@ -210,6 +220,7 @@ class DxfGeometryNormalizer:
             )
             return
 
+        vertices = self._limit_vertices(vertices=vertices, closed=path.is_closed)
         z_values = [vertex.z for vertex in vertices]
         original = entity.source_of_copy or entity
         self._geometries.append(
@@ -228,6 +239,22 @@ class DxfGeometryNormalizer:
                 ),
             )
         )
+        self._geometry_counts[effective_layer] += 1
+
+    def _add_issue(self, issue: NormalizationIssue) -> None:
+        if self.options.collect_issues:
+            self._issues.append(issue)
+
+    def _limit_vertices(self, vertices: tuple, closed: bool) -> tuple:
+        limit = self.options.max_points_per_geometry
+        if limit is None or len(vertices) <= limit:
+            return vertices
+        effective_limit = max(3, limit - 1) if closed else limit
+        step = (len(vertices) - 1) / (effective_limit - 1)
+        limited = tuple(vertices[round(index * step)] for index in range(effective_limit))
+        if closed and limited[0] != limited[-1]:
+            limited = (*limited, limited[0])
+        return limited
 
     @staticmethod
     def _effective_layer(entity: DXFEntity, inherited_layer: str | None) -> str:

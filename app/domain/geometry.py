@@ -84,6 +84,7 @@ class NormalizationResult:
 
     geometries: tuple[NormalizedPolyline, ...]
     issues: tuple[NormalizationIssue, ...]
+    truncated_layers: frozenset[str] = frozenset()
 
 
 @dataclass(frozen=True, slots=True)
@@ -92,9 +93,16 @@ class NormalizationOptions:
 
     curve_tolerance: float
     max_insert_depth: int = 16
+    max_geometries_per_layer: int | None = None
+    max_points_per_geometry: int | None = None
+    collect_issues: bool = True
 
     def __post_init__(self) -> None:
         if not isfinite(self.curve_tolerance) or self.curve_tolerance <= 0:
             raise ValueError('Погрешность аппроксимации кривых должна быть положительной')
         if not 1 <= self.max_insert_depth <= 64:
             raise ValueError('Максимальная глубина INSERT должна быть от 1 до 64')
+        if self.max_geometries_per_layer is not None and self.max_geometries_per_layer < 1:
+            raise ValueError('Лимит геометрий слоя должен быть положительным')
+        if self.max_points_per_geometry is not None and self.max_points_per_geometry < 2:
+            raise ValueError('Лимит точек геометрии должен быть не меньше двух')

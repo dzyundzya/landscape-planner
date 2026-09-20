@@ -6,6 +6,8 @@ from pathlib import Path
 import ezdxf
 from ezdxf.document import Drawing
 from ezdxf.entities import DXFEntity, Insert
+from ezdxf.entities.copy import CopySettings, CopyStrategy
+from ezdxf.explode import virtual_block_reference_entities
 from ezdxf.lldxf.const import DXFError
 from ezdxf.path import make_path
 
@@ -20,6 +22,17 @@ from app.domain import (
 
 GEOMETRY_ENTITY_TYPES = frozenset({'ARC', 'CIRCLE', 'LINE', 'LWPOLYLINE', 'POLYLINE'})
 NON_GEOMETRY_ENTITY_TYPES = frozenset({'ATTDEF', 'ATTRIB', 'MTEXT', 'TEXT'})
+# Временным копиям для расчёта нужны только геометрия и трансформация INSERT.
+# Словари и proxy-данные остаются в исходном документе и не копируются в DTO.
+GEOMETRY_COPY_STRATEGY = CopyStrategy(
+    CopySettings(
+        copy_extension_dict=False,
+        copy_xdata=False,
+        copy_appdata=False,
+        copy_reactors=False,
+        copy_proxy_graphic=False,
+    )
+)
 
 
 class DxfNormalizationError(Exception):
@@ -133,7 +146,11 @@ class DxfGeometryNormalizer:
 
             try:
                 virtual_entities = tuple(
-                    resolved_insert.virtual_entities(skipped_entity_callback=partial(_record_skipped, skipped))
+                    virtual_block_reference_entities(
+                        resolved_insert,
+                        skipped_entity_callback=partial(_record_skipped, skipped),
+                        copy_strategy=GEOMETRY_COPY_STRATEGY,
+                    )
                 )
             except (DXFError, ValueError, ArithmeticError, TypeError) as exc:
                 self._issues.append(

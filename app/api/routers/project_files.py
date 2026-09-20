@@ -8,6 +8,16 @@ from app.schemas.project_file import ProjectFileReadSchema
 router = APIRouter(prefix='/projects/{project_id}/files', tags=['Project files'])
 
 
+@router.get('/current', response_model=ProjectFileReadSchema)
+async def get_current_project_file(
+    project_id: int,
+    service: ProjectFileServiceDep,
+):
+    """Возвращает последнюю версию исходного файла проекта."""
+
+    return await service.get_current_source_file(project_id=project_id)
+
+
 @router.post('/', response_model=ProjectFileReadSchema, status_code=status.HTTP_201_CREATED)
 async def upload_project_file(
     project_id: int,

@@ -15,6 +15,15 @@ async def generate_plan(project_id: int, service: PlanServiceDep):
     return await service.enqueue_plan_generation(project_id=project_id)
 
 
+@router.get('/current', response_model=PlanReadSchema)
+async def get_current_plan(project_id: int, service: PlanServiceDep, response: Response):
+    """Возвращает последний план проекта."""
+
+    plan = await service.get_current_plan(project_id=project_id)
+    response.headers['ETag'] = f'"{plan.revision}"'
+    return plan
+
+
 @router.get('/{plan_id}', response_model=PlanReadSchema)
 async def get_plan(project_id: int, plan_id: int, service: PlanServiceDep, response: Response):
     """Возвращает план озеленения."""

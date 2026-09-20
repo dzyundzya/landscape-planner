@@ -11,6 +11,7 @@ import type {
   PlantingType,
   Project,
   ProjectFile,
+  ProjectPage,
 } from './types'
 
 const API_BASE_URL = (import.meta.env.VITE_API_URL as string | undefined)?.replace(/\/$/, '') ?? '/api'
@@ -56,6 +57,18 @@ export function createProject(data: { name: string; description: string | null }
   })
 }
 
+export function getProjects(): Promise<ProjectPage> {
+  return request<ProjectPage>('/projects/?page=1&limit=100')
+}
+
+export function getProject(projectId: number): Promise<Project> {
+  return request<Project>(`/projects/${projectId}`)
+}
+
+export function getCurrentProjectFile(projectId: number): Promise<ProjectFile | null> {
+  return requestOptional<ProjectFile>(`/projects/${projectId}/files/current`)
+}
+
 export function uploadProjectFile(projectId: number, file: File): Promise<ProjectFile> {
   const body = new FormData()
   body.append('file', file)
@@ -74,6 +87,10 @@ export function getAnalysis(projectId: number): Promise<Analysis> {
   return request<Analysis>(`/projects/${projectId}/analysis`)
 }
 
+export function getCurrentAnalysis(projectId: number): Promise<Analysis | null> {
+  return requestOptional<Analysis>(`/projects/${projectId}/analysis`)
+}
+
 export function saveConfig(projectId: number, payload: ConfigPayload): Promise<ConfigSnapshot> {
   return request<ConfigSnapshot>(`/projects/${projectId}/config`, {
     method: 'PUT',
@@ -82,12 +99,20 @@ export function saveConfig(projectId: number, payload: ConfigPayload): Promise<C
   })
 }
 
+export function getCurrentConfig(projectId: number): Promise<ConfigSnapshot | null> {
+  return requestOptional<ConfigSnapshot>(`/projects/${projectId}/config`)
+}
+
 export function startPlanGeneration(projectId: number): Promise<Job> {
   return request<Job>(`/projects/${projectId}/plans`, { method: 'POST' })
 }
 
 export function getPlan(projectId: number, planId: number): Promise<Plan> {
   return request<Plan>(`/projects/${projectId}/plans/${planId}`)
+}
+
+export function getCurrentPlan(projectId: number): Promise<Plan | null> {
+  return requestOptional<Plan>(`/projects/${projectId}/plans/current`)
 }
 
 export function getPlanPreview(projectId: number, planId: number): Promise<PlanPreview> {
@@ -164,4 +189,13 @@ export function artifactDownloadUrl(projectId: number, artifactId: number): stri
 
 export function getErrorMessage(error: unknown): string {
   return error instanceof Error ? error.message : 'Произошла неизвестная ошибка'
+}
+
+async function requestOptional<T>(path: string): Promise<T | null> {
+  try {
+    return await request<T>(path)
+  } catch (error) {
+    if (error instanceof ApiError && error.status === 404) return null
+    throw error
+  }
 }

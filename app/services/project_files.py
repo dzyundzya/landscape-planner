@@ -12,7 +12,11 @@ from app.models import ProjectFileFormat, ProjectFileModel, ProjectFileStatus
 from app.repositories.crud.project_files import ProjectFileCRUDRepository
 from app.repositories.crud.projects import ProjectCRUDRepository
 from app.services.base import BaseService
-from app.services.exceptions.project_files import InvalidProjectFileError, ProjectFileTooLargeError
+from app.services.exceptions.project_files import (
+    InvalidProjectFileError,
+    ProjectFileNotFoundError,
+    ProjectFileTooLargeError,
+)
 from app.services.exceptions.projects import ProjectNotFoundError
 from app.storage import LocalFileStorage, StoredFile
 from app.storage.exceptions import EmptyStorageFileError, StorageFileTooLargeError
@@ -30,6 +34,16 @@ class ProjectFileService(BaseService[ProjectFileCRUDRepository]):
             root=settings.FILE_STORAGE_ROOT,
             max_size_bytes=settings.MAX_UPLOAD_SIZE_BYTES,
         )
+
+    async def get_current_source_file(self, project_id: int) -> ProjectFileModel:
+        """Возвращает последнюю версию исходного файла проекта."""
+
+        if await self.project_repository.get_obj_by_id(obj_id=project_id) is None:
+            raise ProjectNotFoundError(project_id=project_id)
+        project_file = await self.repository.get_latest_for_project(project_id=project_id)
+        if project_file is None:
+            raise ProjectFileNotFoundError(project_id=project_id)
+        return project_file
 
     async def upload_source_file(
         self,

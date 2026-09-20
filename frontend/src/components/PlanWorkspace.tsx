@@ -20,10 +20,11 @@ import { PlanMap } from './PlanMap'
 
 type Props = {
   projectId: number
+  initialPlanId: number | null
   onProgress: (progress: { plan: Plan | null; validation: PlanValidation | null; exported: boolean }) => void
 }
 
-export function PlanWorkspace({ projectId, onProgress }: Props) {
+export function PlanWorkspace({ projectId, initialPlanId, onProgress }: Props) {
   const queryClient = useQueryClient()
   const [generationJob, setGenerationJob] = useState<Job | null>(null)
   const [validationJob, setValidationJob] = useState<Job | null>(null)
@@ -35,7 +36,7 @@ export function PlanWorkspace({ projectId, onProgress }: Props) {
     onSuccess: setGenerationJob,
   })
   const generationJobQuery = useJobPolling(generationJob, setGenerationJob)
-  const planId = numberFromJob(generationJobQuery.data ?? generationJob, 'plan_id')
+  const planId = numberFromJob(generationJobQuery.data ?? generationJob, 'plan_id') ?? initialPlanId
   const planQuery = useQuery({
     queryKey: ['plan', projectId, planId],
     queryFn: () => getPlan(projectId, planId!),
@@ -135,7 +136,7 @@ export function PlanWorkspace({ projectId, onProgress }: Props) {
     updateMutation.mutate({ plantingId, revision: plan.revision, payload: { x_m: x, y_m: y } })
   }, [plan, updateMutation])
 
-  if (!generationJob) {
+  if (!generationJob && initialPlanId === null) {
     return (
       <section className="panel action-panel">
         <div className="panel-heading">
@@ -149,7 +150,10 @@ export function PlanWorkspace({ projectId, onProgress }: Props) {
     )
   }
 
-  if (generationJob.status !== 'succeeded' || !plan) {
+  if (!plan) {
+    if (!generationJob) {
+      return <section className="panel action-panel"><div className="map-placeholder"><span className="spinner" /> Восстанавливаем план…</div></section>
+    }
     return (
       <JobPanel
         eyebrow="Шаг 5"

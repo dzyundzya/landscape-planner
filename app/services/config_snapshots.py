@@ -24,7 +24,11 @@ from app.rules import (
 )
 from app.schemas.config_snapshot import ConfigSnapshotUpsertSchema
 from app.services.base import BaseService
-from app.services.exceptions.config_snapshots import ConfigPrerequisiteError, InvalidConfigSnapshotError
+from app.services.exceptions.config_snapshots import (
+    ConfigPrerequisiteError,
+    ConfigSnapshotNotFoundError,
+    InvalidConfigSnapshotError,
+)
 from app.services.exceptions.projects import ProjectNotFoundError
 
 CONFIG_SCHEMA_VERSION = 2
@@ -49,6 +53,20 @@ class ConfigSnapshotService(BaseService[ConfigSnapshotCRUDRepository]):
         self.project_repository = ProjectCRUDRepository(async_session=async_session)
         self.project_file_repository = ProjectFileCRUDRepository(async_session=async_session)
         self.analysis_repository = AnalysisCRUDRepository(async_session=async_session)
+
+    async def get_current_config(self, project_id: int) -> ConfigSnapshotModel:
+        """Возвращает последнюю конфигурацию текущего анализа проекта."""
+
+        if await self.project_repository.get_obj_by_id(obj_id=project_id) is None:
+            raise ProjectNotFoundError(project_id=project_id)
+        project_file = await self.project_file_repository.get_latest_for_project(project_id=project_id)
+        if project_file is None:
+            raise ConfigSnapshotNotFoundError(project_id=project_id)
+        analysis = await self.analysis_repository.get_latest_for_project_file(project_file_id=project_file.id)
+        config = await self.repository.get_latest_for_project(project_id=project_id)
+        if analysis is None or config is None or config.analysis_id != analysis.id:
+            raise ConfigSnapshotNotFoundError(project_id=project_id)
+        return config
 
     async def save_current_config(
         self,

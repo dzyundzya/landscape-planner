@@ -10,6 +10,20 @@ class PlanCRUDRepository(BaseCRUDRepository[PlanModel]):
 
     model = PlanModel
 
+    async def get_latest_for_config(self, project_id: int, config_snapshot_id: int) -> PlanModel | None:
+        """Возвращает последний план текущей конфигурации с посадками."""
+
+        return await self.session.scalar(
+            select(PlanModel)
+            .options(selectinload(PlanModel.plantings))
+            .where(
+                PlanModel.project_id == project_id,
+                PlanModel.config_snapshot_id == config_snapshot_id,
+            )
+            .order_by(PlanModel.created_at.desc(), PlanModel.id.desc())
+            .limit(1)
+        )
+
     async def get_plan_for_project(self, plan_id: int, project_id: int) -> PlanModel | None:
         """Возвращает план только в пределах указанного проекта."""
 

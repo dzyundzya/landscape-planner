@@ -6,6 +6,16 @@ from app.schemas.config_snapshot import ConfigSnapshotReadSchema, ConfigSnapshot
 router = APIRouter(prefix='/projects/{project_id}/config', tags=['Project configuration'])
 
 
+@router.get('', response_model=ConfigSnapshotReadSchema)
+async def get_project_config(
+    project_id: int,
+    service: ConfigSnapshotServiceDep,
+):
+    """Возвращает последнюю конфигурацию текущего анализа проекта."""
+
+    return await service.get_current_config(project_id=project_id)
+
+
 @router.put('', response_model=ConfigSnapshotReadSchema)
 async def save_project_config(
     project_id: int,

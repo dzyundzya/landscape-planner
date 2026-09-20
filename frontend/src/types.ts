@@ -6,6 +6,14 @@ export type Project = {
   updated_at: string | null
 }
 
+export type ProjectPage = {
+  total: number
+  page: number
+  limit: number
+  pages: number
+  items: Project[]
+}
+
 export type ProjectFile = {
   id: number
   project_id: number

@@ -23,6 +23,7 @@ from app.schemas.preview import PlanPreviewGeometrySchema, PlanPreviewReadSchema
 from app.services.base import BaseService
 from app.services.exceptions.jobs import JobNotFoundError, JobStateConflictError
 from app.services.exceptions.plans import (
+    CurrentPlanNotFoundError,
     InvalidPlanError,
     PlanNotFoundError,
     PlanPrerequisiteError,
@@ -108,6 +109,28 @@ class PlanService(BaseService[PlanCRUDRepository]):
         plan = await self.repository.get_plan_for_project(plan_id=plan_id, project_id=project_id)
         if plan is None:
             raise PlanNotFoundError(plan_id=plan_id)
+        return plan
+
+    async def get_current_plan(self, project_id: int) -> PlanModel:
+        """Возвращает последний план текущей конфигурации проекта."""
+
+        if await self.project_repository.get_obj_by_id(obj_id=project_id) is None:
+            raise ProjectNotFoundError(project_id=project_id)
+        project_file = await self.project_file_repository.get_latest_for_project(project_id=project_id)
+        analysis = (
+            await self.analysis_repository.get_latest_for_project_file(project_file_id=project_file.id)
+            if project_file is not None
+            else None
+        )
+        config = await self.config_repository.get_latest_for_project(project_id=project_id)
+        if analysis is None or config is None or config.analysis_id != analysis.id:
+            raise CurrentPlanNotFoundError(project_id=project_id)
+        plan = await self.repository.get_latest_for_config(
+            project_id=project_id,
+            config_snapshot_id=config.id,
+        )
+        if plan is None:
+            raise CurrentPlanNotFoundError(project_id=project_id)
         return plan
 
     async def get_preview(self, project_id: int, plan_id: int) -> PlanPreviewReadSchema:

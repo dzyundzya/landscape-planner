@@ -1,4 +1,11 @@
-from app.services.exceptions.base import AppError
+from app.services.exceptions.base import AppError, NotFoundError
+
+
+class ProjectFileNotFoundError(NotFoundError):
+    """Исходный файл проекта не найден."""
+
+    def __init__(self, project_id: int) -> None:
+        super().__init__(entity='исходный файл проекта', obj_id=project_id)
 
 
 class InvalidProjectFileError(AppError):

@@ -68,7 +68,7 @@ async def test_download_hides_artifact_from_another_project(
     response = await client.get(f'/api/projects/{project.id + 1000}/artifacts/{artifact_id}')
 
     assert response.status_code == 404
-    assert response.json() == {'detail': f'File artifact with id={artifact_id} not found'}
+    assert response.json() == {'detail': f'Объект «файловый артефакт» с id={artifact_id} не найден'}
 
 
 async def test_download_reports_missing_storage_file(
@@ -86,4 +86,4 @@ async def test_download_reports_missing_storage_file(
     response = await client.get(f'/api/projects/{project.id}/artifacts/{artifact_id}')
 
     assert response.status_code == 409
-    assert response.json() == {'detail': f'File artifact with id={artifact_id} is unavailable'}
+    assert response.json() == {'detail': f'Файловый артефакт с id={artifact_id} недоступен'}

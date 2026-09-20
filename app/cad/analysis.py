@@ -44,18 +44,38 @@ def analyze_dxf(path: Path) -> AnalysisResultSchema:
     except (DXFError, OSError, UnicodeError) as exc:
         raise DxfAnalysisError('Не удалось прочитать исходный DXF') from exc
 
-    layout_entities = [entity for layout in document.layouts for entity in layout]
     block_layouts = [block for block in document.blocks if not block.is_any_layout]
-    block_entities = [entity for block in block_layouts for entity in block]
-    all_entities = [*layout_entities, *block_entities]
+    entity_counts: Counter[str] = Counter()
+    layer_counts: dict[str, Counter[str]] = defaultdict(Counter)
+    unsupported_counts: Counter[str] = Counter()
+    block_references: Counter[str] = Counter()
+    labels_count = 0
 
-    entity_counts = _count_types(layout_entities)
-    unsupported_entities = _count_unsupported(all_entities)
+    for layout in document.layouts:
+        for entity in layout:
+            entity_type = entity.dxftype()
+            entity_counts[entity_type] += 1
+            layer_counts[entity.dxf.get('layer', '0')][entity_type] += 1
+            labels_count += _collect_common_entity_stats(
+                entity=entity,
+                unsupported_counts=unsupported_counts,
+                block_references=block_references,
+            )
+    for block in block_layouts:
+        for entity in block:
+            labels_count += _collect_common_entity_stats(
+                entity=entity,
+                unsupported_counts=unsupported_counts,
+                block_references=block_references,
+            )
+
+    sorted_entity_counts = dict(sorted(entity_counts.items()))
+    unsupported_entities = dict(sorted(unsupported_counts.items()))
     external_references = _get_external_references(block_layouts)
     bounds, bounds_failed = _get_modelspace_bounds(document)
     warnings = _build_warnings(
         document=document,
-        entity_counts=entity_counts,
+        entity_counts=sorted_entity_counts,
         external_references=external_references,
         unsupported_entities=unsupported_entities,
         bounds_failed=bounds_failed,
@@ -64,10 +84,10 @@ def analyze_dxf(path: Path) -> AnalysisResultSchema:
     return AnalysisResultSchema(
         dxf_version=document.dxfversion,
         drawing_units=units.decode(document.units),
-        entity_counts=entity_counts,
-        layers=_get_layers(document=document, entities=layout_entities),
-        blocks=_get_block_references(block_layouts=block_layouts, entities=all_entities),
-        labels_count=_count_labels(all_entities),
+        entity_counts=sorted_entity_counts,
+        layers=_get_layers(document=document, layer_counts=layer_counts),
+        blocks=_get_block_references(block_layouts=block_layouts, references=block_references),
+        labels_count=labels_count,
         external_references=external_references,
         unsupported_entities=unsupported_entities,
         bounds=bounds,
@@ -76,23 +96,7 @@ def analyze_dxf(path: Path) -> AnalysisResultSchema:
     )
 
 
-def _count_types(entities: list[DXFEntity]) -> dict[str, int]:
-    return dict(sorted(Counter(entity.dxftype() for entity in entities).items()))
-
-
-def _count_unsupported(entities: list[DXFEntity]) -> dict[str, int]:
-    return {
-        entity_type: count
-        for entity_type, count in _count_types(entities).items()
-        if entity_type not in SUPPORTED_ENTITY_TYPES
-    }
-
-
-def _get_layers(document: Drawing, entities: list[DXFEntity]) -> list[AnalysisLayerSchema]:
-    layer_counts: dict[str, Counter[str]] = defaultdict(Counter)
-    for entity in entities:
-        layer_counts[entity.dxf.get('layer', '0')][entity.dxftype()] += 1
-
+def _get_layers(document: Drawing, layer_counts: dict[str, Counter[str]]) -> list[AnalysisLayerSchema]:
     layer_names = sorted({layer.dxf.name for layer in document.layers} | set(layer_counts))
     return [
         AnalysisLayerSchema(
@@ -104,10 +108,7 @@ def _get_layers(document: Drawing, entities: list[DXFEntity]) -> list[AnalysisLa
     ]
 
 
-def _get_block_references(block_layouts, entities: list[DXFEntity]) -> dict[str, int]:
-    references = Counter(
-        entity.dxf.get('name', '') for entity in entities if entity.dxftype() == 'INSERT' and entity.dxf.get('name', '')
-    )
+def _get_block_references(block_layouts, references: Counter[str]) -> dict[str, int]:
     return {block.name: references[block.name] for block in sorted(block_layouts, key=lambda item: item.name)}
 
 
@@ -119,10 +120,21 @@ def _get_external_references(block_layouts) -> list[str]:
     return sorted(set(references))
 
 
-def _count_labels(entities: list[DXFEntity]) -> int:
-    count = sum(entity.dxftype() in LABEL_ENTITY_TYPES for entity in entities)
-    count += sum(len(entity.attribs) for entity in entities if entity.dxftype() == 'INSERT')
-    return count
+def _collect_common_entity_stats(
+    entity: DXFEntity,
+    unsupported_counts: Counter[str],
+    block_references: Counter[str],
+) -> int:
+    entity_type = entity.dxftype()
+    if entity_type not in SUPPORTED_ENTITY_TYPES:
+        unsupported_counts[entity_type] += 1
+    label_count = int(entity_type in LABEL_ENTITY_TYPES)
+    if entity_type == 'INSERT':
+        block_name = entity.dxf.get('name', '')
+        if block_name:
+            block_references[block_name] += 1
+        label_count += len(entity.attribs)
+    return label_count
 
 
 def _get_modelspace_bounds(document: Drawing) -> tuple[AnalysisBoundsSchema | None, bool]:

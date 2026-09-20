@@ -236,6 +236,15 @@ export type PlanPreview = {
     planting_type: PlantingType | null
     rule_id: string | null
   }>
+  summary: {
+    object_count: number
+    displayed_object_count: number
+    restriction_count: number
+    displayed_restriction_count: number
+    source_coordinate_count: number
+    displayed_coordinate_count: number
+    simplified: boolean
+  } | null
   plantings: Planting[]
 }
 

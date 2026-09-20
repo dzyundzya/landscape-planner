@@ -64,7 +64,7 @@ async def test_enqueue_export_enforces_revision_header(
 
     assert missing_response.status_code == 428
     assert stale_response.status_code == 409
-    assert stale_response.json()['detail'] == 'Plan revision conflict: expected=2, actual=1'
+    assert stale_response.json()['detail'] == 'Конфликт ревизии плана: ожидалась 2, фактическая 1'
 
 
 async def test_get_export_hides_other_project(
@@ -96,4 +96,4 @@ async def test_get_export_hides_other_project(
     response = await client.get(f'/api/projects/{project.id + 1000}/plans/{plan_id}/exports/{export.id}')
 
     assert response.status_code == 404
-    assert response.json() == {'detail': f'Export with id={export.id} not found'}
+    assert response.json() == {'detail': f'Объект «экспорт» с id={export.id} не найден'}

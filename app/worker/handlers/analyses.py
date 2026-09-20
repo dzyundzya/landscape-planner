@@ -1,6 +1,5 @@
 from functools import partial
 
-from anyio import to_thread
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from app.cad import analyze_dxf
@@ -11,6 +10,7 @@ from app.services.exceptions.analyses import InvalidAnalysisError
 from app.services.jobs import JobService
 from app.storage import LocalFileStorage
 from app.worker.dispatcher import OwnershipGuard
+from app.worker.metrics import run_measured_operation
 
 
 class AnalysisJobHandler:
@@ -36,7 +36,13 @@ class AnalysisJobHandler:
             storage_key = project_file.storage_key
             await JobService(session).update_stage(job_id=job.id, stage='analyzing_dxf')
 
-        result = await to_thread.run_sync(partial(analyze_dxf, self.storage.get_path(storage_key)))
+        source_path = self.storage.get_path(storage_key)
+        result = await run_measured_operation(
+            partial(analyze_dxf, source_path),
+            job_id=job.id,
+            operation_name='analyze_dxf',
+            source_path=source_path,
+        )
         await ensure_ownership()
 
         async with self.session_factory() as session:

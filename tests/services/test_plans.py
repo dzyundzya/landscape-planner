@@ -73,7 +73,7 @@ async def test_publish_plan_rejects_count_above_config_limit(
     job = await service.enqueue_plan_generation(project_id=project.id)
     await JobService(async_session=db_session).claim_next_job()
 
-    with pytest.raises(InvalidPlanError, match='tree count'):
+    with pytest.raises(InvalidPlanError, match='деревьев превышает'):
         await service.publish_plan(
             project_id=project.id,
             project_file_id=job.project_file_id,

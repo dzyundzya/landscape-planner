@@ -114,7 +114,7 @@ async def test_add_planting_requires_current_revision(
     assert invalid_response.status_code == 400
     assert created_response.status_code == 201
     assert stale_response.status_code == 409
-    assert stale_response.json()['detail'] == 'Plan revision conflict: expected=1, actual=2'
+    assert stale_response.json()['detail'] == 'Конфликт ревизии плана: ожидалась 1, фактическая 2'
 
     plan_response = await client.get(f'/api/projects/{project.id}/plans/{plan_id}')
     assert plan_response.json()['revision'] == 2
@@ -148,10 +148,10 @@ async def test_add_planting_rejects_invalid_geometry_without_mutation(
     )
 
     assert outside_response.status_code == 422
-    assert 'outside the project boundary' in outside_response.json()['detail']
+    assert 'находится вне границы проекта' in outside_response.json()['detail']
     assert first_response.status_code == 201
     assert too_close_response.status_code == 422
-    assert 'require distance 5.0 m' in too_close_response.json()['detail']
+    assert 'требуется расстояние 5.0 м' in too_close_response.json()['detail']
 
     plan_response = await client.get(f'/api/projects/{project.id}/plans/{plan_id}')
     assert plan_response.json()['revision'] == 2

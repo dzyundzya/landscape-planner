@@ -37,7 +37,7 @@ def test_validate_planting_set_accepts_exact_required_distance() -> None:
 def test_validate_planting_set_rejects_boundary_point() -> None:
     """Проверяет отклонение посадки непосредственно на границе участка."""
 
-    with pytest.raises(PlantingValidationError, match='outside the project boundary'):
+    with pytest.raises(PlantingValidationError, match='находится вне границы проекта'):
         validate_planting_set(
             candidates=[PlantingCandidate(type=PlantingType.BUSH, x_m=0, y_m=1)],
             boundary=BOUNDARY,
@@ -48,7 +48,7 @@ def test_validate_planting_set_rejects_boundary_point() -> None:
 def test_validate_planting_set_rejects_invalid_boundary() -> None:
     """Проверяет отклонение самопересекающейся границы участка."""
 
-    with pytest.raises(PlantingValidationError, match='boundary is invalid'):
+    with pytest.raises(PlantingValidationError, match='граница проекта некорректна'):
         validate_planting_set(
             candidates=[],
             boundary={

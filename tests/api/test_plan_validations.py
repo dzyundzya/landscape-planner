@@ -71,7 +71,7 @@ async def test_get_plan_report_requires_current_validation(
     assert edit_response.status_code == 201
     assert stale_response.status_code == 409
     assert stale_response.json() == {
-        'detail': f'Plan with id={plan_id} has no validation for revision=2',
+        'detail': f'У плана с id={plan_id} отсутствует проверка ревизии 2',
     }
 
 
@@ -87,4 +87,4 @@ async def test_get_plan_report_hides_other_project(
     response = await client.get(f'/api/projects/{project.id + 1000}/plans/{plan_id}/report')
 
     assert response.status_code == 404
-    assert response.json() == {'detail': f'Plan with id={plan_id} not found'}
+    assert response.json() == {'detail': f'Объект «план» с id={plan_id} не найден'}

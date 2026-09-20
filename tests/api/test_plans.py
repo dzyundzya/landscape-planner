@@ -186,7 +186,7 @@ async def test_enqueue_plan_requires_project_inputs(client: AsyncClient, project
     response = await client.post(f'/api/projects/{project.id}/plans')
 
     assert response.status_code == 409
-    assert response.json() == {'detail': f'Project with id={project.id} has no source file'}
+    assert response.json() == {'detail': f'У проекта с id={project.id} отсутствует исходный файл'}
 
 
 async def test_get_published_plan(
@@ -226,4 +226,4 @@ async def test_get_plan_hides_other_project(
     response = await client.get(f'/api/projects/{project.id + 1000}/plans/{plan_id}')
 
     assert response.status_code == 404
-    assert response.json() == {'detail': f'Plan with id={plan_id} not found'}
+    assert response.json() == {'detail': f'Объект «план» с id={plan_id} не найден'}

@@ -15,7 +15,7 @@ from app.services.exceptions.jobs import JobNotFoundError, JobStateConflictError
 from app.services.exceptions.projects import ProjectNotFoundError
 from app.services.jobs import JobService
 
-ANALYSIS_SCHEMA_VERSION = 1
+ANALYSIS_SCHEMA_VERSION = 2
 
 
 class AnalysisService(BaseService[AnalysisCRUDRepository]):

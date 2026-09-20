@@ -10,6 +10,8 @@ from app.schemas.config_snapshot import GenerationParametersSchema
 
 GENERATOR_VERSION = 'hex-grid-greedy/1'
 MAX_CANDIDATE_COUNT = 250_000
+MIN_CANDIDATE_BUDGET = 20_000
+CANDIDATES_PER_PLANTING = 200
 COORDINATE_PRECISION = 6
 DISTANCE_EPSILON_M = 1e-9
 HEX_OFFSETS = (
@@ -21,6 +23,7 @@ HEX_OFFSETS = (
     (0.75, 0.25),
     (0.25, 0.75),
 )
+NON_BLOCKING_GENERATION_ISSUES = frozenset({'unsupported_entity', 'unverified_rule'})
 
 
 class PlantingGenerationError(Exception):
@@ -89,21 +92,46 @@ def generate_plantings(
 ) -> PlantingGenerationResult:
     """Выбирает лучший из фиксированных сценариев гексагональной сетки."""
 
-    if restrictions.issues:
-        raise PlantingGenerationError('Генерация заблокирована неразрешёнными ограничениями проекта')
+    blocking_issue_codes = sorted(
+        {issue.code for issue in restrictions.issues if issue.code not in NON_BLOCKING_GENERATION_ISSUES}
+    )
+    if blocking_issue_codes:
+        raise PlantingGenerationError(
+            f'Генерация заблокирована неразрешёнными ограничениями: {", ".join(blocking_issue_codes)}'
+        )
+
+    restriction_warnings = _build_restriction_warnings(restrictions=restrictions)
 
     combined_available = restrictions.tree_available.union(restrictions.bush_available)
     if combined_available.is_empty:
-        return _empty_result(parameters=parameters, warning='На участке отсутствует доступная для посадок область')
+        return _empty_result(
+            parameters=parameters,
+            warnings=('На участке отсутствует доступная для посадок область', *restriction_warnings),
+        )
 
-    row_spacing = parameters.grid_spacing_m * math.sqrt(3) / 2
+    candidate_budget = min(
+        MAX_CANDIDATE_COUNT,
+        max(MIN_CANDIDATE_BUDGET, (parameters.max_trees + parameters.max_bushes) * CANDIDATES_PER_PLANTING),
+    )
+    grid_spacing = _fit_grid_spacing(
+        available=combined_available,
+        requested_spacing=parameters.grid_spacing_m,
+        candidate_budget=candidate_budget,
+    )
+    grid_warnings = ()
+    if grid_spacing > parameters.grid_spacing_m:
+        grid_warnings = (
+            f'Шаг сетки автоматически увеличен с {parameters.grid_spacing_m:g} до {grid_spacing:g} м '
+            'для обработки большой территории',
+        )
+    row_spacing = grid_spacing * math.sqrt(3) / 2
     scenarios = []
     for offset_index, (offset_x_factor, offset_y_factor) in enumerate(HEX_OFFSETS):
-        offset_x = offset_x_factor * parameters.grid_spacing_m
+        offset_x = offset_x_factor * grid_spacing
         offset_y = offset_y_factor * row_spacing
         candidates = _build_candidates(
             available=combined_available,
-            spacing=parameters.grid_spacing_m,
+            spacing=grid_spacing,
             row_spacing=row_spacing,
             offset_x=offset_x,
             offset_y=offset_y,
@@ -122,8 +150,12 @@ def generate_plantings(
                 selected_offset_index=offset_index,
                 offset_x_m=offset_x,
                 offset_y_m=offset_y,
-                grid_spacing_m=parameters.grid_spacing_m,
-                warnings=_build_warnings(plantings=plantings, parameters=parameters),
+                grid_spacing_m=grid_spacing,
+                warnings=(
+                    *_build_warnings(plantings=plantings, parameters=parameters),
+                    *grid_warnings,
+                    *restriction_warnings,
+                ),
             )
         )
 
@@ -159,6 +191,26 @@ def _build_candidates(
             if available.contains(Point(*rounded)):
                 candidates.add(rounded)
     return tuple(sorted(candidates, key=lambda point: (point[1], point[0])))
+
+
+def _fit_grid_spacing(available, requested_spacing: float, candidate_budget: int) -> float:
+    spacing = requested_spacing
+    estimated_count = _estimate_candidate_count(available=available, spacing=spacing)
+    if estimated_count <= candidate_budget:
+        return spacing
+
+    spacing *= math.sqrt(estimated_count / candidate_budget) * 1.05
+    while _estimate_candidate_count(available=available, spacing=spacing) > candidate_budget:
+        spacing *= 1.05
+    return round(spacing, COORDINATE_PRECISION)
+
+
+def _estimate_candidate_count(available, spacing: float) -> int:
+    min_x, min_y, max_x, max_y = available.bounds
+    row_spacing = spacing * math.sqrt(3) / 2
+    row_count = math.ceil((max_y - min_y) / row_spacing) + 3
+    column_count = math.ceil((max_x - min_x) / spacing) + 5
+    return row_count * column_count
 
 
 def _select_plantings(
@@ -209,7 +261,20 @@ def _build_warnings(
     return tuple(warnings)
 
 
-def _empty_result(parameters: GenerationParametersSchema, warning: str) -> PlantingGenerationResult:
+def _build_restriction_warnings(restrictions: RestrictionResult) -> tuple[str, ...]:
+    warnings = []
+    unverified_rule_count = sum(issue.code == 'unverified_rule' for issue in restrictions.issues)
+    if unverified_rule_count:
+        warnings.append(
+            f'Использованы непроверенные нормативные правила ({unverified_rule_count}); план требует подтверждения'
+        )
+    unsupported_count = sum(issue.code == 'unsupported_entity' for issue in restrictions.issues)
+    if unsupported_count:
+        warnings.append('В исходном DXF есть неподдерживаемые сущности; план требует проверки полноты')
+    return tuple(warnings)
+
+
+def _empty_result(parameters: GenerationParametersSchema, warnings: tuple[str, ...]) -> PlantingGenerationResult:
     return PlantingGenerationResult(
         generator_version=GENERATOR_VERSION,
         plantings=(),
@@ -219,5 +284,5 @@ def _empty_result(parameters: GenerationParametersSchema, warning: str) -> Plant
         offset_x_m=0.0,
         offset_y_m=0.0,
         grid_spacing_m=parameters.grid_spacing_m,
-        warnings=(warning,),
+        warnings=warnings,
     )

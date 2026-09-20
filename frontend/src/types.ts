@@ -46,6 +46,23 @@ export type AnalysisLayer = {
   name: string
   entity_count: number
   entity_counts: Record<string, number>
+  block_entity_count: number
+  block_entity_counts: Record<string, number>
+  is_unused: boolean
+  suggestion: {
+    object_type: SemanticObjectType
+    geometry_role: 'line' | 'area'
+    confidence: 'high' | 'medium'
+    reason: string
+  } | null
+}
+
+export type AnalysisBoundaryCandidate = {
+  id: string
+  layer: string
+  entity_type: string
+  area_source_units: number
+  coordinates: [number, number][]
 }
 
 export type AnalysisWarning = {
@@ -65,6 +82,7 @@ export type Analysis = {
     drawing_units: string | null
     entity_counts: Record<string, number>
     layers: AnalysisLayer[]
+    boundary_candidates: AnalysisBoundaryCandidate[]
     blocks: Record<string, number>
     labels_count: number
     external_references: string[]

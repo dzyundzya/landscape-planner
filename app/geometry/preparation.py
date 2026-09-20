@@ -84,14 +84,7 @@ def prepare_project_geometry(
     transform = CoordinateTransform(scale_to_meters=scale)
     boundary_geometry = _build_boundary(boundary=boundary)
     mappings = _build_mapping_index(layer_mappings=layer_mappings)
-    issues = [
-        ProjectGeometryIssue(
-            code=issue.code,
-            message=issue.message,
-            source_object_id=issue.source_object_id,
-        )
-        for issue in normalization.issues
-    ]
+    issues = _build_normalization_issues(normalization=normalization)
     objects = []
     unmapped_layers = set()
 
@@ -141,6 +134,25 @@ def prepare_project_geometry(
         unmapped_layers=tuple(sorted(unmapped_layers, key=str.casefold)),
         issues=tuple(issues),
     )
+
+
+def _build_normalization_issues(normalization: NormalizationResult) -> list[ProjectGeometryIssue]:
+    grouped: dict[tuple[str, str], list[str | None]] = {}
+    for issue in normalization.issues:
+        grouped.setdefault((issue.code, issue.message), []).append(issue.source_object_id)
+
+    result = []
+    for (code, message), source_ids in grouped.items():
+        if len(source_ids) == 1:
+            result.append(ProjectGeometryIssue(code=code, message=message, source_object_id=source_ids[0]))
+        else:
+            result.append(
+                ProjectGeometryIssue(
+                    code=code,
+                    message=f'{message}. Количество объектов: {len(source_ids)}',
+                )
+            )
+    return result
 
 
 def _build_boundary(boundary: dict[str, object]) -> BaseGeometry:

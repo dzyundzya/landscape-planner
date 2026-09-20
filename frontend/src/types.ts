@@ -48,6 +48,7 @@ export type AnalysisLayer = {
   entity_counts: Record<string, number>
   block_entity_count: number
   block_entity_counts: Record<string, number>
+  block_names: string[]
   is_unused: boolean
   suggestion: {
     object_type: SemanticObjectType

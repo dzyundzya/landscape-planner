@@ -6,7 +6,7 @@ rules:
     object_type: building
     vegetation_type: tree
     min_distance_m: 5.0
-    measurement_reference: exterior_wall_to_trunk_axis
+    measurement_reference: exterior_wall
     conditions: {}
     required_attributes: []
     document: СП 42.13330.2026 «Градостроительство. Планировка и застройка территорий»
@@ -24,7 +24,7 @@ rules:
     object_type: building
     vegetation_type: bush
     min_distance_m: 1.5
-    measurement_reference: exterior_wall_to_bush_axis
+    measurement_reference: exterior_wall
     conditions: {}
     required_attributes: []
     document: СП 42.13330.2026 «Градостроительство. Планировка и застройка территорий»
@@ -40,7 +40,7 @@ rules:
     object_type: road
     vegetation_type: tree
     min_distance_m: 2.0
-    measurement_reference: roadway_edge_to_trunk_axis
+    measurement_reference: roadway_edge
     conditions: {}
     required_attributes: []
     document: СП 42.13330.2026 «Градостроительство. Планировка и застройка территорий»
@@ -58,7 +58,7 @@ rules:
     object_type: road
     vegetation_type: bush
     min_distance_m: 1.0
-    measurement_reference: roadway_edge_to_bush_axis
+    measurement_reference: roadway_edge
     conditions: {}
     required_attributes: []
     document: СП 42.13330.2026 «Градостроительство. Планировка и застройка территорий»
@@ -76,7 +76,7 @@ rules:
     object_type: utility_gas
     vegetation_type: tree
     min_distance_m: 1.5
-    measurement_reference: utility_outer_surface_to_trunk_surface
+    measurement_reference: utility_outer_surface
     conditions: {}
     required_attributes: []
     document: СП 42.13330.2026 «Градостроительство. Планировка и застройка территорий»
@@ -95,7 +95,7 @@ rules:
     object_type: utility_sewer
     vegetation_type: tree
     min_distance_m: 1.5
-    measurement_reference: utility_outer_surface_to_trunk_surface
+    measurement_reference: utility_outer_surface
     conditions: {}
     required_attributes: []
     document: СП 42.13330.2026 «Градостроительство. Планировка и застройка территорий»
@@ -114,7 +114,7 @@ rules:
     object_type: utility_water
     vegetation_type: tree
     min_distance_m: 2.0
-    measurement_reference: utility_outer_surface_to_trunk_surface
+    measurement_reference: utility_outer_surface
     conditions: {}
     required_attributes: []
     document: СП 42.13330.2026 «Градостроительство. Планировка и застройка территорий»
@@ -133,7 +133,7 @@ rules:
     object_type: utility_power
     vegetation_type: tree
     min_distance_m: 2.0
-    measurement_reference: utility_outer_surface_to_trunk_surface
+    measurement_reference: utility_outer_surface
     conditions:
       network_kind: underground_power_cable
     required_attributes: []
@@ -152,7 +152,7 @@ rules:
     object_type: utility_power
     vegetation_type: bush
     min_distance_m: 0.75
-    measurement_reference: utility_outer_surface_to_bush_surface
+    measurement_reference: utility_outer_surface
     conditions:
       network_kind: underground_power_cable
     required_attributes: []
@@ -170,7 +170,7 @@ rules:
     object_type: building
     vegetation_type: tree
     min_distance_m: 10.0
-    measurement_reference: exterior_wall_to_trunk_axis
+    measurement_reference: exterior_wall
     conditions:
       building_use: school_or_kindergarten
     required_attributes: []

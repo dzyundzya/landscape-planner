@@ -64,6 +64,12 @@ export type AnalysisLayer = {
     confidence: 'high' | 'medium'
     reason: string
   } | null
+  preview: Array<{
+    entity_type: string
+    closed: boolean
+    coordinates: [number, number][]
+  }>
+  preview_truncated: boolean
 }
 
 export type AnalysisBoundaryCandidate = {

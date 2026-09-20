@@ -13,10 +13,13 @@ from ezdxf.path import make_path
 from shapely.geometry import Polygon
 
 from app.cad.layer_suggestions import suggest_layer
+from app.cad.normalization import DxfGeometryNormalizer
+from app.domain import NormalizationOptions
 from app.models import AnalysisWarningSeverity
 from app.schemas.analysis import (
     AnalysisBoundaryCandidateSchema,
     AnalysisBoundsSchema,
+    AnalysisLayerGeometrySchema,
     AnalysisLayerSchema,
     AnalysisLayerSuggestionSchema,
     AnalysisResultSchema,
@@ -40,6 +43,8 @@ SUPPORTED_ENTITY_TYPES = frozenset(
 LABEL_ENTITY_TYPES = frozenset({'ATTDEF', 'ATTRIB', 'MTEXT', 'TEXT'})
 BOUNDARY_CANDIDATE_LIMIT = 40
 BOUNDARY_COORDINATE_LIMIT = 512
+LAYER_PREVIEW_GEOMETRY_LIMIT = 12
+LAYER_PREVIEW_COORDINATE_LIMIT = 128
 UNIT_SCALE_TO_METERS = {
     1: 0.0254,
     2: 0.3048,
@@ -112,6 +117,7 @@ def analyze_dxf(path: Path) -> AnalysisResultSchema:
         unsupported_entities=unsupported_entities,
         bounds_failed=bounds_failed,
     )
+    layer_previews, truncated_preview_layers = _get_layer_previews(document)
 
     return AnalysisResultSchema(
         dxf_version=document.dxfversion,
@@ -122,6 +128,8 @@ def analyze_dxf(path: Path) -> AnalysisResultSchema:
             layer_counts=layer_counts,
             block_layer_counts=block_layer_counts,
             block_names_by_layer=block_names_by_layer,
+            layer_previews=layer_previews,
+            truncated_preview_layers=truncated_preview_layers,
         ),
         boundary_candidates=_get_boundary_candidates(document),
         blocks=_get_block_references(block_layouts=block_layouts, references=block_references),
@@ -139,6 +147,8 @@ def _get_layers(
     layer_counts: dict[str, Counter[str]],
     block_layer_counts: dict[str, Counter[str]],
     block_names_by_layer: dict[str, set[str]],
+    layer_previews: dict[str, list[AnalysisLayerGeometrySchema]],
+    truncated_preview_layers: frozenset[str],
 ) -> list[AnalysisLayerSchema]:
     layer_names = sorted({layer.dxf.name for layer in document.layers} | set(layer_counts) | set(block_layer_counts))
     layers = []
@@ -169,9 +179,42 @@ def _get_layers(
                 block_names=sorted(block_names_by_layer[name], key=str.casefold),
                 is_unused=is_unused,
                 suggestion=suggestion,
+                preview=layer_previews.get(name, []),
+                preview_truncated=name in truncated_preview_layers,
             )
         )
     return layers
+
+
+def _get_layer_previews(
+    document: Drawing,
+) -> tuple[dict[str, list[AnalysisLayerGeometrySchema]], frozenset[str]]:
+    """Готовит ограниченную геометрию активных слоёв для браузера."""
+
+    result = DxfGeometryNormalizer(
+        options=NormalizationOptions(
+            curve_tolerance=_boundary_tolerance(document.units),
+            max_geometries_per_layer=LAYER_PREVIEW_GEOMETRY_LIMIT,
+            max_points_per_geometry=LAYER_PREVIEW_COORDINATE_LIMIT,
+            collect_issues=False,
+        )
+    ).normalize(document)
+    previews: dict[str, list[AnalysisLayerGeometrySchema]] = defaultdict(list)
+    for geometry in result.geometries:
+        coordinates = [(point.x, point.y) for point in geometry.points]
+        if geometry.closed and coordinates[0] != coordinates[-1]:
+            if len(coordinates) >= LAYER_PREVIEW_COORDINATE_LIMIT:
+                coordinates[-1] = coordinates[0]
+            else:
+                coordinates.append(coordinates[0])
+        previews[geometry.provenance.layer].append(
+            AnalysisLayerGeometrySchema(
+                entity_type=geometry.provenance.entity_type,
+                closed=geometry.closed,
+                coordinates=coordinates,
+            )
+        )
+    return dict(previews), result.truncated_layers
 
 
 def _get_reachable_blocks(document: Drawing) -> list:

@@ -38,6 +38,16 @@ class AnalysisLayerSuggestionSchema(BaseModel):
     model_config = ConfigDict(extra='forbid')
 
 
+class AnalysisLayerGeometrySchema(BaseModel):
+    """Облегчённая геометрия слоя для диагностического просмотра."""
+
+    entity_type: Annotated[str, Field(min_length=1, max_length=32)]
+    closed: bool
+    coordinates: Annotated[list[tuple[float, float]], Field(min_length=2, max_length=128)]
+
+    model_config = ConfigDict(extra='forbid', allow_inf_nan=False)
+
+
 class AnalysisLayerSchema(BaseModel):
     """Сводка объектов одного слоя DXF."""
 
@@ -49,6 +59,8 @@ class AnalysisLayerSchema(BaseModel):
     block_names: list[Annotated[str, Field(min_length=1, max_length=255)]] = Field(default_factory=list)
     is_unused: bool = False
     suggestion: AnalysisLayerSuggestionSchema | None = None
+    preview: list[AnalysisLayerGeometrySchema] = Field(default_factory=list, max_length=12)
+    preview_truncated: bool = False
 
     model_config = ConfigDict(extra='forbid')
 

@@ -35,27 +35,32 @@ const defaultGeneration: Generation = {
 }
 
 export function ConfigForm({ analysis, isSaving, savedConfig, onSave }: Props) {
-  const initialUnit = guessCoordinateUnit(analysis.result.drawing_units)
-  const initialBounds = scaledBounds(analysis, initialUnit)
+  const restoredConfig = savedConfig?.analysis_id === analysis.id ? savedConfig : null
+  const initialUnit = restoredConfig?.coordinate_unit ?? guessCoordinateUnit(analysis.result.drawing_units)
+  const initialBoundary = restoredConfig?.boundary.coordinates[0] ?? null
+  const initialBounds = initialBoundary ? boundsFromRing(initialBoundary) : scaledBounds(analysis, initialUnit)
+  const savedMappings = new Map(
+    restoredConfig?.layer_mappings.map((mapping) => [mapping.layer.toLocaleLowerCase('ru-RU'), mapping]),
+  )
   const [coordinateUnit, setCoordinateUnit] = useState<CoordinateUnit>(initialUnit)
-  const [territoryType, setTerritoryType] = useState<TerritoryType>('courtyard')
+  const [territoryType, setTerritoryType] = useState<TerritoryType>(restoredConfig?.territory_type ?? 'courtyard')
   const [bounds, setBounds] = useState<Bounds>(initialBounds)
-  const [boundaryCoordinates, setBoundaryCoordinates] = useState<[number, number][]>(() => rectangleRing(initialBounds))
+  const [boundaryCoordinates, setBoundaryCoordinates] = useState<[number, number][]>(() => initialBoundary ?? rectangleRing(initialBounds))
   const [selectedBoundaryId, setSelectedBoundaryId] = useState<string | null>(null)
   const [layerMappings, setLayerMappings] = useState<LayerMapping[]>(() =>
-    analysis.result.layers.map((layer) => ({
-      layer: layer.name,
-      object_type: 'ignore',
-      attributes: { geometry_role: 'line' },
-    })),
+    analysis.result.layers.map((layer) => savedMappings.get(layer.name.toLocaleLowerCase('ru-RU')) ?? ({
+        layer: layer.name,
+        object_type: 'ignore',
+        attributes: { geometry_role: 'line' },
+      })),
   )
-  const [generation, setGeneration] = useState<Generation>(defaultGeneration)
+  const [generation, setGeneration] = useState<Generation>(restoredConfig?.generation ?? defaultGeneration)
   const [layerSearch, setLayerSearch] = useState('')
   const [layerView, setLayerView] = useState<LayerView>('active')
   const [bulkObjectType, setBulkObjectType] = useState<SemanticObjectType>('ignore')
 
   const boundaryIsValid = bounds.maxX > bounds.minX && bounds.maxY > bounds.minY
-  const configuredLayers = useMemo(
+  const includedLayers = useMemo(
     () => layerMappings.filter((mapping) => mapping.object_type !== 'ignore').length,
     [layerMappings],
   )
@@ -201,10 +206,10 @@ export function ConfigForm({ analysis, isSaving, savedConfig, onSave }: Props) {
           <p className="eyebrow">Шаг 4</p>
           <h2 id="config-title">Подтверждение настроек</h2>
           <p className="section-description">
-            Проверьте единицы, границу и назначение каждого слоя. Эти данные станут неизменяемым снимком расчёта.
+            Проверьте единицы и границу. Назначьте только подтверждённые препятствия; остальные слои останутся исключёнными.
           </p>
         </div>
-        <span className="counter-badge">Настроено слоёв: {configuredLayers}/{layerMappings.length}</span>
+        <span className="counter-badge">Учитывается слоёв: {includedLayers} из {layerMappings.length}</span>
       </div>
 
       <form onSubmit={submit}>
@@ -318,7 +323,7 @@ export function ConfigForm({ analysis, isSaving, savedConfig, onSave }: Props) {
               Применить предложения к показанным
             </button>
           </div>
-          {configuredLayers === 0 && (
+          {includedLayers === 0 && (
             <article className="notice notice-warning mapping-notice">
               <span className="notice-marker" />
               <div>

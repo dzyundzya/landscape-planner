@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from app.models import SemanticObjectType
 
 NAME_SEPARATOR = re.compile(r'[^0-9a-zа-я]+')
+EXACT_TOKEN_KEYWORDS = frozenset({'газ', 'кн'})
 
 
 @dataclass(frozen=True, slots=True)
@@ -131,7 +132,7 @@ def suggest_layer(name: str, entity_counts: Mapping[str, int]) -> LayerSuggestio
         )
 
     for object_type, geometry_role, confidence, keywords in SUGGESTION_RULES:
-        keyword = next((item for item in keywords if item in normalized), None)
+        keyword = _find_keyword(normalized=normalized, keywords=keywords)
         if keyword is not None:
             return LayerSuggestion(
                 object_type=object_type,
@@ -141,7 +142,7 @@ def suggest_layer(name: str, entity_counts: Mapping[str, int]) -> LayerSuggestio
             )
 
     for object_type, geometry_role, keywords in MEDIUM_RULES:
-        keyword = next((item for item in keywords if item in normalized), None)
+        keyword = _find_keyword(normalized=normalized, keywords=keywords)
         if keyword is not None:
             return LayerSuggestion(
                 object_type=object_type,
@@ -154,3 +155,14 @@ def suggest_layer(name: str, entity_counts: Mapping[str, int]) -> LayerSuggestio
 
 def _normalize(value: str) -> str:
     return ' '.join(NAME_SEPARATOR.sub(' ', value.casefold().replace('ё', 'е')).split())
+
+
+def _find_keyword(normalized: str, keywords: tuple[str, ...]) -> str | None:
+    tokens = set(normalized.split())
+    for keyword in keywords:
+        if keyword in EXACT_TOKEN_KEYWORDS:
+            if keyword in tokens:
+                return keyword
+        elif keyword in normalized:
+            return keyword
+    return None

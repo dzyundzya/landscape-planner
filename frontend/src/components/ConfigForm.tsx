@@ -49,6 +49,7 @@ export function ConfigForm({ analysis, isSaving, savedConfig, onSave }: Props) {
     () => layerMappings.filter((mapping) => mapping.object_type !== 'ignore').length,
     [layerMappings],
   )
+  const hasUtilityLayers = layerMappings.some((mapping) => mapping.object_type.startsWith('utility_'))
 
   function changeUnit(value: CoordinateUnit) {
     setCoordinateUnit(value)
@@ -63,6 +64,13 @@ export function ConfigForm({ analysis, isSaving, savedConfig, onSave }: Props) {
         if (mappingIndex !== index) return mapping
         if ('geometryRole' in patch) {
           return { ...mapping, attributes: { geometry_role: patch.geometryRole } }
+        }
+        if (patch.object_type) {
+          return {
+            ...mapping,
+            ...patch,
+            attributes: defaultAttributes(patch.object_type, mapping.attributes.geometry_role),
+          }
         }
         return { ...mapping, ...patch }
       }),
@@ -86,7 +94,17 @@ export function ConfigForm({ analysis, isSaving, savedConfig, onSave }: Props) {
           [bounds.minX, bounds.minY],
         ]],
       },
-      layer_mappings: layerMappings,
+      layer_mappings: layerMappings.map((mapping) => ({
+        ...mapping,
+        attributes: mapping.object_type === 'building'
+          ? {
+              ...mapping.attributes,
+              building_use: ['preschool', 'education_and_sport'].includes(territoryType)
+                ? 'school_or_kindergarten'
+                : 'other',
+            }
+          : mapping.attributes,
+      })),
       generation,
     })
   }
@@ -169,6 +187,15 @@ export function ConfigForm({ analysis, isSaving, savedConfig, onSave }: Props) {
               )
             })}
           </div>
+          {hasUtilityLayers && (
+            <article className="notice notice-warning mapping-notice">
+              <span className="notice-marker" />
+              <div>
+                <strong>Проверьте геометрию инженерных сетей</strong>
+                <p>Расстояние считается от показанной линии как от наружной поверхности сети. Если в чертеже указана ось, сначала нужны диаметр и преобразование геометрии.</p>
+              </div>
+            </article>
+          )}
         </fieldset>
 
         <fieldset className="form-section">
@@ -236,4 +263,20 @@ function round(value: number) {
 
 function formatEntityCounts(counts: Record<string, number>) {
   return Object.entries(counts).map(([type, count]) => `${type}: ${count}`).join(', ') || 'пустой слой'
+}
+
+function defaultAttributes(objectType: SemanticObjectType, geometryRole: 'line' | 'area'): LayerMapping['attributes'] {
+  const measurementReferences: Partial<Record<SemanticObjectType, string>> = {
+    building: 'exterior_wall',
+    road: 'roadway_edge',
+    utility_water: 'utility_outer_surface',
+    utility_sewer: 'utility_outer_surface',
+    utility_gas: 'utility_outer_surface',
+    utility_power: 'utility_outer_surface',
+  }
+  return {
+    geometry_role: geometryRole,
+    ...(measurementReferences[objectType] ? { measurement_reference: measurementReferences[objectType] } : {}),
+    ...(objectType === 'utility_power' ? { network_kind: 'underground_power_cable' } : {}),
+  }
 }

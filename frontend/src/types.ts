@@ -110,7 +110,12 @@ export type SemanticObjectType =
 export type LayerMapping = {
   layer: string
   object_type: SemanticObjectType
-  attributes: { geometry_role: 'line' | 'area' }
+  attributes: {
+    geometry_role: 'line' | 'area'
+    measurement_reference?: string
+    network_kind?: string
+    building_use?: string
+  }
 }
 
 export type ConfigPayload = {
@@ -146,5 +151,162 @@ export type ConfigSnapshot = ConfigPayload & {
   plant_catalog_version: string | null
   plant_catalog_sha256: string | null
   content_sha256: string
+  created_at: string
+}
+
+export type PlantingType = 'tree' | 'bush'
+export type PlanStatus = 'needs_verification' | 'verified' | 'invalid'
+export type ValidationStatus = 'passed' | 'failed' | 'needs_verification'
+
+export type Planting = {
+  public_id: string
+  plan_id: number
+  type: PlantingType
+  source: 'generated' | 'manual'
+  x_m: string
+  y_m: string
+  species: string | null
+}
+
+export type Plan = {
+  id: number
+  project_id: number
+  project_file_id: number
+  analysis_id: number
+  config_snapshot_id: number
+  job_id: number
+  revision: number
+  status: PlanStatus
+  generator_version: string
+  generation_summary: {
+    candidate_count: number
+    tree_count: number
+    bush_count: number
+    rejected_candidate_count: number
+    strategy: string
+    selected_offset_index: number
+    offset_x_m: number
+    offset_y_m: number
+    grid_spacing_m: number | null
+    warnings: string[]
+  }
+  plantings: Planting[]
+  created_at: string
+  updated_at: string | null
+}
+
+export type GeoJsonGeometry = {
+  type: string
+  coordinates?: unknown
+  geometries?: GeoJsonGeometry[]
+}
+
+export type PlanPreview = {
+  schema_version: number
+  coordinate_space: 'local_meters'
+  plan_id: number
+  plan_revision: number
+  boundary: GeoJsonGeometry
+  objects: Array<{
+    source_object_id: string
+    object_type: SemanticObjectType
+    geometry: GeoJsonGeometry
+  }>
+  restrictions: Array<{
+    source_object_id: string
+    object_type: SemanticObjectType
+    planting_type: PlantingType
+    rule_id: string
+    rule_version: string
+    min_distance_m: number
+    document: string
+    clause: string
+    geometry: GeoJsonGeometry
+  }>
+  zones: {
+    tree_available: GeoJsonGeometry
+    bush_available: GeoJsonGeometry
+    tree_exclusion: GeoJsonGeometry
+    bush_exclusion: GeoJsonGeometry
+  }
+  issues: Array<{
+    code: string
+    message: string
+    source_object_id: string | null
+    planting_type: PlantingType | null
+    rule_id: string | null
+  }>
+  plantings: Planting[]
+}
+
+export type ValidationCheck = {
+  check_type: string
+  status: ValidationStatus
+  planting_id: string | null
+  actual: string | null
+  required: string | null
+  unit: string | null
+  rule_id: string | null
+  rule_version: string | null
+  source_object_id: string | null
+  document: string | null
+  clause: string | null
+  reason: string
+}
+
+export type PlanValidation = {
+  id: number
+  plan_id: number
+  plan_revision: number
+  status: ValidationStatus
+  validator_version: string
+  checks: ValidationCheck[]
+  summary: {
+    total: number
+    passed: number
+    failed: number
+    needs_verification: number
+  }
+  rules_status: 'needs_verification' | 'verified'
+  rules_version: string | null
+  rules_sha256: string | null
+  plant_catalog_status: 'needs_verification' | 'verified' | null
+  plant_catalog_version: string | null
+  plant_catalog_sha256: string | null
+  created_at: string
+}
+
+export type FileArtifact = {
+  id: number
+  project_id: number
+  project_file_id: number | null
+  job_id: number
+  export_id: number | null
+  kind: 'canonical_dxf' | 'result_dxf' | 'plan_json' | 'report_json' | 'report_markdown'
+  format: 'dxf' | 'json' | 'markdown'
+  download_name: string
+  content_type: string
+  size_bytes: number
+  sha256: string
+  created_at: string
+}
+
+export type PlanExport = {
+  id: number
+  project_id: number
+  plan_id: number
+  plan_revision: number
+  validation_id: number
+  job_id: number
+  export_version: string
+  manifest: Array<{
+    artifact_id: number
+    kind: FileArtifact['kind']
+    format: FileArtifact['format']
+    download_name: string
+    size_bytes: number
+    sha256: string
+  }>
+  artifacts: FileArtifact[]
   created_at: string
 }

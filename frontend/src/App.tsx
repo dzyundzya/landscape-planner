@@ -1,8 +1,9 @@
-import { FormEvent, useState } from 'react'
+import { FormEvent, useCallback, useState } from 'react'
 import { useMutation, useQuery } from '@tanstack/react-query'
 
 import { AnalysisPanel } from './components/AnalysisPanel'
 import { ConfigForm } from './components/ConfigForm'
+import { PlanWorkspace } from './components/PlanWorkspace'
 import {
   createProject,
   getAnalysis,
@@ -12,15 +13,23 @@ import {
   startAnalysis,
   uploadProjectFile,
 } from './api'
-import type { ConfigPayload, ConfigSnapshot, Job, Project, ProjectFile } from './types'
+import type { ConfigPayload, ConfigSnapshot, Job, Plan, PlanValidation, Project, ProjectFile } from './types'
 
-const stepLabels = ['Проект', 'Исходный DXF', 'Анализ', 'Настройки']
+const stepLabels = ['Проект', 'Исходный DXF', 'Анализ', 'Настройки', 'План', 'Проверка', 'Экспорт']
 
 export function App() {
   const [project, setProject] = useState<Project | null>(null)
   const [projectFile, setProjectFile] = useState<ProjectFile | null>(null)
   const [analysisJob, setAnalysisJob] = useState<Job | null>(null)
   const [savedConfig, setSavedConfig] = useState<ConfigSnapshot | null>(null)
+  const [planProgress, setPlanProgress] = useState<{ plan: Plan | null; validation: PlanValidation | null; exported: boolean }>({
+    plan: null,
+    validation: null,
+    exported: false,
+  })
+  const updatePlanProgress = useCallback((progress: { plan: Plan | null; validation: PlanValidation | null; exported: boolean }) => {
+    setPlanProgress(progress)
+  }, [])
 
   const jobQuery = useQuery<Job>({
     queryKey: ['job', analysisJob?.id],
@@ -45,6 +54,7 @@ export function App() {
       setProjectFile(null)
       setAnalysisJob(null)
       setSavedConfig(null)
+      setPlanProgress({ plan: null, validation: null, exported: false })
     },
   })
 
@@ -54,6 +64,7 @@ export function App() {
       setProjectFile(uploadedFile)
       setAnalysisJob(null)
       setSavedConfig(null)
+      setPlanProgress({ plan: null, validation: null, exported: false })
     },
   })
 
@@ -62,16 +73,34 @@ export function App() {
     onSuccess: (job) => {
       setAnalysisJob(job)
       setSavedConfig(null)
+      setPlanProgress({ plan: null, validation: null, exported: false })
     },
   })
 
   const configMutation = useMutation({
     mutationFn: ({ projectId, payload }: { projectId: number; payload: ConfigPayload }) =>
       saveConfig(projectId, payload),
-    onSuccess: setSavedConfig,
+    onSuccess: (config) => {
+      setSavedConfig(config)
+      setPlanProgress({ plan: null, validation: null, exported: false })
+    },
   })
 
-  const currentStep = savedConfig ? 4 : analysisQuery.data ? 3 : projectFile ? 2 : project ? 1 : 0
+  const currentStep = planProgress.exported
+    ? 7
+    : planProgress.validation
+      ? 6
+      : planProgress.plan
+        ? 5
+        : savedConfig
+          ? 4
+          : analysisQuery.data
+            ? 3
+            : projectFile
+              ? 2
+              : project
+                ? 1
+                : 0
   const error = createMutation.error ?? uploadMutation.error ?? analysisMutation.error ?? jobQuery.error ?? analysisQuery.error ?? configMutation.error
 
   return (
@@ -146,6 +175,7 @@ export function App() {
                 onSave={(payload) => configMutation.mutate({ projectId: project.id, payload })}
               />
             )}
+            {savedConfig && project && <PlanWorkspace projectId={project.id} onProgress={updatePlanProgress} />}
           </div>
 
           <aside className="context-panel">
@@ -155,6 +185,9 @@ export function App() {
             <ContextRow label="Исходник" value={projectFile ? `${projectFile.original_name} · v${projectFile.version}` : 'Не загружен'} state={projectFile ? 'ready' : 'pending'} />
             <ContextRow label="Анализ" value={analysisJob ? jobStatusLabel(analysisJob) : 'Не запускался'} state={analysisJob?.status === 'succeeded' ? 'ready' : analysisJob?.status === 'failed' ? 'error' : 'pending'} />
             <ContextRow label="Конфигурация" value={savedConfig ? `Версия ${savedConfig.version}` : 'Не сохранена'} state={savedConfig ? 'ready' : 'pending'} />
+            <ContextRow label="План" value={planProgress.plan ? `#${planProgress.plan.id} · ревизия ${planProgress.plan.revision}` : 'Не создан'} state={planProgress.plan ? 'ready' : 'pending'} />
+            <ContextRow label="Проверка" value={planProgress.validation ? validationLabel(planProgress.validation.status) : 'Не выполнена'} state={planProgress.validation?.status === 'passed' ? 'ready' : planProgress.validation?.status === 'failed' ? 'error' : 'pending'} />
+            <ContextRow label="Экспорт" value={planProgress.exported ? 'Комплект готов' : 'Не сформирован'} state={planProgress.exported ? 'ready' : 'pending'} />
             <div className="context-note">
               <strong>Сейчас принимается DXF</strong>
               <p>DWG и DWF нужно предварительно преобразовать в DXF без потери структуры слоёв.</p>
@@ -273,6 +306,10 @@ function stageLabel(stage: string | null, status: Job['status']) {
 
 function statusLabel(status: Job['status']) {
   return { queued: 'В очереди', running: 'Выполняется', succeeded: 'Завершён', failed: 'Ошибка' }[status]
+}
+
+function validationLabel(status: PlanValidation['status']) {
+  return { passed: 'Пройдена', failed: 'Есть нарушения', needs_verification: 'Требует проверки' }[status]
 }
 
 function formatBytes(bytes: number) {

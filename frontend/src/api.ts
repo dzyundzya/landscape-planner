@@ -1,4 +1,17 @@
-import type { Analysis, ConfigPayload, ConfigSnapshot, Job, Project, ProjectFile } from './types'
+import type {
+  Analysis,
+  ConfigPayload,
+  ConfigSnapshot,
+  Job,
+  Plan,
+  PlanExport,
+  PlanPreview,
+  PlanValidation,
+  Planting,
+  PlantingType,
+  Project,
+  ProjectFile,
+} from './types'
 
 const API_BASE_URL = (import.meta.env.VITE_API_URL as string | undefined)?.replace(/\/$/, '') ?? '/api'
 
@@ -17,9 +30,11 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   if (!response.ok) {
     let message = `Сервер вернул ошибку ${response.status}`
     try {
-      const payload = (await response.json()) as { detail?: unknown }
+      const payload = (await response.json()) as { detail?: unknown; message?: unknown }
       if (typeof payload.detail === 'string') {
         message = payload.detail
+      } else if (typeof payload.message === 'string') {
+        message = payload.message
       } else if (Array.isArray(payload.detail)) {
         message = payload.detail
           .map((item) => (typeof item === 'object' && item && 'msg' in item ? String(item.msg) : String(item)))
@@ -65,6 +80,86 @@ export function saveConfig(projectId: number, payload: ConfigPayload): Promise<C
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
   })
+}
+
+export function startPlanGeneration(projectId: number): Promise<Job> {
+  return request<Job>(`/projects/${projectId}/plans`, { method: 'POST' })
+}
+
+export function getPlan(projectId: number, planId: number): Promise<Plan> {
+  return request<Plan>(`/projects/${projectId}/plans/${planId}`)
+}
+
+export function getPlanPreview(projectId: number, planId: number): Promise<PlanPreview> {
+  return request<PlanPreview>(`/projects/${projectId}/plans/${planId}/preview`)
+}
+
+export function addPlanting(
+  projectId: number,
+  planId: number,
+  revision: number,
+  payload: { type: PlantingType; x_m: number; y_m: number; species: string | null },
+): Promise<{ plan_revision: number; planting: Planting }> {
+  return request(`/projects/${projectId}/plans/${planId}/plantings`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'If-Match': `"${revision}"` },
+    body: JSON.stringify(payload),
+  })
+}
+
+export function updatePlanting(
+  projectId: number,
+  planId: number,
+  plantingId: string,
+  revision: number,
+  payload: { type?: PlantingType; x_m?: number; y_m?: number; species?: string | null },
+): Promise<{ plan_revision: number; planting: Planting }> {
+  return request(`/projects/${projectId}/plans/${planId}/plantings/${plantingId}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', 'If-Match': `"${revision}"` },
+    body: JSON.stringify(payload),
+  })
+}
+
+export async function deletePlanting(
+  projectId: number,
+  planId: number,
+  plantingId: string,
+  revision: number,
+): Promise<void> {
+  const response = await fetch(`${API_BASE_URL}/projects/${projectId}/plans/${planId}/plantings/${plantingId}`, {
+    method: 'DELETE',
+    headers: { 'If-Match': `"${revision}"` },
+  })
+  if (!response.ok) {
+    throw new ApiError(`Не удалось удалить посадку: сервер вернул ошибку ${response.status}`, response.status)
+  }
+}
+
+export function getPlanReport(projectId: number, planId: number): Promise<PlanValidation> {
+  return request<PlanValidation>(`/projects/${projectId}/plans/${planId}/report`)
+}
+
+export function startPlanValidation(projectId: number, planId: number, revision: number): Promise<Job> {
+  return request<Job>(`/projects/${projectId}/plans/${planId}/validate`, {
+    method: 'POST',
+    headers: { 'If-Match': `"${revision}"` },
+  })
+}
+
+export function startExport(projectId: number, planId: number, revision: number): Promise<Job> {
+  return request<Job>(`/projects/${projectId}/plans/${planId}/exports`, {
+    method: 'POST',
+    headers: { 'If-Match': `"${revision}"` },
+  })
+}
+
+export function getExport(projectId: number, planId: number, exportId: number): Promise<PlanExport> {
+  return request<PlanExport>(`/projects/${projectId}/plans/${planId}/exports/${exportId}`)
+}
+
+export function artifactDownloadUrl(projectId: number, artifactId: number): string {
+  return `${API_BASE_URL}/projects/${projectId}/artifacts/${artifactId}`
 }
 
 export function getErrorMessage(error: unknown): string {

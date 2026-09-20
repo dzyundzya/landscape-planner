@@ -91,7 +91,7 @@ async def test_enqueue_analysis(
     job = await db_session.scalar(select(JobModel).where(JobModel.id == job_data['id']))
     assert job is not None
     assert job.input_data['project_file_id'] == project_file_id
-    assert job.input_data['analysis_schema_version'] == 4
+    assert job.input_data['analysis_schema_version'] == 5
 
 
 async def test_enqueue_analysis_requires_source(client: AsyncClient, project: ProjectModel) -> None:
@@ -133,7 +133,7 @@ async def test_get_current_analysis(
     assert response.status_code == 200
     assert data['id'] == analysis_id
     assert data['job_id'] == job_id
-    assert data['schema_version'] == 4
+    assert data['schema_version'] == 5
     assert data['result'] == analysis_result().model_dump(mode='json')
 
 

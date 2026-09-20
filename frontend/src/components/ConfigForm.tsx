@@ -5,6 +5,7 @@ import type {
   Analysis,
   AnalysisBoundaryCandidate,
   AnalysisLayer,
+  AnalysisLayerGroup,
   ConfigPayload,
   ConfigSnapshot,
   CoordinateUnit,
@@ -14,6 +15,7 @@ import type {
 } from '../types'
 import { BoundaryPicker } from './BoundaryPicker'
 import { LayerPreview } from './LayerPreview'
+import { LayerAssistant } from './LayerAssistant'
 
 type Props = {
   analysis: Analysis
@@ -60,6 +62,7 @@ export function ConfigForm({ analysis, isSaving, savedConfig, onSave }: Props) {
   const [layerView, setLayerView] = useState<LayerView>('active')
   const [bulkObjectType, setBulkObjectType] = useState<SemanticObjectType>('ignore')
   const [previewLayerName, setPreviewLayerName] = useState<string | null>(null)
+  const [assistantIsOpen, setAssistantIsOpen] = useState(false)
 
   const boundaryIsValid = bounds.maxX > bounds.minX && bounds.maxY > bounds.minY
   const includedLayers = useMemo(
@@ -90,6 +93,9 @@ export function ConfigForm({ analysis, isSaving, savedConfig, onSave }: Props) {
     (layer) => layer.suggestion?.confidence === 'high' && layer.suggestion.object_type !== 'ignore',
   ).length
   const previewLayer = analysis.result.layers.find((layer) => layer.name === previewLayerName) ?? null
+  const unresolvedLayerCount = analysis.result.layers.filter(
+    (layer) => !layer.is_unused && layer.suggestion?.confidence !== 'high',
+  ).length
 
   function changeUnit(value: CoordinateUnit) {
     setCoordinateUnit(value)
@@ -161,6 +167,23 @@ export function ConfigForm({ analysis, isSaving, savedConfig, onSave }: Props) {
         attributes: defaultAttributes(suggestion.object_type, suggestion.geometry_role),
       }
     }))
+  }
+
+  function applyAssistantGroup(
+    group: AnalysisLayerGroup,
+    objectType: SemanticObjectType,
+    geometryRole: 'line' | 'area',
+  ) {
+    const names = new Set(group.layer_names.map((name) => name.toLocaleLowerCase('ru-RU')))
+    setLayerMappings((current) => current.map((mapping) => (
+      names.has(mapping.layer.toLocaleLowerCase('ru-RU'))
+        ? {
+            ...mapping,
+            object_type: objectType,
+            attributes: defaultAttributes(objectType, geometryRole),
+          }
+        : mapping
+    )))
   }
 
   function applyBulkType() {
@@ -281,10 +304,24 @@ export function ConfigForm({ analysis, isSaving, savedConfig, onSave }: Props) {
               <strong>{confidentSuggestionCount}</strong>
               <span>уверенных предложений</span>
             </div>
-            <button className="button button-secondary" type="button" onClick={applyConfidentSuggestions}>
-              Применить уверенные
-            </button>
+            <div className="suggestion-actions">
+              <button className="button button-secondary" type="button" onClick={() => setAssistantIsOpen((current) => !current)}>
+                {assistantIsOpen ? 'Скрыть помощника' : 'Помочь настроить слои'}
+              </button>
+              <button className="button button-secondary" type="button" onClick={applyConfidentSuggestions}>
+                Применить уверенные
+              </button>
+            </div>
           </div>
+          {assistantIsOpen && (
+            <LayerAssistant
+              groups={analysis.result.layer_groups}
+              unresolvedLayerCount={unresolvedLayerCount}
+              onApply={applyAssistantGroup}
+              onClose={() => setAssistantIsOpen(false)}
+              onPreview={setPreviewLayerName}
+            />
+          )}
           <div className="layer-tools">
             <label>
               <span>Поиск слоя</span>

@@ -72,6 +72,15 @@ export type AnalysisLayer = {
   preview_truncated: boolean
 }
 
+export type AnalysisLayerGroup = {
+  id: string
+  label: string
+  kind: 'suggested' | 'family'
+  layer_names: string[]
+  suggestion: AnalysisLayer['suggestion']
+  reason: string
+}
+
 export type AnalysisBoundaryCandidate = {
   id: string
   layer: string
@@ -97,6 +106,7 @@ export type Analysis = {
     drawing_units: string | null
     entity_counts: Record<string, number>
     layers: AnalysisLayer[]
+    layer_groups: AnalysisLayerGroup[]
     boundary_candidates: AnalysisBoundaryCandidate[]
     blocks: Record<string, number>
     labels_count: number

@@ -12,6 +12,7 @@ from ezdxf.lldxf.const import DXFError
 from ezdxf.path import make_path
 from shapely.geometry import Polygon
 
+from app.cad.layer_groups import build_layer_groups
 from app.cad.layer_suggestions import suggest_layer
 from app.cad.normalization import DxfGeometryNormalizer
 from app.domain import NormalizationOptions
@@ -119,18 +120,20 @@ def analyze_dxf(path: Path) -> AnalysisResultSchema:
     )
     layer_previews, truncated_preview_layers = _get_layer_previews(document)
 
+    layers = _get_layers(
+        document=document,
+        layer_counts=layer_counts,
+        block_layer_counts=block_layer_counts,
+        block_names_by_layer=block_names_by_layer,
+        layer_previews=layer_previews,
+        truncated_preview_layers=truncated_preview_layers,
+    )
     return AnalysisResultSchema(
         dxf_version=document.dxfversion,
         drawing_units=units.decode(document.units),
         entity_counts=sorted_entity_counts,
-        layers=_get_layers(
-            document=document,
-            layer_counts=layer_counts,
-            block_layer_counts=block_layer_counts,
-            block_names_by_layer=block_names_by_layer,
-            layer_previews=layer_previews,
-            truncated_preview_layers=truncated_preview_layers,
-        ),
+        layers=layers,
+        layer_groups=build_layer_groups(layers),
         boundary_candidates=_get_boundary_candidates(document),
         blocks=_get_block_references(block_layouts=block_layouts, references=block_references),
         labels_count=labels_count,

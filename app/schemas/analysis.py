@@ -1,9 +1,9 @@
 from datetime import datetime
-from typing import Annotated
+from typing import Annotated, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
-from app.models import AnalysisWarningSeverity
+from app.models import AnalysisWarningSeverity, SemanticObjectType
 
 NonNegativeInt = Annotated[int, Field(ge=0)]
 
@@ -27,14 +27,41 @@ class AnalysisBoundsSchema(BaseModel):
         return self
 
 
+class AnalysisLayerSuggestionSchema(BaseModel):
+    """Неподтверждённое предложение классификации слоя."""
+
+    object_type: SemanticObjectType
+    geometry_role: Literal['line', 'area']
+    confidence: Literal['high', 'medium']
+    reason: Annotated[str, Field(min_length=1, max_length=500)]
+
+    model_config = ConfigDict(extra='forbid')
+
+
 class AnalysisLayerSchema(BaseModel):
     """Сводка объектов одного слоя DXF."""
 
     name: Annotated[str, Field(min_length=1, max_length=255)]
     entity_count: NonNegativeInt
     entity_counts: dict[str, NonNegativeInt] = Field(default_factory=dict)
+    block_entity_count: NonNegativeInt = 0
+    block_entity_counts: dict[str, NonNegativeInt] = Field(default_factory=dict)
+    is_unused: bool = False
+    suggestion: AnalysisLayerSuggestionSchema | None = None
 
     model_config = ConfigDict(extra='forbid')
+
+
+class AnalysisBoundaryCandidateSchema(BaseModel):
+    """Замкнутый контур, который пользователь может подтвердить как границу."""
+
+    id: Annotated[str, Field(min_length=1, max_length=100)]
+    layer: Annotated[str, Field(min_length=1, max_length=255)]
+    entity_type: Annotated[str, Field(min_length=1, max_length=32)]
+    area_source_units: Annotated[float, Field(gt=0)]
+    coordinates: Annotated[list[tuple[float, float]], Field(min_length=4, max_length=513)]
+
+    model_config = ConfigDict(extra='forbid', allow_inf_nan=False)
 
 
 class AnalysisWarningSchema(BaseModel):
@@ -54,6 +81,7 @@ class AnalysisResultSchema(BaseModel):
     drawing_units: Annotated[str | None, Field(max_length=64)] = None
     entity_counts: dict[str, NonNegativeInt] = Field(default_factory=dict)
     layers: list[AnalysisLayerSchema] = Field(default_factory=list)
+    boundary_candidates: list[AnalysisBoundaryCandidateSchema] = Field(default_factory=list)
     blocks: dict[str, NonNegativeInt] = Field(default_factory=dict)
     labels_count: NonNegativeInt = 0
     external_references: list[Annotated[str, Field(min_length=1, max_length=500)]] = Field(default_factory=list)

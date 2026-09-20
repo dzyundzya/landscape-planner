@@ -3,6 +3,8 @@ import { FormEvent, useMemo, useState } from 'react'
 import { coordinateUnitOptions, guessCoordinateUnit, objectTypeOptions, territoryOptions } from '../constants'
 import type {
   Analysis,
+  AnalysisBoundaryCandidate,
+  AnalysisLayer,
   ConfigPayload,
   ConfigSnapshot,
   CoordinateUnit,
@@ -10,6 +12,7 @@ import type {
   SemanticObjectType,
   TerritoryType,
 } from '../types'
+import { BoundaryPicker } from './BoundaryPicker'
 
 type Props = {
   analysis: Analysis
@@ -20,6 +23,7 @@ type Props = {
 
 type Bounds = { minX: number; minY: number; maxX: number; maxY: number }
 type Generation = ConfigPayload['generation']
+type LayerView = 'active' | 'all' | 'suggested' | 'uncertain' | 'configured' | 'ignored' | 'unused'
 
 const defaultGeneration: Generation = {
   max_trees: 50,
@@ -32,9 +36,12 @@ const defaultGeneration: Generation = {
 
 export function ConfigForm({ analysis, isSaving, savedConfig, onSave }: Props) {
   const initialUnit = guessCoordinateUnit(analysis.result.drawing_units)
+  const initialBounds = scaledBounds(analysis, initialUnit)
   const [coordinateUnit, setCoordinateUnit] = useState<CoordinateUnit>(initialUnit)
   const [territoryType, setTerritoryType] = useState<TerritoryType>('courtyard')
-  const [bounds, setBounds] = useState<Bounds>(() => scaledBounds(analysis, initialUnit))
+  const [bounds, setBounds] = useState<Bounds>(initialBounds)
+  const [boundaryCoordinates, setBoundaryCoordinates] = useState<[number, number][]>(() => rectangleRing(initialBounds))
+  const [selectedBoundaryId, setSelectedBoundaryId] = useState<string | null>(null)
   const [layerMappings, setLayerMappings] = useState<LayerMapping[]>(() =>
     analysis.result.layers.map((layer) => ({
       layer: layer.name,
@@ -43,6 +50,9 @@ export function ConfigForm({ analysis, isSaving, savedConfig, onSave }: Props) {
     })),
   )
   const [generation, setGeneration] = useState<Generation>(defaultGeneration)
+  const [layerSearch, setLayerSearch] = useState('')
+  const [layerView, setLayerView] = useState<LayerView>('active')
+  const [bulkObjectType, setBulkObjectType] = useState<SemanticObjectType>('ignore')
 
   const boundaryIsValid = bounds.maxX > bounds.minX && bounds.maxY > bounds.minY
   const configuredLayers = useMemo(
@@ -50,12 +60,54 @@ export function ConfigForm({ analysis, isSaving, savedConfig, onSave }: Props) {
     [layerMappings],
   )
   const hasUtilityLayers = layerMappings.some((mapping) => mapping.object_type.startsWith('utility_'))
+  const scale = coordinateUnitOptions.find((option) => option.value === coordinateUnit)?.scale ?? 1
+  const boundaryCandidates = useMemo(
+    () => analysis.result.boundary_candidates.map((candidate) => scaleBoundaryCandidate(candidate, scale)),
+    [analysis.result.boundary_candidates, scale],
+  )
+  const visibleLayers = useMemo(() => {
+    const query = layerSearch.trim().toLocaleLowerCase('ru-RU')
+    return analysis.result.layers.map((layer, index) => ({ layer, index })).filter(({ layer, index }) => {
+      if (query && !layer.name.toLocaleLowerCase('ru-RU').includes(query)) return false
+      const mapping = layerMappings[index]
+      if (layerView === 'active') return !layer.is_unused
+      if (layerView === 'suggested') return layer.suggestion !== null && layer.suggestion.object_type !== 'ignore'
+      if (layerView === 'uncertain') return layer.suggestion === null || layer.suggestion.confidence === 'medium'
+      if (layerView === 'configured') return mapping.object_type !== 'ignore'
+      if (layerView === 'ignored') return mapping.object_type === 'ignore'
+      if (layerView === 'unused') return layer.is_unused
+      return true
+    })
+  }, [analysis.result.layers, layerMappings, layerSearch, layerView])
+  const confidentSuggestionCount = analysis.result.layers.filter(
+    (layer) => layer.suggestion?.confidence === 'high' && layer.suggestion.object_type !== 'ignore',
+  ).length
 
   function changeUnit(value: CoordinateUnit) {
     setCoordinateUnit(value)
-    if (analysis.result.bounds) {
-      setBounds(scaledBounds(analysis, value))
+    const nextScale = coordinateUnitOptions.find((option) => option.value === value)?.scale ?? 1
+    const selectedCandidate = analysis.result.boundary_candidates.find((candidate) => candidate.id === selectedBoundaryId)
+    if (selectedCandidate) {
+      const coordinates = selectedCandidate.coordinates.map(([x, y]) => [round(x * nextScale), round(y * nextScale)] as [number, number])
+      setBoundaryCoordinates(coordinates)
+      setBounds(boundsFromRing(coordinates))
+      return
     }
+    const nextBounds = scaledBounds(analysis, value)
+    setBounds(nextBounds)
+    setBoundaryCoordinates(rectangleRing(nextBounds))
+  }
+
+  function changeBounds(nextBounds: Bounds) {
+    setBounds(nextBounds)
+    setBoundaryCoordinates(rectangleRing(nextBounds))
+    setSelectedBoundaryId(null)
+  }
+
+  function selectBoundary(candidate: AnalysisBoundaryCandidate) {
+    setSelectedBoundaryId(candidate.id)
+    setBoundaryCoordinates(candidate.coordinates)
+    setBounds(boundsFromRing(candidate.coordinates))
   }
 
   function updateMapping(index: number, patch: Partial<LayerMapping> | { geometryRole: 'line' | 'area' }) {
@@ -77,6 +129,45 @@ export function ConfigForm({ analysis, isSaving, savedConfig, onSave }: Props) {
     )
   }
 
+  function applySuggestions(onlyVisible: boolean) {
+    const visibleIndexes = new Set(visibleLayers.map(({ index }) => index))
+    setLayerMappings((current) => current.map((mapping, index) => {
+      if (onlyVisible && !visibleIndexes.has(index)) return mapping
+      const suggestion = analysis.result.layers[index].suggestion
+      if (!suggestion || suggestion.object_type === 'ignore') return mapping
+      return {
+        ...mapping,
+        object_type: suggestion.object_type,
+        attributes: defaultAttributes(suggestion.object_type, suggestion.geometry_role),
+      }
+    }))
+  }
+
+  function applyConfidentSuggestions() {
+    setLayerMappings((current) => current.map((mapping, index) => {
+      const suggestion = analysis.result.layers[index].suggestion
+      if (!suggestion || suggestion.confidence !== 'high' || suggestion.object_type === 'ignore') return mapping
+      return {
+        ...mapping,
+        object_type: suggestion.object_type,
+        attributes: defaultAttributes(suggestion.object_type, suggestion.geometry_role),
+      }
+    }))
+  }
+
+  function applyBulkType() {
+    const visibleIndexes = new Set(visibleLayers.map(({ index }) => index))
+    setLayerMappings((current) => current.map((mapping, index) => (
+      visibleIndexes.has(index)
+        ? {
+            ...mapping,
+            object_type: bulkObjectType,
+            attributes: defaultAttributes(bulkObjectType, mapping.attributes.geometry_role),
+          }
+        : mapping
+    )))
+  }
+
   function submit(event: FormEvent) {
     event.preventDefault()
     if (!boundaryIsValid) return
@@ -86,13 +177,7 @@ export function ConfigForm({ analysis, isSaving, savedConfig, onSave }: Props) {
       boundary: {
         type: 'Polygon',
         coordinate_space: 'local_meters',
-        coordinates: [[
-          [bounds.minX, bounds.minY],
-          [bounds.maxX, bounds.minY],
-          [bounds.maxX, bounds.maxY],
-          [bounds.minX, bounds.maxY],
-          [bounds.minX, bounds.minY],
-        ]],
+        coordinates: [boundaryCoordinates],
       },
       layer_mappings: layerMappings.map((mapping) => ({
         ...mapping,
@@ -142,19 +227,97 @@ export function ConfigForm({ analysis, isSaving, savedConfig, onSave }: Props) {
 
         <fieldset className="form-section">
           <legend>Граница участка в локальных метрах</legend>
-          <p className="field-hint">Сейчас используется прямоугольник bbox. Позже его можно будет заменить выбранным контуром.</p>
+          <p className="field-hint">
+            Выберите подходящий замкнутый контур на схеме. Если нужного контура нет, задайте прямоугольник координатами.
+          </p>
+          {boundaryCandidates.length > 0 && (
+            <div className="boundary-selection">
+              <BoundaryPicker
+                candidates={boundaryCandidates}
+                selectedId={selectedBoundaryId}
+                onSelect={selectBoundary}
+              />
+              <div className="boundary-candidate-list">
+                <strong>Крупные замкнутые контуры</strong>
+                <p>{selectedBoundaryId ? 'Выбранный контур подсвечен.' : 'Нажмите на контур или выберите его из списка.'}</p>
+                {boundaryCandidates.slice(0, 8).map((candidate, index) => (
+                  <button
+                    className={candidate.id === selectedBoundaryId ? 'boundary-candidate selected' : 'boundary-candidate'}
+                    key={candidate.id}
+                    type="button"
+                    onClick={() => selectBoundary(candidate)}
+                  >
+                    <span>Контур {index + 1}</span>
+                    <small>{candidate.layer} · {formatArea(candidate.area_source_units)} м²</small>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
           <div className="boundary-grid">
-            <NumberField label="min X" value={bounds.minX} onChange={(value) => setBounds({ ...bounds, minX: value })} />
-            <NumberField label="min Y" value={bounds.minY} onChange={(value) => setBounds({ ...bounds, minY: value })} />
-            <NumberField label="max X" value={bounds.maxX} onChange={(value) => setBounds({ ...bounds, maxX: value })} />
-            <NumberField label="max Y" value={bounds.maxY} onChange={(value) => setBounds({ ...bounds, maxY: value })} />
+            <NumberField label="min X" value={bounds.minX} onChange={(value) => changeBounds({ ...bounds, minX: value })} />
+            <NumberField label="min Y" value={bounds.minY} onChange={(value) => changeBounds({ ...bounds, minY: value })} />
+            <NumberField label="max X" value={bounds.maxX} onChange={(value) => changeBounds({ ...bounds, maxX: value })} />
+            <NumberField label="max Y" value={bounds.maxY} onChange={(value) => changeBounds({ ...bounds, maxY: value })} />
           </div>
           {!boundaryIsValid && <p className="field-error">Максимальные координаты должны быть больше минимальных.</p>}
         </fieldset>
 
         <fieldset className="form-section">
           <legend>Сопоставление слоёв</legend>
-          <p className="field-hint">Каждый слой нужно классифицировать или явно исключить из расчёта.</p>
+          <p className="field-hint">
+            Система предлагает назначение по названию и составу слоя. Проверьте предложения перед сохранением.
+          </p>
+          <div className="suggestion-summary">
+            <div>
+              <strong>{confidentSuggestionCount}</strong>
+              <span>уверенных предложений</span>
+            </div>
+            <button className="button button-secondary" type="button" onClick={applyConfidentSuggestions}>
+              Применить уверенные
+            </button>
+          </div>
+          <div className="layer-tools">
+            <label>
+              <span>Поиск слоя</span>
+              <input
+                type="search"
+                placeholder="Например: дорога, газ, дерево"
+                value={layerSearch}
+                onChange={(event) => setLayerSearch(event.target.value)}
+              />
+            </label>
+            <label>
+              <span>Показать</span>
+              <select value={layerView} onChange={(event) => setLayerView(event.target.value as LayerView)}>
+                <option value="active">Только используемые</option>
+                <option value="all">Все слои</option>
+                <option value="suggested">С предложением</option>
+                <option value="uncertain">Требуют решения</option>
+                <option value="configured">Учитываемые</option>
+                <option value="ignored">Не учитываемые</option>
+                <option value="unused">Пустые</option>
+              </select>
+            </label>
+            <label>
+              <span>Назначить показанным</span>
+              <select
+                value={bulkObjectType}
+                onChange={(event) => setBulkObjectType(event.target.value as SemanticObjectType)}
+              >
+                {objectTypeOptions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
+              </select>
+            </label>
+            <button className="button button-secondary" type="button" onClick={applyBulkType} disabled={visibleLayers.length === 0}>
+              Применить к показанным
+            </button>
+          </div>
+          <div className="layer-tool-summary">
+            <span>Показано {visibleLayers.length} из {analysis.result.layers.length}</span>
+            <button className="text-button" type="button" onClick={() => applySuggestions(true)} disabled={visibleLayers.length === 0}>
+              Применить предложения к показанным
+            </button>
+          </div>
           {configuredLayers === 0 && (
             <article className="notice notice-warning mapping-notice">
               <span className="notice-marker" />
@@ -168,13 +331,18 @@ export function ConfigForm({ analysis, isSaving, savedConfig, onSave }: Props) {
             <div className="layer-row layer-header" role="row">
               <span>Слой и состав</span><span>Назначение</span><span>Геометрия</span>
             </div>
-            {analysis.result.layers.map((layer, index) => {
+            {visibleLayers.map(({ layer, index }) => {
               const mapping = layerMappings[index]
               return (
                 <div className="layer-row" role="row" key={layer.name}>
                   <div>
                     <strong>{layer.name}</strong>
-                    <small>{layer.entity_count} объектов · {formatEntityCounts(layer.entity_counts)}</small>
+                    <small>{formatLayerCounts(layer)}</small>
+                    {layer.suggestion && (
+                      <span className={`layer-suggestion suggestion-${layer.suggestion.confidence}`} title={layer.suggestion.reason}>
+                        {layer.suggestion.confidence === 'high' ? 'Уверенно' : 'Проверьте'}: {objectTypeLabel(layer.suggestion.object_type)}
+                      </span>
+                    )}
                   </div>
                   <select
                     aria-label={`Назначение слоя ${layer.name}`}
@@ -195,6 +363,7 @@ export function ConfigForm({ analysis, isSaving, savedConfig, onSave }: Props) {
                 </div>
               )
             })}
+            {visibleLayers.length === 0 && <p className="empty-layer-result">По заданному фильтру слои не найдены.</p>}
           </div>
           {hasUtilityLayers && (
             <article className="notice notice-warning mapping-notice">
@@ -270,8 +439,56 @@ function round(value: number) {
   return Math.round(value * 1_000_000) / 1_000_000
 }
 
+function rectangleRing(bounds: Bounds): [number, number][] {
+  return [
+    [bounds.minX, bounds.minY],
+    [bounds.maxX, bounds.minY],
+    [bounds.maxX, bounds.maxY],
+    [bounds.minX, bounds.maxY],
+    [bounds.minX, bounds.minY],
+  ]
+}
+
+function boundsFromRing(coordinates: [number, number][]): Bounds {
+  const xs = coordinates.map(([x]) => x)
+  const ys = coordinates.map(([, y]) => y)
+  return {
+    minX: Math.min(...xs),
+    minY: Math.min(...ys),
+    maxX: Math.max(...xs),
+    maxY: Math.max(...ys),
+  }
+}
+
+function scaleBoundaryCandidate(candidate: AnalysisBoundaryCandidate, scale: number): AnalysisBoundaryCandidate {
+  return {
+    ...candidate,
+    area_source_units: candidate.area_source_units * scale * scale,
+    coordinates: candidate.coordinates.map(([x, y]) => [round(x * scale), round(y * scale)]),
+  }
+}
+
+function formatArea(value: number) {
+  return new Intl.NumberFormat('ru-RU', { maximumFractionDigits: 1 }).format(value)
+}
+
 function formatEntityCounts(counts: Record<string, number>) {
   return Object.entries(counts).map(([type, count]) => `${type}: ${count}`).join(', ') || 'пустой слой'
+}
+
+function formatLayerCounts(layer: AnalysisLayer) {
+  if (layer.is_unused) return 'Слой объявлен, но объекты не найдены'
+  const direct = layer.entity_count > 0
+    ? `${layer.entity_count} на листах · ${formatEntityCounts(layer.entity_counts)}`
+    : 'нет объектов на листах'
+  const blocks = layer.block_entity_count > 0
+    ? ` · ${layer.block_entity_count} внутри блоков`
+    : ''
+  return `${direct}${blocks}`
+}
+
+function objectTypeLabel(value: SemanticObjectType) {
+  return objectTypeOptions.find((option) => option.value === value)?.label ?? value
 }
 
 function defaultAttributes(objectType: SemanticObjectType, geometryRole: 'line' | 'area'): LayerMapping['attributes'] {

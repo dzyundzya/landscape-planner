@@ -18,6 +18,7 @@ class ExportDocuments:
     plan_json: bytes
     report_json: bytes
     report_markdown: bytes
+    draft: bool
 
 
 def build_export_documents(
@@ -30,6 +31,8 @@ def build_export_documents(
     plan = {
         'schema_version': 1,
         'export_version': EXPORT_DXF_VERSION,
+        'export_status': 'draft' if job_input.draft else 'verified',
+        'disclaimer': _draft_disclaimer(job_input),
         'project_id': project_id,
         'plan_id': job_input.plan_id,
         'plan_revision': job_input.plan_revision,
@@ -47,6 +50,8 @@ def build_export_documents(
     report = {
         'schema_version': REPORT_SCHEMA_VERSION,
         'export_version': EXPORT_DXF_VERSION,
+        'export_status': 'draft' if job_input.draft else 'verified',
+        'disclaimer': _draft_disclaimer(job_input),
         'project_id': project_id,
         'plan_id': job_input.plan_id,
         'plan_revision': job_input.plan_revision,
@@ -65,12 +70,13 @@ def build_export_documents(
             'plant_catalog_sha256': job_input.config.plant_catalog_sha256,
         },
         'checks': [check.model_dump(mode='json') for check in job_input.validation.checks],
-        'limitations': list(REPORT_LIMITATIONS),
+        'limitations': [*([_draft_disclaimer(job_input)] if job_input.draft else []), *REPORT_LIMITATIONS],
     }
     return ExportDocuments(
         plan_json=_json_bytes(plan),
         report_json=_json_bytes(report),
         report_markdown=_build_markdown(job_input=job_input, report=report).encode('utf-8'),
+        draft=job_input.draft,
     )
 
 
@@ -79,6 +85,11 @@ def _build_markdown(job_input: ExportJobInputSchema, report: dict[str, object]) 
     lines = [
         '# Отчёт о проверке плана озеленения',
         '',
+        *(
+            ['> **ДЕМОНСТРАЦИОННЫЙ ЧЕРНОВИК.** Нормативные правила требуют подтверждения.', '']
+            if job_input.draft
+            else []
+        ),
         f'- Проект: `{report["project_id"]}`',
         f'- План: `{job_input.plan_id}`',
         f'- Ревизия: `{job_input.plan_revision}`',
@@ -129,6 +140,12 @@ def _build_markdown(job_input: ExportJobInputSchema, report: dict[str, object]) 
         ]
     )
     return '\n'.join(lines)
+
+
+def _draft_disclaimer(job_input: ExportJobInputSchema) -> str | None:
+    if not job_input.draft:
+        return None
+    return 'Демонстрационный черновик. Нормативные правила требуют подтверждения.'
 
 
 def _json_bytes(payload: dict[str, object]) -> bytes:

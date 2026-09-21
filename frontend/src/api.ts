@@ -172,8 +172,8 @@ export function startPlanValidation(projectId: number, planId: number, revision:
   })
 }
 
-export function startExport(projectId: number, planId: number, revision: number): Promise<Job> {
-  return request<Job>(`/projects/${projectId}/plans/${planId}/exports`, {
+export function startExport(projectId: number, planId: number, revision: number, draft = false): Promise<Job> {
+  return request<Job>(`/projects/${projectId}/plans/${planId}/exports?draft=${draft}`, {
     method: 'POST',
     headers: { 'If-Match': `"${revision}"` },
   })

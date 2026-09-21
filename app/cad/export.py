@@ -21,6 +21,7 @@ LAYER_DEFINITIONS = {
     'tree_exclusion': ('GREENPLAN_TREE_EXCLUSION', 1),
     'bush_exclusion': ('GREENPLAN_BUSH_EXCLUSION', 30),
 }
+DRAFT_LAYER_DEFINITION = ('GREENPLAN_DRAFT', 1)
 BLOCK_DEFINITIONS = {
     PlantingType.TREE: ('GREENPLAN_TREE', 0.5),
     PlantingType.BUSH: ('GREENPLAN_BUSH', 0.3),
@@ -45,6 +46,8 @@ def write_landscape_dxf(
     plantings: list[PlantingReadSchema],
     transform: CoordinateTransform,
     restrictions: RestrictionResult,
+    *,
+    draft: bool = False,
 ) -> DxfExportMetadata:
     """Копирует исходный DXF и добавляет посадки и расчётные зоны."""
 
@@ -54,6 +57,9 @@ def write_landscape_dxf(
         layers = _create_layers(document=document)
         blocks = _create_blocks(document=document, transform=transform)
         modelspace = document.modelspace()
+
+        if draft:
+            layers['draft'] = _add_draft_notice(document=document, restrictions=restrictions, transform=transform)
 
         for planting in plantings:
             point = transform.to_source(Point2D(x=float(planting.x_m), y=float(planting.y_m)))
@@ -86,6 +92,31 @@ def write_landscape_dxf(
     except (DXFError, OSError, UnicodeError, ValueError, TypeError) as exc:
         raise DxfExportError('Не удалось сформировать итоговый DXF') from exc
     return DxfExportMetadata(layers=layers, blocks=blocks)
+
+
+def _add_draft_notice(
+    document: Drawing,
+    restrictions: RestrictionResult,
+    transform: CoordinateTransform,
+) -> str:
+    """Добавляет в DXF видимую маркировку демонстрационного результата."""
+
+    existing = {layer.dxf.name.casefold() for layer in document.layers}
+    layer_name = _unique_name(preferred=DRAFT_LAYER_DEFINITION[0], existing=existing)
+    document.layers.add(name=layer_name, color=DRAFT_LAYER_DEFINITION[1])
+
+    available = restrictions.tree_available.union(restrictions.bush_available)
+    x_m, y_m = (0.0, 0.0) if available.is_empty else (available.bounds[0], available.bounds[3])
+    point = transform.to_source(Point2D(x=x_m, y=y_m))
+    document.modelspace().add_mtext(
+        'ДЕМОНСТРАЦИОННЫЙ ЧЕРНОВИК. НОРМАТИВНЫЕ ПРАВИЛА ТРЕБУЮТ ПОДТВЕРЖДЕНИЯ.',
+        dxfattribs={
+            'insert': (point.x, point.y),
+            'char_height': max(1.5 / transform.scale_to_meters, 1e-9),
+            'layer': layer_name,
+        },
+    )
+    return layer_name
 
 
 def _create_layers(document: Drawing) -> dict[str, str]:

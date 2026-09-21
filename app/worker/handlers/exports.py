@@ -23,6 +23,13 @@ from app.storage import LocalFileStorage
 from app.worker.dispatcher import OwnershipGuard
 from app.worker.metrics import run_measured_operation
 
+DRAFT_DOWNLOAD_NAMES = {
+    FileArtifactKind.RESULT_DXF: 'draft-result.dxf',
+    FileArtifactKind.PLAN_JSON: 'draft-plan.json',
+    FileArtifactKind.REPORT_JSON: 'draft-report.json',
+    FileArtifactKind.REPORT_MARKDOWN: 'draft-report.md',
+}
+
 
 @dataclass(frozen=True, slots=True)
 class _ExportInput:
@@ -111,7 +118,7 @@ class ExportJobHandler:
             layer_mappings=[mapping.model_dump(mode='json') for mapping in snapshot.config.layer_mappings],
         )
         restrictions = build_restriction_zones(project=project, rule_set=rule_set)
-        if restrictions.issues:
+        if restrictions.issues and not snapshot.draft:
             raise InvalidExportError('При повторном расчёте зон обнаружены неразрешённые ограничения')
 
         dxf_metadata = write_landscape_dxf(
@@ -120,6 +127,7 @@ class ExportJobHandler:
             plantings=snapshot.plan.plantings,
             transform=project.transform,
             restrictions=restrictions,
+            draft=snapshot.draft,
         )
         documents = build_export_documents(
             project_id=project_id,
@@ -141,12 +149,14 @@ class ExportJobHandler:
                         (FileArtifactKind.REPORT_MARKDOWN, BytesIO(output.documents.report_markdown)),
                     )
                     for kind, source in sources:
+                        download_name = DRAFT_DOWNLOAD_NAMES[kind] if output.documents.draft else None
                         artifact = await artifact_service.create_artifact(
                             project_id=job.project_id,
                             project_file_id=job.project_file_id,
                             job_id=job.id,
                             kind=kind,
                             source=source,
+                            download_name=download_name,
                             commit=False,
                         )
                         published_keys.append(artifact.storage_key)

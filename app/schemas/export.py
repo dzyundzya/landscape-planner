@@ -24,7 +24,8 @@ class ExportPlanSnapshotSchema(BaseModel):
 class ExportJobInputSchema(BaseModel):
     """Полный снимок входов фоновой задачи экспорта."""
 
-    export_schema_version: Annotated[int, Field(ge=1)] = 2
+    export_schema_version: Annotated[int, Field(ge=1)] = 3
+    draft: bool = False
     plan_id: Annotated[int, Field(ge=1)]
     plan_revision: Annotated[int, Field(ge=1)]
     project_file_id: Annotated[int, Field(ge=1)]

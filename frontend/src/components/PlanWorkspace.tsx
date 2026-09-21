@@ -101,7 +101,7 @@ export function PlanWorkspace({ projectId, initialPlanId, onProgress }: Props) {
   }, [refreshPlan, validationJobQuery.data?.status])
 
   const exportMutation = useMutation({
-    mutationFn: (plan: Plan) => startExport(projectId, plan.id, plan.revision),
+    mutationFn: ({ plan, draft }: { plan: Plan; draft: boolean }) => startExport(projectId, plan.id, plan.revision, draft),
     onSuccess: setExportJob,
   })
   const exportJobQuery = useJobPolling(exportJob, setExportJob)
@@ -222,7 +222,7 @@ export function PlanWorkspace({ projectId, initialPlanId, onProgress }: Props) {
         job={exportJobQuery.data ?? exportJob}
         exported={currentExport}
         isStarting={exportMutation.isLoading}
-        onStart={() => exportMutation.mutate(plan)}
+        onStart={(draft) => exportMutation.mutate({ plan, draft })}
       />
     </>
   )
@@ -314,12 +314,15 @@ function ValidationPanel({ plan, validation, job, isStarting, onStart }: { plan:
   )
 }
 
-function ExportPanel({ projectId, plan, validation, job, exported, isStarting, onStart }: { projectId: number; plan: Plan; validation: PlanValidation | null; job: Job | null; exported: PlanExport | null; isStarting: boolean; onStart: () => void }) {
+function ExportPanel({ projectId, plan, validation, job, exported, isStarting, onStart }: { projectId: number; plan: Plan; validation: PlanValidation | null; job: Job | null; exported: PlanExport | null; isStarting: boolean; onStart: (draft: boolean) => void }) {
   const canExport = plan.status === 'verified' && validation?.status === 'passed' && validation.plan_revision === plan.revision
+  const canExportDraft = plan.status === 'needs_verification' && validation?.status === 'needs_verification' && validation.plan_revision === plan.revision
+  const isDraft = job?.result?.draft === true
   return (
     <section className="panel export-panel">
-      <div className="panel-heading"><div><p className="eyebrow">Шаг 7</p><h2>Экспорт результата</h2><p className="section-description">Неизменяемый комплект содержит DXF, JSON-план и отчёт в JSON и Markdown.</p></div>{!exported && <button className="button button-primary" type="button" disabled={!canExport || isStarting || job?.status === 'queued' || job?.status === 'running'} onClick={onStart}>{job?.status === 'queued' || job?.status === 'running' ? 'Формируем…' : 'Сформировать экспорт'}</button>}</div>
-      {exported ? <div className="artifact-grid">{exported.artifacts.map((artifact) => <a href={artifactDownloadUrl(projectId, artifact.id)} key={artifact.id} download><span>{artifact.format.toUpperCase()}</span><div><strong>{artifact.download_name}</strong><small>{formatBytes(artifact.size_bytes)} · {artifact.kind}</small></div><b>Скачать</b></a>)}</div> : job?.status === 'failed' ? <InlineError error={new Error(job.error ?? 'Экспорт завершился с ошибкой')} /> : <p className="muted">{canExport ? 'План готов к формированию экспортного комплекта.' : 'Экспорт станет доступен после успешной проверки текущей ревизии.'}</p>}
+      <div className="panel-heading"><div><p className="eyebrow">Шаг 7</p><h2>Экспорт результата</h2><p className="section-description">Неизменяемый комплект содержит DXF, JSON-план и отчёт в JSON и Markdown.</p></div>{!exported && <button className="button button-primary" type="button" disabled={(!canExport && !canExportDraft) || isStarting || job?.status === 'queued' || job?.status === 'running'} onClick={() => onStart(canExportDraft)}>{job?.status === 'queued' || job?.status === 'running' ? 'Формируем…' : canExportDraft ? 'Сформировать черновой экспорт' : 'Сформировать экспорт'}</button>}</div>
+      {canExportDraft && !exported && <article className="notice notice-warning"><span className="notice-marker" /><div><strong>Демонстрационный режим</strong><p>Комплект будет помечен как черновик: нормативные правила требуют подтверждения.</p></div></article>}
+      {exported ? <>{isDraft && <article className="notice notice-warning"><span className="notice-marker" /><div><strong>Сформирован демонстрационный черновик</strong><p>Этот результат нельзя считать нормативно проверенным.</p></div></article>}<div className="artifact-grid">{exported.artifacts.map((artifact) => <a href={artifactDownloadUrl(projectId, artifact.id)} key={artifact.id} download><span>{artifact.format.toUpperCase()}</span><div><strong>{artifact.download_name}</strong><small>{formatBytes(artifact.size_bytes)} · {artifact.kind}</small></div><b>Скачать</b></a>)}</div></> : job?.status === 'failed' ? <InlineError error={new Error(job.error ?? 'Экспорт завершился с ошибкой')} /> : <p className="muted">{canExport ? 'План готов к формированию экспортного комплекта.' : canExportDraft ? 'Можно сформировать демонстрационный черновик.' : 'Сначала выполните проверку текущей ревизии и устраните нарушения.'}</p>}
     </section>
   )
 }

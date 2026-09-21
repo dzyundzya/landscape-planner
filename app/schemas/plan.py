@@ -21,6 +21,7 @@ class PlanGenerationSummarySchema(BaseModel):
     offset_x_m: float = 0.0
     offset_y_m: float = 0.0
     grid_spacing_m: Annotated[float | None, Field(gt=0)] = None
+    design_rationale: Annotated[str | None, Field(min_length=1, max_length=2000)] = None
     warnings: list[Annotated[str, Field(min_length=1, max_length=2000)]] = Field(default_factory=list)
 
     model_config = ConfigDict(extra='forbid', allow_inf_nan=False)

@@ -2,10 +2,12 @@ import math
 from collections import defaultdict
 from dataclasses import dataclass
 
+from shapely import union_all
 from shapely.geometry import Point
+from shapely.geometry.base import BaseGeometry
 
-from app.geometry import RestrictionResult
-from app.models import PlantingType
+from app.geometry import PreparedProjectGeometry, RestrictionResult
+from app.models import PlantingType, SemanticObjectType
 from app.schemas.config_snapshot import GenerationParametersSchema
 
 GENERATOR_VERSION = 'hex-grid-greedy/1'
@@ -48,6 +50,10 @@ class LayoutCandidate:
     x_m: float
     y_m: float
     allowed_types: tuple[PlantingType, ...]
+    design_roles: tuple[str, ...]
+    distance_to_road_m: float | None
+    distance_to_building_m: float | None
+    distance_to_boundary_m: float
 
 
 @dataclass(frozen=True, slots=True)
@@ -177,6 +183,7 @@ def generate_plantings(
 
 
 def build_llm_candidate_pool(
+    project: PreparedProjectGeometry,
     restrictions: RestrictionResult,
     parameters: GenerationParametersSchema,
     limit: int = MAX_LLM_CANDIDATE_COUNT,
@@ -218,8 +225,10 @@ def build_llm_candidate_pool(
         step = len(ordered) / limit
         ordered = [ordered[min(int(index * step), len(ordered) - 1)] for index in range(limit)]
 
-    candidates = []
-    for candidate_id, (x, y) in enumerate(ordered):
+    road_geometry = _merge_project_objects(project=project, object_type=SemanticObjectType.ROAD)
+    building_geometry = _merge_project_objects(project=project, object_type=SemanticObjectType.BUILDING)
+    candidate_data = []
+    for x, y in ordered:
         point = Point(x, y)
         allowed_types = tuple(
             planting_type
@@ -230,15 +239,72 @@ def build_llm_candidate_pool(
             if geometry.contains(point)
         )
         if allowed_types:
-            candidates.append(
-                LayoutCandidate(
-                    id=candidate_id,
-                    x_m=x,
-                    y_m=y,
-                    allowed_types=allowed_types,
+            candidate_data.append(
+                (
+                    x,
+                    y,
+                    allowed_types,
+                    _optional_distance(point=point, geometry=road_geometry),
+                    _optional_distance(point=point, geometry=building_geometry),
+                    point.distance(project.boundary.boundary),
                 )
             )
+    road_threshold = _near_distance_threshold(
+        distances=[item[3] for item in candidate_data if item[3] is not None],
+        spacing=spacing,
+    )
+    building_threshold = _near_distance_threshold(
+        distances=[item[4] for item in candidate_data if item[4] is not None],
+        spacing=spacing,
+    )
+    boundary_threshold = _near_distance_threshold(
+        distances=[item[5] for item in candidate_data],
+        spacing=spacing,
+    )
+    candidates = []
+    for candidate_id, (x, y, allowed_types, road_distance, building_distance, boundary_distance) in enumerate(
+        candidate_data
+    ):
+        design_roles = []
+        if road_distance is not None and road_threshold is not None and road_distance <= road_threshold:
+            design_roles.append('road_alley')
+        if building_distance is not None and building_threshold is not None and building_distance <= building_threshold:
+            design_roles.append('building_edge')
+        if boundary_threshold is not None and boundary_distance <= boundary_threshold:
+            design_roles.append('perimeter')
+        if not design_roles:
+            design_roles.append('open_space')
+        candidates.append(
+            LayoutCandidate(
+                id=candidate_id,
+                x_m=x,
+                y_m=y,
+                allowed_types=allowed_types,
+                design_roles=tuple(design_roles),
+                distance_to_road_m=road_distance,
+                distance_to_building_m=building_distance,
+                distance_to_boundary_m=boundary_distance,
+            )
+        )
     return tuple(candidates), spacing
+
+
+def _merge_project_objects(
+    project: PreparedProjectGeometry,
+    object_type: SemanticObjectType,
+) -> BaseGeometry | None:
+    geometries = [obj.geometry for obj in project.objects if obj.object_type == object_type.value]
+    return union_all(geometries) if geometries else None
+
+
+def _optional_distance(point: Point, geometry: BaseGeometry | None) -> float | None:
+    return None if geometry is None else round(point.distance(geometry), 3)
+
+
+def _near_distance_threshold(distances: list[float], spacing: float) -> float | None:
+    if not distances:
+        return None
+    return min(distances) + max(spacing * 0.75, 2.0)
 
 
 def _build_candidates(

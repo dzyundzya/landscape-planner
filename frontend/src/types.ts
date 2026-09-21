@@ -231,6 +231,7 @@ export type Plan = {
     offset_x_m: number
     offset_y_m: number
     grid_spacing_m: number | null
+    design_rationale?: string | null
     warnings: string[]
   }
   plantings: Planting[]

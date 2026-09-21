@@ -181,12 +181,30 @@ async def test_enqueue_export_requires_passed_validation(
     )
     assert validation.status is ValidationStatus.NEEDS_VERIFICATION
 
-    with pytest.raises(ExportPrerequisiteError, match='не проверен для экспорта'):
+    plan = await service.plan_repository.get_obj_by_id(obj_id=plan_without_validation)
+    assert plan is not None
+    config = await service.config_repository.get_obj_by_id(obj_id=plan.config_snapshot_id)
+    assert config is not None
+    config.rules_version = 'TEST_ONLY/1'
+    config.rules_sha256 = 'c' * 64
+    await db_session.commit()
+
+    with pytest.raises(ExportPrerequisiteError, match='не проверен для подтверждённого экспорта'):
         await service.enqueue_export(
             project_id=project.id,
             plan_id=plan_without_validation,
             expected_revision=1,
         )
+
+    draft_job = await service.enqueue_export(
+        project_id=project.id,
+        plan_id=plan_without_validation,
+        expected_revision=1,
+        draft=True,
+    )
+
+    assert draft_job.input_data['draft'] is True
+    assert draft_job.input_data['validation']['status'] == ValidationStatus.NEEDS_VERIFICATION.value
 
 
 async def test_publish_export_completes_job_with_manifest(

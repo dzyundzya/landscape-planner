@@ -1,4 +1,6 @@
-from fastapi import APIRouter, status
+from typing import Annotated
+
+from fastapi import APIRouter, Query, status
 
 from app.api.dependencies.exports import ExportServiceDep
 from app.core.dependencies.revision import ExpectedPlanRevisionDep
@@ -14,13 +16,17 @@ async def create_export(
     plan_id: int,
     expected_revision: ExpectedPlanRevisionDep,
     service: ExportServiceDep,
+    draft: Annotated[
+        bool, Query(description='Сформировать демонстрационный комплект без статуса нормативной проверки')
+    ] = False,
 ):
-    """Фиксирует проверенную ревизию и ставит экспорт в очередь."""
+    """Фиксирует ревизию и ставит проверенный либо черновой экспорт в очередь."""
 
     return await service.enqueue_export(
         project_id=project_id,
         plan_id=plan_id,
         expected_revision=expected_revision,
+        draft=draft,
     )
 
 

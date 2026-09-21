@@ -54,7 +54,14 @@ class ExportService(BaseService[ExportCRUDRepository]):
         self.job_repository = JobCRUDRepository(async_session=async_session)
         self.artifact_repository = FileArtifactCRUDRepository(async_session=async_session)
 
-    async def enqueue_export(self, project_id: int, plan_id: int, expected_revision: int) -> JobModel:
+    async def enqueue_export(
+        self,
+        project_id: int,
+        plan_id: int,
+        expected_revision: int,
+        *,
+        draft: bool = False,
+    ) -> JobModel:
         """Фиксирует ревизию с проверкой и ставит её экспорт в очередь."""
 
         plan = await self.plan_repository.get_plan_for_update(plan_id=plan_id, project_id=project_id)
@@ -86,8 +93,12 @@ class ExportService(BaseService[ExportCRUDRepository]):
         )
         if validation is None:
             raise ExportPrerequisiteError(f'У плана с id={plan.id} отсутствует проверка ревизии {plan.revision}')
-        if validation.status is not ValidationStatus.PASSED or plan.status is not PlanStatus.VERIFIED:
-            raise ExportPrerequisiteError(f'План с id={plan.id} ревизии {plan.revision} не проверен для экспорта')
+        if validation.status is ValidationStatus.FAILED or plan.status is PlanStatus.INVALID:
+            raise ExportPrerequisiteError(f'План с id={plan.id} ревизии {plan.revision} содержит нарушения')
+        if not draft and (validation.status is not ValidationStatus.PASSED or plan.status is not PlanStatus.VERIFIED):
+            raise ExportPrerequisiteError(
+                f'План с id={plan.id} ревизии {plan.revision} не проверен для подтверждённого экспорта'
+            )
 
         project_file = await self.project_file_repository.get_obj_by_id(obj_id=plan.project_file_id)
         if project_file is None or project_file.project_id != project_id:
@@ -105,6 +116,7 @@ class ExportService(BaseService[ExportCRUDRepository]):
             raise InvalidExportError('Неизменяемая конфигурация плана неполна для экспорта')
 
         job_input = ExportJobInputSchema(
+            draft=draft,
             plan_id=plan.id,
             plan_revision=plan.revision,
             project_file_id=project_file.id,
@@ -177,8 +189,10 @@ class ExportService(BaseService[ExportCRUDRepository]):
         )
         if validation is None or validation.id != job_input.validation.id:
             raise InvalidExportError('Снимок проверки экспорта не соответствует сохранённой проверке')
-        if validation.status is not ValidationStatus.PASSED:
-            raise InvalidExportError('Проверка для экспорта не пройдена')
+        if validation.status is ValidationStatus.FAILED:
+            raise InvalidExportError('План содержит нарушения и не может быть экспортирован')
+        if not job_input.draft and validation.status is not ValidationStatus.PASSED:
+            raise InvalidExportError('Проверка для подтверждённого экспорта не пройдена')
 
         artifacts = await self.artifact_repository.get_artifacts_for_job(job_id=job.id)
         artifacts_by_kind = {artifact.kind: artifact for artifact in artifacts}
@@ -222,6 +236,7 @@ class ExportService(BaseService[ExportCRUDRepository]):
         job.stage = 'completed'
         job.result = {
             'export_id': export.id,
+            'draft': job_input.draft,
             'plan_id': export.plan_id,
             'plan_revision': export.plan_revision,
             'artifacts': [

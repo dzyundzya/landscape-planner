@@ -1,207 +1,224 @@
 schema_version: 1
-version: draft-2026-09-21-sp42-2026-moscow-743
+version: verified-2026-09-21-moscow-743
 rules:
-  - id: sp42-2026-building-tree
-    version: '1'
-    object_type: building
-    vegetation_type: tree
-    min_distance_m: 5.0
-    measurement_reference: exterior_wall
-    conditions: {}
-    required_attributes: []
-    document: СП 42.13330.2026 «Градостроительство. Планировка и застройка территорий»
-    edition: утверждён приказом Минстроя России от 11.06.2026 № 368/пр
-    clause: п. 6.4.8, таблица 6.3
-    source_url: https://protect.gost.ru/sp/details/f6917ab4-63d8-4ecb-9794-0b4990ba3b99
-    verification_status: needs_verification
-    verified_at: null
-    description: >-
-      От наружной стены здания или сооружения до оси ствола дерева. Значение таблицы относится к деревьям
-      с диаметром кроны не более 5 м; увеличение расстояния для большей кроны пока не формализовано.
-
-  - id: sp42-2026-building-bush
-    version: '1'
-    object_type: building
-    vegetation_type: bush
-    min_distance_m: 1.5
-    measurement_reference: exterior_wall
-    conditions: {}
-    required_attributes: []
-    document: СП 42.13330.2026 «Градостроительство. Планировка и застройка территорий»
-    edition: утверждён приказом Минстроя России от 11.06.2026 № 368/пр
-    clause: п. 6.4.8, таблица 6.3
-    source_url: https://protect.gost.ru/sp/details/f6917ab4-63d8-4ecb-9794-0b4990ba3b99
-    verification_status: needs_verification
-    verified_at: null
-    description: От наружной стены здания или сооружения до оси прикорневого центра кустарника.
-
-  - id: sp42-2026-road-tree
-    version: '1'
-    object_type: road
-    vegetation_type: tree
-    min_distance_m: 2.0
-    measurement_reference: roadway_edge
-    conditions: {}
-    required_attributes: []
-    document: СП 42.13330.2026 «Градостроительство. Планировка и застройка территорий»
-    edition: утверждён приказом Минстроя России от 11.06.2026 № 368/пр
-    clause: п. 6.4.8, таблица 6.3
-    source_url: https://protect.gost.ru/sp/details/f6917ab4-63d8-4ecb-9794-0b4990ba3b99
-    verification_status: needs_verification
-    verified_at: null
-    description: >-
-      От края проезжей части улицы, обочины дороги, бровки канавы или кювета до оси ствола дерева.
-      Значение таблицы относится к деревьям с диаметром кроны не более 5 м.
-
-  - id: sp42-2026-road-bush
-    version: '1'
-    object_type: road
-    vegetation_type: bush
-    min_distance_m: 1.0
-    measurement_reference: roadway_edge
-    conditions: {}
-    required_attributes: []
-    document: СП 42.13330.2026 «Градостроительство. Планировка и застройка территорий»
-    edition: утверждён приказом Минстроя России от 11.06.2026 № 368/пр
-    clause: п. 6.4.8, таблица 6.3
-    source_url: https://protect.gost.ru/sp/details/f6917ab4-63d8-4ecb-9794-0b4990ba3b99
-    verification_status: needs_verification
-    verified_at: null
-    description: >-
-      От края проезжей части улицы, обочины дороги, бровки канавы или кювета до оси прикорневого центра
-      кустарника.
-
-  - id: sp42-2026-underground-gas-tree
-    version: '1'
-    object_type: utility_gas
-    vegetation_type: tree
-    min_distance_m: 1.5
-    measurement_reference: utility_outer_surface
-    conditions: {}
-    required_attributes: []
-    document: СП 42.13330.2026 «Градостроительство. Планировка и застройка территорий»
-    edition: утверждён приказом Минстроя России от 11.06.2026 № 368/пр
-    clause: п. 6.4.8, таблица 6.3, примечания 1 и 5
-    source_url: https://protect.gost.ru/sp/details/f6917ab4-63d8-4ecb-9794-0b4990ba3b99
-    verification_status: needs_verification
-    verified_at: null
-    description: >-
-      Между наружными поверхностями ствола дерева и подземного газопровода либо его защитного футляра.
-      Требуется геометрия наружной поверхности сети и учёт диаметра ствола; для кустарника числовое значение
-      в таблице не установлено.
-
-  - id: sp42-2026-underground-sewer-tree
-    version: '1'
-    object_type: utility_sewer
-    vegetation_type: tree
-    min_distance_m: 1.5
-    measurement_reference: utility_outer_surface
-    conditions: {}
-    required_attributes: []
-    document: СП 42.13330.2026 «Градостроительство. Планировка и застройка территорий»
-    edition: утверждён приказом Минстроя России от 11.06.2026 № 368/пр
-    clause: п. 6.4.8, таблица 6.3, примечания 1 и 5
-    source_url: https://protect.gost.ru/sp/details/f6917ab4-63d8-4ecb-9794-0b4990ba3b99
-    verification_status: needs_verification
-    verified_at: null
-    description: >-
-      Между наружными поверхностями ствола дерева и подземной канализации либо её защитного футляра.
-      Требуется геометрия наружной поверхности сети и учёт диаметра ствола; для кустарника числовое значение
-      в таблице не установлено.
-
-  - id: sp42-2026-underground-water-tree
-    version: '1'
-    object_type: utility_water
-    vegetation_type: tree
-    min_distance_m: 2.0
-    measurement_reference: utility_outer_surface
-    conditions: {}
-    required_attributes: []
-    document: СП 42.13330.2026 «Градостроительство. Планировка и застройка территорий»
-    edition: утверждён приказом Минстроя России от 11.06.2026 № 368/пр
-    clause: п. 6.4.8, таблица 6.3, примечания 1 и 5
-    source_url: https://protect.gost.ru/sp/details/f6917ab4-63d8-4ecb-9794-0b4990ba3b99
-    verification_status: needs_verification
-    verified_at: null
-    description: >-
-      Между наружными поверхностями ствола дерева и подземного водопровода либо его защитного футляра.
-      Требуется геометрия наружной поверхности сети и учёт диаметра ствола; для кустарника числовое значение
-      в таблице не установлено.
-
-  - id: sp42-2026-underground-water-bush
-    version: '1'
-    object_type: utility_water
-    vegetation_type: bush
-    distance_kind: not_specified
-    min_distance_m: null
-    measurement_reference: utility_outer_surface
-    conditions: {}
-    required_attributes: []
-    document: СП 42.13330.2026 «Градостроительство. Планировка и застройка территорий»
-    edition: утверждён приказом Минстроя России от 11.06.2026 № 368/пр
-    clause: п. 6.4.8, таблица 6.3, примечание 5
-    source_url: https://protect.gost.ru/sp/details/f6917ab4-63d8-4ecb-9794-0b4990ba3b99
-    verification_status: needs_verification
-    verified_at: null
-    description: >-
-      Для кустарника числовое расстояние до подземной сети водопровода в таблице не установлено.
-      Запись не создаёт запретную зону и должна быть подтверждена профильным специалистом.
-
-  - id: sp42-2026-underground-power-tree
-    version: '1'
-    object_type: utility_power
-    vegetation_type: tree
-    min_distance_m: 2.0
-    measurement_reference: utility_outer_surface
-    conditions:
-      network_kind: underground_power_cable
-    required_attributes: []
-    document: СП 42.13330.2026 «Градостроительство. Планировка и застройка территорий»
-    edition: утверждён приказом Минстроя России от 11.06.2026 № 368/пр
-    clause: п. 6.4.8, таблица 6.3, примечания 1, 2 и 5
-    source_url: https://protect.gost.ru/sp/details/f6917ab4-63d8-4ecb-9794-0b4990ba3b99
-    verification_status: needs_verification
-    verified_at: null
-    description: >-
-      Между наружными поверхностями ствола дерева и подземного силового кабеля либо его защитного футляра.
-      Правило не применяется к воздушным линиям электропередачи.
-
-  - id: sp42-2026-underground-power-bush
-    version: '1'
-    object_type: utility_power
-    vegetation_type: bush
-    min_distance_m: 0.75
-    measurement_reference: utility_outer_surface
-    conditions:
-      network_kind: underground_power_cable
-    required_attributes: []
-    document: СП 42.13330.2026 «Градостроительство. Планировка и застройка территорий»
-    edition: утверждён приказом Минстроя России от 11.06.2026 № 368/пр
-    clause: п. 6.4.8, таблица 6.3, примечание 5
-    source_url: https://protect.gost.ru/sp/details/f6917ab4-63d8-4ecb-9794-0b4990ba3b99
-    verification_status: needs_verification
-    verified_at: null
-    description: >-
-      Между наружными поверхностями кустарника и подземного силового кабеля либо его защитного футляра.
-
-  - id: moscow-743-school-building-tree
-    version: '1'
-    object_type: building
-    vegetation_type: tree
-    min_distance_m: 10.0
-    measurement_reference: exterior_wall
-    conditions:
-      building_use: school_or_kindergarten
-    required_attributes: []
-    document: >-
-      Постановление Правительства Москвы от 10.09.2002 № 743-ПП «Об утверждении Правил создания,
-      содержания и охраны зеленых насаждений и природных сообществ города Москвы»
-    edition: с изменениями на 08.08.2025
-    clause: п. 3.6.3, таблица 3.6.1
-    source_url: >-
-      https://www.mos.ru/upload/content/files/49f68586dd69e7d9cc0a0d9a6e933190/Postanovlenieot10_09_2002N743-PPObytverjdeniiPravilsozdaniyasoderjaniyaiohranizelenih_Tekst%281%29.pdf
-    verification_status: needs_verification
-    verified_at: null
-    description: >-
-      Специальное московское расстояние от наружной стены школьного здания или здания детского сада до
-      оси ствола дерева. Для применения слой здания должен иметь подтверждённый атрибут building_use.
+- id: sp42-2026-building-tree
+  version: '2'
+  object_type: building
+  vegetation_type: tree
+  min_distance_m: 5.0
+  measurement_reference: exterior_wall
+  conditions: {}
+  required_attributes: []
+  document: Постановление Правительства Москвы от 10.09.2002 № 743-ПП «Об утверждении Правил создания, содержания и охраны
+    зеленых насаждений и природных сообществ города Москвы»
+  edition: редакция от 04.02.2025, действует с 17.03.2025
+  clause: п. 3.6.3, таблица 3.6.1
+  source_url: https://www.mos.ru/upload/documents/files/7389/Postanovlenie743-PP.pdf
+  verification_status: verified
+  verified_at: '2026-09-21'
+  description: От наружной стены здания или сооружения до оси ствола дерева. Значение таблицы относится к деревьям с диаметром
+    кроны не более 5 м; увеличение расстояния для большей кроны пока не формализовано.
+- id: sp42-2026-building-bush
+  version: '2'
+  object_type: building
+  vegetation_type: bush
+  min_distance_m: 1.5
+  measurement_reference: exterior_wall
+  conditions: {}
+  required_attributes: []
+  document: Постановление Правительства Москвы от 10.09.2002 № 743-ПП «Об утверждении Правил создания, содержания и охраны
+    зеленых насаждений и природных сообществ города Москвы»
+  edition: редакция от 04.02.2025, действует с 17.03.2025
+  clause: п. 3.6.3, таблица 3.6.1
+  source_url: https://www.mos.ru/upload/documents/files/7389/Postanovlenie743-PP.pdf
+  verification_status: verified
+  verified_at: '2026-09-21'
+  description: От наружной стены здания или сооружения до оси прикорневого центра кустарника.
+- id: sp42-2026-road-tree
+  version: '2'
+  object_type: road
+  vegetation_type: tree
+  min_distance_m: 2.0
+  measurement_reference: roadway_edge
+  conditions: {}
+  required_attributes: []
+  document: Постановление Правительства Москвы от 10.09.2002 № 743-ПП «Об утверждении Правил создания, содержания и охраны
+    зеленых насаждений и природных сообществ города Москвы»
+  edition: редакция от 04.02.2025, действует с 17.03.2025
+  clause: п. 3.6.3, таблица 3.6.1
+  source_url: https://www.mos.ru/upload/documents/files/7389/Postanovlenie743-PP.pdf
+  verification_status: verified
+  verified_at: '2026-09-21'
+  description: От края проезжей части улицы, обочины дороги, бровки канавы или кювета до оси ствола дерева. Значение таблицы
+    относится к деревьям с диаметром кроны не более 5 м.
+- id: sp42-2026-road-bush
+  version: '2'
+  object_type: road
+  vegetation_type: bush
+  min_distance_m: 1.0
+  measurement_reference: roadway_edge
+  conditions: {}
+  required_attributes: []
+  document: Постановление Правительства Москвы от 10.09.2002 № 743-ПП «Об утверждении Правил создания, содержания и охраны
+    зеленых насаждений и природных сообществ города Москвы»
+  edition: редакция от 04.02.2025, действует с 17.03.2025
+  clause: п. 3.6.3, таблица 3.6.1
+  source_url: https://www.mos.ru/upload/documents/files/7389/Postanovlenie743-PP.pdf
+  verification_status: verified
+  verified_at: '2026-09-21'
+  description: От края проезжей части улицы, обочины дороги, бровки канавы или кювета до оси прикорневого центра кустарника.
+- id: sp42-2026-underground-gas-tree
+  version: '2'
+  object_type: utility_gas
+  vegetation_type: tree
+  min_distance_m: 1.5
+  measurement_reference: utility_outer_surface
+  conditions: {}
+  required_attributes: []
+  document: Постановление Правительства Москвы от 10.09.2002 № 743-ПП «Об утверждении Правил создания, содержания и охраны
+    зеленых насаждений и природных сообществ города Москвы»
+  edition: редакция от 04.02.2025, действует с 17.03.2025
+  clause: п. 3.6.3, таблица 3.6.1
+  source_url: https://www.mos.ru/upload/documents/files/7389/Postanovlenie743-PP.pdf
+  verification_status: verified
+  verified_at: '2026-09-21'
+  description: Между наружными поверхностями ствола дерева и подземного газопровода либо его защитного футляра. Требуется
+    геометрия наружной поверхности сети и учёт диаметра ствола; для кустарника числовое значение в таблице не установлено.
+- id: sp42-2026-underground-gas-bush
+  version: '2'
+  object_type: utility_gas
+  vegetation_type: bush
+  distance_kind: not_specified
+  min_distance_m: null
+  measurement_reference: utility_outer_surface
+  conditions: {}
+  required_attributes: []
+  document: Постановление Правительства Москвы от 10.09.2002 № 743-ПП «Об утверждении Правил создания, содержания и охраны
+    зеленых насаждений и природных сообществ города Москвы»
+  edition: редакция от 04.02.2025, действует с 17.03.2025
+  clause: п. 3.6.3, таблица 3.6.1
+  source_url: https://www.mos.ru/upload/documents/files/7389/Postanovlenie743-PP.pdf
+  verification_status: verified
+  verified_at: '2026-09-21'
+  description: Для кустарника числовое расстояние до подземного газопровода в таблице 3.6.1 не установлено.
+- id: sp42-2026-underground-sewer-tree
+  version: '2'
+  object_type: utility_sewer
+  vegetation_type: tree
+  min_distance_m: 1.5
+  measurement_reference: utility_outer_surface
+  conditions: {}
+  required_attributes: []
+  document: Постановление Правительства Москвы от 10.09.2002 № 743-ПП «Об утверждении Правил создания, содержания и охраны
+    зеленых насаждений и природных сообществ города Москвы»
+  edition: редакция от 04.02.2025, действует с 17.03.2025
+  clause: п. 3.6.3, таблица 3.6.1
+  source_url: https://www.mos.ru/upload/documents/files/7389/Postanovlenie743-PP.pdf
+  verification_status: verified
+  verified_at: '2026-09-21'
+  description: Между наружными поверхностями ствола дерева и подземной канализации либо её защитного футляра. Требуется геометрия
+    наружной поверхности сети и учёт диаметра ствола; для кустарника числовое значение в таблице не установлено.
+- id: sp42-2026-underground-sewer-bush
+  version: '2'
+  object_type: utility_sewer
+  vegetation_type: bush
+  distance_kind: not_specified
+  min_distance_m: null
+  measurement_reference: utility_outer_surface
+  conditions: {}
+  required_attributes: []
+  document: Постановление Правительства Москвы от 10.09.2002 № 743-ПП «Об утверждении Правил создания, содержания и охраны
+    зеленых насаждений и природных сообществ города Москвы»
+  edition: редакция от 04.02.2025, действует с 17.03.2025
+  clause: п. 3.6.3, таблица 3.6.1
+  source_url: https://www.mos.ru/upload/documents/files/7389/Postanovlenie743-PP.pdf
+  verification_status: verified
+  verified_at: '2026-09-21'
+  description: Для кустарника числовое расстояние до подземной канализации в таблице 3.6.1 не установлено.
+- id: sp42-2026-underground-water-tree
+  version: '2'
+  object_type: utility_water
+  vegetation_type: tree
+  min_distance_m: 2.0
+  measurement_reference: utility_outer_surface
+  conditions: {}
+  required_attributes: []
+  document: Постановление Правительства Москвы от 10.09.2002 № 743-ПП «Об утверждении Правил создания, содержания и охраны
+    зеленых насаждений и природных сообществ города Москвы»
+  edition: редакция от 04.02.2025, действует с 17.03.2025
+  clause: п. 3.6.3, таблица 3.6.1
+  source_url: https://www.mos.ru/upload/documents/files/7389/Postanovlenie743-PP.pdf
+  verification_status: verified
+  verified_at: '2026-09-21'
+  description: Между наружными поверхностями ствола дерева и подземного водопровода либо его защитного футляра. Требуется
+    геометрия наружной поверхности сети и учёт диаметра ствола; для кустарника числовое значение в таблице не установлено.
+- id: sp42-2026-underground-water-bush
+  version: '2'
+  object_type: utility_water
+  vegetation_type: bush
+  distance_kind: not_specified
+  min_distance_m: null
+  measurement_reference: utility_outer_surface
+  conditions: {}
+  required_attributes: []
+  document: Постановление Правительства Москвы от 10.09.2002 № 743-ПП «Об утверждении Правил создания, содержания и охраны
+    зеленых насаждений и природных сообществ города Москвы»
+  edition: редакция от 04.02.2025, действует с 17.03.2025
+  clause: п. 3.6.3, таблица 3.6.1
+  source_url: https://www.mos.ru/upload/documents/files/7389/Postanovlenie743-PP.pdf
+  verification_status: verified
+  verified_at: '2026-09-21'
+  description: Для кустарника числовое расстояние до подземного водопровода в таблице 3.6.1 не установлено.
+- id: sp42-2026-underground-power-tree
+  version: '2'
+  object_type: utility_power
+  vegetation_type: tree
+  min_distance_m: 2.0
+  measurement_reference: utility_outer_surface
+  conditions:
+    network_kind: underground_power_cable
+  required_attributes: []
+  document: Постановление Правительства Москвы от 10.09.2002 № 743-ПП «Об утверждении Правил создания, содержания и охраны
+    зеленых насаждений и природных сообществ города Москвы»
+  edition: редакция от 04.02.2025, действует с 17.03.2025
+  clause: п. 3.6.3, таблица 3.6.1
+  source_url: https://www.mos.ru/upload/documents/files/7389/Postanovlenie743-PP.pdf
+  verification_status: verified
+  verified_at: '2026-09-21'
+  description: Между наружными поверхностями ствола дерева и подземного силового кабеля либо его защитного футляра. Правило
+    не применяется к воздушным линиям электропередачи.
+- id: sp42-2026-underground-power-bush
+  version: '2'
+  object_type: utility_power
+  vegetation_type: bush
+  min_distance_m: 0.7
+  measurement_reference: utility_outer_surface
+  conditions:
+    network_kind: underground_power_cable
+  required_attributes: []
+  document: Постановление Правительства Москвы от 10.09.2002 № 743-ПП «Об утверждении Правил создания, содержания и охраны
+    зеленых насаждений и природных сообществ города Москвы»
+  edition: редакция от 04.02.2025, действует с 17.03.2025
+  clause: п. 3.6.3, таблица 3.6.1
+  source_url: https://www.mos.ru/upload/documents/files/7389/Postanovlenie743-PP.pdf
+  verification_status: verified
+  verified_at: '2026-09-21'
+  description: Между наружными поверхностями кустарника и подземного силового кабеля либо его защитного футляра.
+- id: moscow-743-school-building-tree
+  version: '2'
+  object_type: building
+  vegetation_type: tree
+  min_distance_m: 10.0
+  measurement_reference: exterior_wall
+  conditions:
+    building_use: school_or_kindergarten
+  required_attributes: []
+  document: Постановление Правительства Москвы от 10.09.2002 № 743-ПП «Об утверждении Правил создания, содержания и охраны
+    зеленых насаждений и природных сообществ города Москвы»
+  edition: редакция от 04.02.2025, действует с 17.03.2025
+  clause: п. 3.6.3, таблица 3.6.1
+  source_url: https://www.mos.ru/upload/documents/files/7389/Postanovlenie743-PP.pdf
+  verification_status: verified
+  verified_at: '2026-09-21'
+  description: Специальное московское расстояние от наружной стены школьного здания или здания детского сада до оси ствола
+    дерева. Для применения слой здания должен иметь подтверждённый атрибут building_use.

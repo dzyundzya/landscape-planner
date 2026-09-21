@@ -53,3 +53,26 @@ Preview ограничен 2 000 исходных объектов, 2 000 нор
 переменными `MAX_UPLOAD_SIZE_BYTES`, `MAX_ARTIFACT_SIZE_BYTES`,
 `PREVIEW_SIMPLIFY_TOLERANCE_M`, `PREVIEW_MAX_OBJECTS`,
 `PREVIEW_MAX_RESTRICTIONS` и `PREVIEW_MAX_COORDINATES`.
+
+## LangChain-агент
+
+Маршрут `POST /api/projects/{project_id}/agent/messages` и панель помощника в UI
+используют `langchain.agents.create_agent`. Агент получает только краткие сводки
+проекта и семь инструментов: состояние проекта, анализ, предложения по слоям,
+генерацию, статус задачи, объяснение посадки и экспорт. CAD-расчёты выполняют
+обычные сервисы и worker.
+
+По умолчанию агент отключён. Для OpenAI добавьте в `.env`:
+
+```dotenv
+AGENT_ENABLED=true
+LLM_PROVIDER=openai
+LLM_MODEL=<модель-с-поддержкой-tool-calling>
+LLM_API_KEY=<ключ>
+ALLOW_EXTERNAL_LLM=true
+```
+
+Для локального OpenAI-compatible сервера задайте `LLM_PROVIDER=openai_compatible`,
+`LLM_BASE_URL=http://127.0.0.1:.../v1` и требуемый сервером `LLM_API_KEY`.
+Loopback-подключение не требует `ALLOW_EXTERNAL_LLM=true`. После изменения `.env`
+перезапустите FastAPI; worker перезапускать не требуется.

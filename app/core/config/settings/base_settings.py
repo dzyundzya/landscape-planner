@@ -60,6 +60,15 @@ class BackendSettings(BaseSettings):
     WORKER_POLL_INTERVAL_SECONDS: float = 1.0
     WORKER_LOCK_CHECK_INTERVAL_SECONDS: float = 1.0
 
+    AGENT_ENABLED: bool = False
+    ALLOW_EXTERNAL_LLM: bool = False
+    LLM_PROVIDER: str | None = None
+    LLM_MODEL: str | None = None
+    LLM_BASE_URL: str | None = None
+    LLM_API_KEY: SecretStr | None = None
+    AGENT_TIMEOUT_SECONDS: float = 60.0
+    AGENT_RECURSION_LIMIT: int = 10
+
     model_config = SettingsConfigDict(
         env_file='.env',
         env_file_encoding='utf-8',

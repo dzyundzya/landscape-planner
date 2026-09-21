@@ -1,4 +1,5 @@
 import type {
+  AgentMessage,
   Analysis,
   ConfigPayload,
   ConfigSnapshot,
@@ -77,6 +78,14 @@ export function uploadProjectFile(projectId: number, file: File): Promise<Projec
 
 export function startAnalysis(projectId: number): Promise<Job> {
   return request<Job>(`/projects/${projectId}/analyze`, { method: 'POST' })
+}
+
+export function sendAgentMessage(projectId: number, message: string): Promise<AgentMessage> {
+  return request<AgentMessage>(`/projects/${projectId}/agent/messages`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ message }),
+  })
 }
 
 export function getJob(jobId: number): Promise<Job> {

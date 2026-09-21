@@ -43,12 +43,6 @@ export type Job = {
   finished_at: string | null
 }
 
-export type AgentMessage = {
-  message: string
-  model: string
-  tool_calls: string[]
-}
-
 export type AnalysisBounds = {
   min_x: number
   min_y: number

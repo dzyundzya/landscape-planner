@@ -1,8 +1,10 @@
 from app.planning.generator import (
     GENERATOR_VERSION,
     GeneratedPlanting,
+    LayoutCandidate,
     PlantingGenerationError,
     PlantingGenerationResult,
+    build_llm_candidate_pool,
     generate_plantings,
 )
 from app.planning.planting_validation import PlantingCandidate, PlantingValidationError, validate_planting_set
@@ -13,6 +15,7 @@ from app.planning.validator import VALIDATOR_VERSION, ValidationPlanting, valida
 __all__ = (
     'GENERATOR_VERSION',
     'GeneratedPlanting',
+    'LayoutCandidate',
     'PlantingCandidate',
     'PlantingGenerationError',
     'PlantingGenerationResult',
@@ -21,6 +24,7 @@ __all__ = (
     'VALIDATOR_VERSION',
     'ValidationPlanting',
     'assign_species',
+    'build_llm_candidate_pool',
     'build_plan_preview',
     'generate_plantings',
     'validate_plan_geometry',

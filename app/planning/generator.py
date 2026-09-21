@@ -10,6 +10,7 @@ from app.schemas.config_snapshot import GenerationParametersSchema
 
 GENERATOR_VERSION = 'hex-grid-greedy/1'
 MAX_CANDIDATE_COUNT = 250_000
+MAX_LLM_CANDIDATE_COUNT = 240
 MIN_CANDIDATE_BUDGET = 20_000
 CANDIDATES_PER_PLANTING = 200
 COORDINATE_PRECISION = 6
@@ -37,6 +38,16 @@ class GeneratedPlanting:
     type: PlantingType
     x_m: float
     y_m: float
+
+
+@dataclass(frozen=True, slots=True)
+class LayoutCandidate:
+    """Ограниченная точка, из которой LLM может выбрать посадку."""
+
+    id: int
+    x_m: float
+    y_m: float
+    allowed_types: tuple[PlantingType, ...]
 
 
 @dataclass(frozen=True, slots=True)
@@ -163,6 +174,71 @@ def generate_plantings(
         scenarios,
         key=lambda result: (result.tree_count, result.bush_count, -result.selected_offset_index),
     )
+
+
+def build_llm_candidate_pool(
+    restrictions: RestrictionResult,
+    parameters: GenerationParametersSchema,
+    limit: int = MAX_LLM_CANDIDATE_COUNT,
+) -> tuple[tuple[LayoutCandidate, ...], float]:
+    """Строит ограниченный детерминированный пул допустимых точек для LLM."""
+
+    if limit < 1:
+        raise ValueError('Лимит LLM-кандидатов должен быть положительным')
+    blocking_issue_codes = sorted(
+        {issue.code for issue in restrictions.issues if issue.code not in NON_BLOCKING_GENERATION_ISSUES}
+    )
+    if blocking_issue_codes:
+        raise PlantingGenerationError(
+            f'Генерация заблокирована неразрешёнными ограничениями: {", ".join(blocking_issue_codes)}'
+        )
+
+    available = restrictions.tree_available.union(restrictions.bush_available)
+    if available.is_empty:
+        return (), parameters.grid_spacing_m
+    spacing = _fit_grid_spacing(
+        available=available,
+        requested_spacing=parameters.grid_spacing_m,
+        candidate_budget=max(limit * 3, 100),
+    )
+    row_spacing = spacing * math.sqrt(3) / 2
+    raw_points = set()
+    for offset_x_factor, offset_y_factor in HEX_OFFSETS:
+        raw_points.update(
+            _build_candidates(
+                available=available,
+                spacing=spacing,
+                row_spacing=row_spacing,
+                offset_x=offset_x_factor * spacing,
+                offset_y=offset_y_factor * row_spacing,
+            )
+        )
+    ordered = sorted(raw_points, key=lambda point: (point[1], point[0]))
+    if len(ordered) > limit:
+        step = len(ordered) / limit
+        ordered = [ordered[min(int(index * step), len(ordered) - 1)] for index in range(limit)]
+
+    candidates = []
+    for candidate_id, (x, y) in enumerate(ordered):
+        point = Point(x, y)
+        allowed_types = tuple(
+            planting_type
+            for planting_type, geometry in (
+                (PlantingType.TREE, restrictions.tree_available),
+                (PlantingType.BUSH, restrictions.bush_available),
+            )
+            if geometry.contains(point)
+        )
+        if allowed_types:
+            candidates.append(
+                LayoutCandidate(
+                    id=candidate_id,
+                    x_m=x,
+                    y_m=y,
+                    allowed_types=allowed_types,
+                )
+            )
+    return tuple(candidates), spacing
 
 
 def _build_candidates(

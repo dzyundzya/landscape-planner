@@ -1,6 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from app.agent import LandscapeAgentRuntime
+from app.agent.model import build_chat_model
 from app.core.config.settings.base_settings import BackendSettings
 from app.models import JobModel
 from app.repositories.crud.projects import ProjectCRUDRepository
@@ -38,7 +39,11 @@ class AgentService:
         )
 
     async def start_autoplan(self, project_id: int) -> JobModel:
-        """Запускает детерминированную автоматическую расстановку по текущей конфигурации."""
+        """Запускает выбор посадок LLM из допустимых Python-кандидатов."""
 
+        build_chat_model(settings=self.settings)
         async with self.session_factory() as session:
-            return await PlanService(async_session=session).enqueue_plan_generation(project_id=project_id)
+            return await PlanService(async_session=session).enqueue_plan_generation(
+                project_id=project_id,
+                planner_mode='llm',
+            )

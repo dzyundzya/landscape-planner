@@ -38,6 +38,7 @@ def build_dispatcher() -> JobDispatcher:
                 preview_max_objects=settings.PREVIEW_MAX_OBJECTS,
                 preview_max_restrictions=settings.PREVIEW_MAX_RESTRICTIONS,
                 preview_max_coordinates=settings.PREVIEW_MAX_COORDINATES,
+                settings=settings,
             ),
             JobType.VALIDATE_PLAN: PlanValidationJobHandler(
                 session_factory=async_db.async_session_maker,

@@ -140,7 +140,7 @@ export function PlanWorkspace({ projectId, initialPlanId, onProgress }: Props) {
     return (
       <section className="panel action-panel">
         <div className="panel-heading">
-          <div><p className="eyebrow">Шаг 5</p><h2>Агент автопланирования</h2><p className="section-description">Агент построит запретные зоны, переберёт варианты сетки и выберет вариант с максимумом деревьев, затем кустарников. Validator независимо проверит результат.</p></div>
+          <div><p className="eyebrow">Шаг 5</p><h2>LLM-агент автопланирования</h2><p className="section-description">Python рассчитает допустимые точки, а LLM выберет места для деревьев и кустарников. Некорректные выборы будут отклонены, затем Validator проверит весь план.</p></div>
           <button className="button button-primary" type="button" disabled={generationMutation.isLoading} onClick={() => generationMutation.mutate()}>
             {generationMutation.isLoading ? 'Запускаем агента…' : 'Расставить автоматически'}
           </button>
@@ -157,7 +157,7 @@ export function PlanWorkspace({ projectId, initialPlanId, onProgress }: Props) {
     return (
       <JobPanel
         eyebrow="Шаг 5"
-        title="Агент расставляет растения"
+        title="LLM выбирает места посадок"
         job={generationJobQuery.data ?? generationJob}
         error={actionError}
         isRetrying={generationMutation.isLoading}

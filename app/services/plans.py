@@ -48,8 +48,11 @@ class PlanService(BaseService[PlanCRUDRepository]):
         self.job_repository = JobCRUDRepository(async_session=async_session)
         self.planting_repository = PlantingCRUDRepository(async_session=async_session)
 
-    async def enqueue_plan_generation(self, project_id: int) -> JobModel:
+    async def enqueue_plan_generation(self, project_id: int, planner_mode: str = 'deterministic') -> JobModel:
         """Ставит генерацию плана по текущей конфигурации в очередь."""
+
+        if planner_mode not in {'deterministic', 'llm'}:
+            raise InvalidPlanError('Неизвестный режим планировщика')
 
         if await self.project_repository.get_obj_by_id(obj_id=project_id) is None:
             raise ProjectNotFoundError(project_id=project_id)
@@ -100,6 +103,7 @@ class PlanService(BaseService[PlanCRUDRepository]):
                 'plant_catalog_status': config.plant_catalog_status.value,
                 'plant_catalog_version': config.plant_catalog_version,
                 'plant_catalog_sha256': config.plant_catalog_sha256,
+                'planner_mode': planner_mode,
             },
         )
 

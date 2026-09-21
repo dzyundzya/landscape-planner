@@ -1,18 +1,16 @@
 import asyncio
 import json
 from collections.abc import Awaitable, Callable
-from ipaddress import ip_address
-from urllib.parse import urlparse
 from uuid import UUID
 
 from langchain.agents import create_agent
 from langchain_core.messages import AIMessage
 from langchain_core.tools import StructuredTool
-from langchain_openai import ChatOpenAI
 from loguru import logger
 from pydantic import BaseModel, ConfigDict, Field
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
+from app.agent.model import build_chat_model
 from app.core.config.settings.base_settings import BackendSettings
 from app.repositories.crud.analyses import AnalysisCRUDRepository
 from app.repositories.crud.config_snapshots import ConfigSnapshotCRUDRepository
@@ -83,7 +81,7 @@ class LandscapeAgentRuntime:
         """Выполняет один запрос без сохранения истории диалога."""
 
         try:
-            model = self._build_model()
+            model = build_chat_model(settings=self.settings)
             tools = self._build_tools(project_id=project_id)
             agent = create_agent(model=model, tools=tools, system_prompt=SYSTEM_PROMPT)
             async with asyncio.timeout(self.settings.AGENT_TIMEOUT_SECONDS):
@@ -113,44 +111,6 @@ class LandscapeAgentRuntime:
             if call.get('name')
         ]
         return self._message_text(final_message.content), tool_calls
-
-    def _build_model(self) -> ChatOpenAI:
-        if not self.settings.AGENT_ENABLED:
-            raise AgentUnavailableError('Агент отключён. Установите AGENT_ENABLED=true')
-        provider = (self.settings.LLM_PROVIDER or '').strip().lower()
-        model_name = (self.settings.LLM_MODEL or '').strip()
-        if provider not in {'openai', 'openai_compatible'}:
-            raise AgentUnavailableError('Поддерживаются провайдеры openai и openai_compatible')
-        if not model_name:
-            raise AgentUnavailableError('Не задана модель агента в LLM_MODEL')
-        if provider == 'openai_compatible' and not self.settings.LLM_BASE_URL:
-            raise AgentUnavailableError('Для openai_compatible требуется LLM_BASE_URL')
-        if self._uses_external_provider() and not self.settings.ALLOW_EXTERNAL_LLM:
-            raise AgentUnavailableError('Передача сводок внешнему LLM отключена')
-
-        api_key = self.settings.LLM_API_KEY.get_secret_value() if self.settings.LLM_API_KEY else None
-        try:
-            return ChatOpenAI(
-                model=model_name,
-                api_key=api_key,
-                base_url=self.settings.LLM_BASE_URL,
-                temperature=0,
-                timeout=self.settings.AGENT_TIMEOUT_SECONDS,
-                max_retries=1,
-            )
-        except Exception as exc:
-            raise AgentUnavailableError('Не настроен ключ доступа к модели агента') from exc
-
-    def _uses_external_provider(self) -> bool:
-        if not self.settings.LLM_BASE_URL:
-            return True
-        hostname = urlparse(self.settings.LLM_BASE_URL).hostname
-        if hostname is None or hostname == 'localhost':
-            return False
-        try:
-            return not ip_address(hostname).is_loopback
-        except ValueError:
-            return True
 
     def _build_tools(self, project_id: int) -> list[StructuredTool]:
         return [

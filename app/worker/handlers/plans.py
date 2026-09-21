@@ -5,13 +5,16 @@ from uuid import UUID, uuid4
 
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
+from app.agent.layout import LLM_LAYOUT_VERSION, select_llm_layout
 from app.cad import normalize_dxf
+from app.core.config.settings.base_settings import BackendSettings
 from app.domain import NormalizationOptions
-from app.geometry import build_restriction_zones, prepare_project_geometry
-from app.models import JobModel, ProjectFileFormat, ProjectFileStatus, TerritoryType
+from app.geometry import RestrictionResult, build_restriction_zones, prepare_project_geometry
+from app.models import JobModel, PlantingType, ProjectFileFormat, ProjectFileStatus, TerritoryType
 from app.planning import (
     ValidationPlanting,
     assign_species,
+    build_llm_candidate_pool,
     build_plan_preview,
     generate_plantings,
     validate_plan_geometry,
@@ -47,6 +50,7 @@ class _PlanGenerationInput:
     territory_type: TerritoryType
     plant_catalog_version: str
     plant_catalog_sha256: str
+    planner_mode: str
 
 
 @dataclass(frozen=True, slots=True)
@@ -75,6 +79,7 @@ class PlanGenerationJobHandler:
         preview_max_objects: int,
         preview_max_restrictions: int,
         preview_max_coordinates: int,
+        settings: BackendSettings,
     ) -> None:
         self.session_factory = session_factory
         self.storage = storage
@@ -85,6 +90,7 @@ class PlanGenerationJobHandler:
         self.preview_max_objects = preview_max_objects
         self.preview_max_restrictions = preview_max_restrictions
         self.preview_max_coordinates = preview_max_coordinates
+        self.settings = settings
 
     async def execute(self, job: JobModel, ensure_ownership: OwnershipGuard) -> None:
         async with self.session_factory() as session:
@@ -154,6 +160,9 @@ class PlanGenerationJobHandler:
             raise InvalidPlanError('В конфигурации отсутствует снимок нормативного справочника')
         if config.territory_type is None or config.plant_catalog_version is None or config.plant_catalog_sha256 is None:
             raise InvalidPlanError('В конфигурации отсутствует снимок справочника растений')
+        planner_mode = job.input_data.get('planner_mode', 'deterministic')
+        if planner_mode not in {'deterministic', 'llm'}:
+            raise InvalidPlanError('Задача содержит неизвестный режим планировщика')
 
         return _PlanGenerationInput(
             source_path=self.storage.get_path(project_file.storage_key),
@@ -166,6 +175,7 @@ class PlanGenerationJobHandler:
             territory_type=config.territory_type,
             plant_catalog_version=config.plant_catalog_version,
             plant_catalog_sha256=config.plant_catalog_sha256,
+            planner_mode=planner_mode,
         )
 
     def _generate(self, data: _PlanGenerationInput) -> _PlanGenerationOutput:
@@ -192,14 +202,53 @@ class PlanGenerationJobHandler:
         )
         parameters = GenerationParametersSchema.model_validate(data.generation)
         restrictions = build_restriction_zones(project=project, rule_set=rule_set, parameters=parameters)
-        result = generate_plantings(restrictions=restrictions, parameters=parameters)
+        if data.planner_mode == 'llm':
+            candidates, grid_spacing = build_llm_candidate_pool(
+                restrictions=restrictions,
+                parameters=parameters,
+            )
+            llm_result = select_llm_layout(
+                candidates=candidates,
+                parameters=parameters,
+                settings=self.settings,
+            )
+            generated_plantings = llm_result.plantings
+            generator_version = LLM_LAYOUT_VERSION
+            summary = PlanGenerationSummarySchema(
+                candidate_count=len(candidates),
+                tree_count=sum(planting.type is PlantingType.TREE for planting in generated_plantings),
+                bush_count=sum(planting.type is PlantingType.BUSH for planting in generated_plantings),
+                rejected_candidate_count=len(candidates) - len(generated_plantings),
+                strategy='llm_candidate_selection',
+                selected_offset_index=0,
+                offset_x_m=0,
+                offset_y_m=0,
+                grid_spacing_m=grid_spacing,
+                warnings=[*llm_result.warnings, *self._restriction_warnings(restrictions=restrictions)],
+            )
+        else:
+            result = generate_plantings(restrictions=restrictions, parameters=parameters)
+            generated_plantings = result.plantings
+            generator_version = result.generator_version
+            summary = PlanGenerationSummarySchema(
+                candidate_count=result.candidate_count,
+                tree_count=result.tree_count,
+                bush_count=result.bush_count,
+                rejected_candidate_count=result.rejected_candidate_count,
+                strategy='hex_grid_greedy',
+                selected_offset_index=result.selected_offset_index,
+                offset_x_m=result.offset_x_m,
+                offset_y_m=result.offset_y_m,
+                grid_spacing_m=result.grid_spacing_m,
+                warnings=list(result.warnings),
+            )
         species = assign_species(
-            planting_types=(planting.type for planting in result.plantings),
+            planting_types=(planting.type for planting in generated_plantings),
             catalog=plant_catalog,
             territory_type=data.territory_type,
         )
 
-        planting_ids = [uuid4() for _ in result.plantings]
+        planting_ids = [uuid4() for _ in generated_plantings]
         plantings = [
             PlantingCreateSchema(
                 type=planting.type,
@@ -207,7 +256,7 @@ class PlanGenerationJobHandler:
                 y_m=planting.y_m,
                 species=plant_name,
             )
-            for planting, plant_name in zip(result.plantings, species, strict=True)
+            for planting, plant_name in zip(generated_plantings, species, strict=True)
         ]
         validation = validate_plan_geometry(
             project=project,
@@ -219,7 +268,7 @@ class PlanGenerationJobHandler:
                     x_m=planting.x_m,
                     y_m=planting.y_m,
                 )
-                for public_id, planting in zip(planting_ids, result.plantings, strict=True)
+                for public_id, planting in zip(planting_ids, generated_plantings, strict=True)
             ],
             parameters=parameters,
         )
@@ -232,24 +281,20 @@ class PlanGenerationJobHandler:
             max_coordinates=self.preview_max_coordinates,
         )
         return _PlanGenerationOutput(
-            generator_version=result.generator_version,
-            summary=PlanGenerationSummarySchema(
-                candidate_count=result.candidate_count,
-                tree_count=result.tree_count,
-                bush_count=result.bush_count,
-                rejected_candidate_count=result.rejected_candidate_count,
-                strategy='hex_grid_greedy',
-                selected_offset_index=result.selected_offset_index,
-                offset_x_m=result.offset_x_m,
-                offset_y_m=result.offset_y_m,
-                grid_spacing_m=result.grid_spacing_m,
-                warnings=list(result.warnings),
-            ),
+            generator_version=generator_version,
+            summary=summary,
             plantings=plantings,
             planting_ids=planting_ids,
             validation=validation,
             preview=preview,
         )
+
+    @staticmethod
+    def _restriction_warnings(restrictions: RestrictionResult) -> list[str]:
+        unverified_count = sum(issue.code == 'unverified_rule' for issue in restrictions.issues)
+        if not unverified_count:
+            return []
+        return [f'Использованы непроверенные нормативные правила ({unverified_count}); план требует подтверждения']
 
     @staticmethod
     def _required_int(job: JobModel, key: str) -> int:

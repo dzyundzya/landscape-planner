@@ -2,7 +2,6 @@ import { FormEvent, useCallback, useEffect, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 import { AnalysisPanel } from './components/AnalysisPanel'
-import { AgentPanel } from './components/AgentPanel'
 import { ConfigForm } from './components/ConfigForm'
 import { PlanWorkspace } from './components/PlanWorkspace'
 import {
@@ -235,7 +234,6 @@ export function App() {
               onClose={closeProject}
               onSubmit={createMutation.mutate}
             />
-            {project && <AgentPanel key={project.id} projectId={project.id} />}
             {project && (
               <FileSection
                 project={project}

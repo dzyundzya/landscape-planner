@@ -11,7 +11,7 @@ import {
   getPlanPreview,
   getPlanReport,
   startExport,
-  startPlanGeneration,
+  startAgentAutoplan,
   startPlanValidation,
   updatePlanting,
 } from '../api'
@@ -32,7 +32,7 @@ export function PlanWorkspace({ projectId, initialPlanId, onProgress }: Props) {
   const [selectedPlantingId, setSelectedPlantingId] = useState<string | null>(null)
 
   const generationMutation = useMutation({
-    mutationFn: () => startPlanGeneration(projectId),
+    mutationFn: () => startAgentAutoplan(projectId),
     onSuccess: setGenerationJob,
   })
   const generationJobQuery = useJobPolling(generationJob, setGenerationJob)
@@ -140,9 +140,9 @@ export function PlanWorkspace({ projectId, initialPlanId, onProgress }: Props) {
     return (
       <section className="panel action-panel">
         <div className="panel-heading">
-          <div><p className="eyebrow">Шаг 5</p><h2>Сгенерируйте план</h2><p className="section-description">Worker построит нормативные зоны, расставит деревья и кустарники и независимо проверит результат.</p></div>
+          <div><p className="eyebrow">Шаг 5</p><h2>LLM-агент автопланирования</h2><p className="section-description">Python рассчитает допустимые точки, а LLM выберет места для деревьев и кустарников. Некорректные выборы будут отклонены, затем Validator проверит весь план.</p></div>
           <button className="button button-primary" type="button" disabled={generationMutation.isLoading} onClick={() => generationMutation.mutate()}>
-            {generationMutation.isLoading ? 'Ставим в очередь…' : 'Запустить генерацию'}
+            {generationMutation.isLoading ? 'Запускаем агента…' : 'Расставить автоматически'}
           </button>
         </div>
         {generationMutation.error !== null && <InlineError error={generationMutation.error} />}
@@ -157,7 +157,7 @@ export function PlanWorkspace({ projectId, initialPlanId, onProgress }: Props) {
     return (
       <JobPanel
         eyebrow="Шаг 5"
-        title="Генерация плана"
+        title="LLM выбирает места посадок"
         job={generationJobQuery.data ?? generationJob}
         error={actionError}
         isRetrying={generationMutation.isLoading}

@@ -113,7 +113,7 @@ async def test_save_config_snapshot(
     assert data['coordinate_unit'] == 'millimeter'
     assert float(data['unit_scale_to_meters']) == 0.001
     assert data['rules_status'] == 'needs_verification'
-    assert data['rules_version'] == 'draft-2026-09-19-sp42-2026-moscow-743'
+    assert data['rules_version'] == 'draft-2026-09-21-sp42-2026-moscow-743'
     assert len(data['rules_sha256']) == 64
     assert data['territory_type'] == 'courtyard'
     assert data['plant_catalog_status'] == 'needs_verification'

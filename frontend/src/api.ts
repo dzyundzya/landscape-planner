@@ -1,5 +1,4 @@
 import type {
-  AgentMessage,
   Analysis,
   ConfigPayload,
   ConfigSnapshot,
@@ -80,14 +79,6 @@ export function startAnalysis(projectId: number): Promise<Job> {
   return request<Job>(`/projects/${projectId}/analyze`, { method: 'POST' })
 }
 
-export function sendAgentMessage(projectId: number, message: string): Promise<AgentMessage> {
-  return request<AgentMessage>(`/projects/${projectId}/agent/messages`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ message }),
-  })
-}
-
 export function getJob(jobId: number): Promise<Job> {
   return request<Job>(`/jobs/${jobId}`)
 }
@@ -114,6 +105,10 @@ export function getCurrentConfig(projectId: number): Promise<ConfigSnapshot | nu
 
 export function startPlanGeneration(projectId: number): Promise<Job> {
   return request<Job>(`/projects/${projectId}/plans`, { method: 'POST' })
+}
+
+export function startAgentAutoplan(projectId: number): Promise<Job> {
+  return request<Job>(`/projects/${projectId}/agent/autoplan`, { method: 'POST' })
 }
 
 export function getPlan(projectId: number, planId: number): Promise<Plan> {

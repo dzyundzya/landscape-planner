@@ -12,10 +12,12 @@ from app.geometry import RestrictionResult
 from app.models import PlantingType
 from app.schemas.planting import PlantingReadSchema
 
-EXPORT_DXF_VERSION = 'dxf-export/1'
+EXPORT_DXF_VERSION = 'dxf-export/2'
 LAYER_DEFINITIONS = {
     'trees': ('GREENPLAN_TREES', 3),
     'bushes': ('GREENPLAN_BUSHES', 94),
+    'tree_labels': ('GREENPLAN_TREE_LABELS', 3),
+    'bush_labels': ('GREENPLAN_BUSH_LABELS', 94),
     'tree_available': ('GREENPLAN_TREE_AVAILABLE', 92),
     'bush_available': ('GREENPLAN_BUSH_AVAILABLE', 72),
     'tree_exclusion': ('GREENPLAN_TREE_EXCLUSION', 1),
@@ -61,9 +63,14 @@ def write_landscape_dxf(
         if draft:
             layers['draft'] = _add_draft_notice(document=document, restrictions=restrictions, transform=transform)
 
+        counters = {PlantingType.TREE: 0, PlantingType.BUSH: 0}
         for planting in plantings:
             point = transform.to_source(Point2D(x=float(planting.x_m), y=float(planting.y_m)))
-            layer = layers['trees' if planting.type is PlantingType.TREE else 'bushes']
+            is_tree = planting.type is PlantingType.TREE
+            layer = layers['trees' if is_tree else 'bushes']
+            label_layer = layers['tree_labels' if is_tree else 'bush_labels']
+            counters[planting.type] += 1
+            mark = f'{"Д" if is_tree else "К"}-{counters[planting.type]:03d}'
             insert = modelspace.add_blockref(
                 blocks[planting.type],
                 (point.x, point.y),
@@ -74,7 +81,16 @@ def write_landscape_dxf(
                     'PLANTING_ID': str(planting.public_id),
                     'PLANTING_TYPE': planting.type.value,
                     'SPECIES': planting.species or '',
+                    'MARK': mark,
                 }
+            )
+            _add_planting_label(
+                document=document,
+                point=point,
+                mark=mark,
+                species=planting.species,
+                layer=label_layer,
+                transform=transform,
             )
 
         _add_geometry(document, restrictions.tree_available, layers['tree_available'], transform)
@@ -138,10 +154,15 @@ def _create_blocks(document: Drawing, transform: CoordinateTransform) -> dict[Pl
         block = document.blocks.new(name=name)
         radius = radius_m / transform.scale_to_meters
         block.add_circle((0, 0), radius=radius)
-        block.add_line((-radius, 0), (radius, 0))
-        block.add_line((0, -radius), (0, radius))
+        if planting_type is PlantingType.TREE:
+            block.add_line((-radius, 0), (radius, 0))
+            block.add_line((0, -radius), (0, radius))
+        else:
+            block.add_circle((0, 0), radius=radius * 0.55)
+            block.add_line((-radius * 0.7, -radius * 0.7), (radius * 0.7, radius * 0.7))
+            block.add_line((-radius * 0.7, radius * 0.7), (radius * 0.7, -radius * 0.7))
         attribute_height = max(radius * 0.25, 1e-9)
-        for tag in ('PLANTING_ID', 'PLANTING_TYPE', 'SPECIES'):
+        for tag in ('PLANTING_ID', 'PLANTING_TYPE', 'SPECIES', 'MARK'):
             block.add_attdef(
                 tag=tag,
                 insert=(0, 0),
@@ -151,6 +172,29 @@ def _create_blocks(document: Drawing, transform: CoordinateTransform) -> dict[Pl
         existing.add(name.casefold())
         names[planting_type] = name
     return names
+
+
+def _add_planting_label(
+    document: Drawing,
+    point: Point2D,
+    mark: str,
+    species: str | None,
+    layer: str,
+    transform: CoordinateTransform,
+) -> None:
+    """Добавляет рядом с посадкой видимую марку и название породы."""
+
+    offset = 0.75 / transform.scale_to_meters
+    height = max(0.6 / transform.scale_to_meters, 1e-9)
+    text = f'{mark} · {species}' if species else mark
+    document.modelspace().add_text(
+        text,
+        dxfattribs={
+            'insert': (point.x + offset, point.y + offset),
+            'height': height,
+            'layer': layer,
+        },
+    )
 
 
 def _add_geometry(

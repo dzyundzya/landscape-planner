@@ -179,6 +179,12 @@ export function PlanWorkspace({ projectId, initialPlanId, onProgress }: Props) {
           <Metric label="Кандидатов" value={plan.generation_summary.candidate_count} />
           <Metric label="Отклонено" value={plan.generation_summary.rejected_candidate_count} />
         </div>
+        {plan.generation_summary.design_rationale && (
+          <article className="notice notice-info">
+            <span className="notice-marker" />
+            <div><strong>Концепция LLM</strong><p>{plan.generation_summary.design_rationale}</p></div>
+          </article>
+        )}
         {previewQuery.data ? (
           <div className="plan-layout">
             <PlanMap

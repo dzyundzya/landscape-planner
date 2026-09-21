@@ -60,13 +60,21 @@ def select_llm_layout(
             'x': candidate.x_m,
             'y': candidate.y_m,
             'allowed': [planting_type.value for planting_type in candidate.allowed_types],
+            'roles': list(candidate.design_roles),
+            'road_m': candidate.distance_to_road_m,
+            'building_m': candidate.distance_to_building_m,
+            'boundary_m': round(candidate.distance_to_boundary_m, 3),
         }
         for candidate in candidates
     ]
     prompt = (
         'Выбери точки для плана озеленения. Используй только candidate_id из списка и тип из allowed. '
-        'Стремись равномерно заполнить участок, сначала достичь лимита деревьев, затем кустарников. '
-        'Не повторяй candidate_id. Соблюдай минимальные интервалы.\n'
+        'Создай связную ландшафтную композицию, а не случайное заполнение. '
+        'Для аллей выбирай деревья с role=road_alley последовательными рядами вдоль дороги. '
+        'Около зданий выбирай деревья для тени и кустарники с role=building_edge. '
+        'Кустарники также можно собирать по role=perimeter. Точки open_space используй только для '
+        'осмысленных групп или когда профильных точек недостаточно. Не чередуй дерево и куст случайно. '
+        'Выбирай регулярные последовательности координат и не повторяй candidate_id. Соблюдай интервалы.\n'
         f'Лимиты: trees={min(parameters.max_trees, MAX_LLM_PLANTINGS)}, '
         f'bushes={min(parameters.max_bushes, MAX_LLM_PLANTINGS)}, '
         f'tree_tree={parameters.tree_tree_distance_m}, bush_bush={parameters.bush_bush_distance_m}, '
@@ -78,8 +86,10 @@ def select_llm_layout(
             [
                 SystemMessage(
                     content=(
-                        'Ты планировщик озеленения. Точные допустимые координаты уже рассчитаны Python. '
-                        'Выбирай только из них; не придумывай координаты, нормы или новые точки.'
+                        'Ты ландшафтный проектировщик. Точные допустимые координаты и их связь с дорогами, '
+                        'зданиями и границей уже рассчитаны Python. Проектируй аллеи деревьев, озеленение '
+                        'вокруг зданий и цельные группы кустарников. Выбирай только переданные точки; '
+                        'не придумывай координаты, нормы или новые точки.'
                     )
                 ),
                 HumanMessage(content=prompt),
@@ -113,6 +123,7 @@ def _validate_choices(
             or choice.candidate_id in used_ids
             or choice.type not in candidate.allowed_types
             or counts[choice.type] >= limits[choice.type]
+            or not _matches_composition_role(candidate=candidate, planting_type=choice.type, candidates=candidates)
             or not _respects_spacing(
                 candidate=candidate, planting_type=choice.type, selected=selected, parameters=parameters
             )
@@ -123,17 +134,101 @@ def _validate_choices(
         counts[choice.type] += 1
         selected.append(GeneratedPlanting(type=choice.type, x_m=candidate.x_m, y_m=candidate.y_m))
 
+    filled = _fill_composition(
+        candidates=candidates,
+        selected=selected,
+        used_ids=used_ids,
+        counts=counts,
+        limits=limits,
+        parameters=parameters,
+    )
+
     requested_total = parameters.max_trees + parameters.max_bushes
     if requested_total > 0 and not selected:
         raise AgentExecutionError('LLM не выбрал ни одной допустимой посадки')
     warnings = []
     if rejected:
         warnings.append(f'Python отклонил некорректные выборы LLM: {rejected}')
+    if filled:
+        warnings.append(f'Python дополнил композицию профильными точками: {filled}')
     if counts[PlantingType.TREE] < parameters.max_trees:
         warnings.append('LLM выбрал меньше деревьев, чем заданный лимит')
     if counts[PlantingType.BUSH] < parameters.max_bushes:
         warnings.append('LLM выбрал меньше кустарников, чем заданный лимит')
     return LlmLayoutResult(plantings=tuple(selected), warnings=tuple(warnings), rationale=response.rationale)
+
+
+def _matches_composition_role(
+    candidate: LayoutCandidate,
+    planting_type: PlantingType,
+    candidates: tuple[LayoutCandidate, ...],
+) -> bool:
+    preferred_roles = _preferred_roles(planting_type=planting_type)
+    has_preferred = any(
+        planting_type in item.allowed_types and preferred_roles.intersection(item.design_roles) for item in candidates
+    )
+    return not has_preferred or bool(preferred_roles.intersection(candidate.design_roles))
+
+
+def _fill_composition(
+    candidates: tuple[LayoutCandidate, ...],
+    selected: list[GeneratedPlanting],
+    used_ids: set[int],
+    counts: dict[PlantingType, int],
+    limits: dict[PlantingType, int],
+    parameters: GenerationParametersSchema,
+) -> int:
+    filled = 0
+    for planting_type in (PlantingType.TREE, PlantingType.BUSH):
+        ranked = sorted(
+            (candidate for candidate in candidates if planting_type in candidate.allowed_types),
+            key=lambda candidate: _composition_rank(candidate=candidate, planting_type=planting_type),
+        )
+        for candidate in ranked:
+            if counts[planting_type] >= limits[planting_type]:
+                break
+            if candidate.id in used_ids or not _respects_spacing(
+                candidate=candidate,
+                planting_type=planting_type,
+                selected=selected,
+                parameters=parameters,
+            ):
+                continue
+            selected.append(GeneratedPlanting(type=planting_type, x_m=candidate.x_m, y_m=candidate.y_m))
+            used_ids.add(candidate.id)
+            counts[planting_type] += 1
+            filled += 1
+    return filled
+
+
+def _preferred_roles(planting_type: PlantingType) -> set[str]:
+    if planting_type is PlantingType.TREE:
+        return {'road_alley', 'building_edge'}
+    return {'building_edge', 'perimeter'}
+
+
+def _composition_rank(candidate: LayoutCandidate, planting_type: PlantingType) -> tuple[float, float, float, float]:
+    if planting_type is PlantingType.TREE:
+        primary = (
+            min(
+                value for value in (candidate.distance_to_road_m, candidate.distance_to_building_m) if value is not None
+            )
+            if candidate.distance_to_road_m is not None or candidate.distance_to_building_m is not None
+            else float('inf')
+        )
+        role_rank = (
+            0 if 'road_alley' in candidate.design_roles else 1 if 'building_edge' in candidate.design_roles else 2
+        )
+    else:
+        primary = (
+            candidate.distance_to_building_m
+            if candidate.distance_to_building_m is not None
+            else candidate.distance_to_boundary_m
+        )
+        role_rank = (
+            0 if 'building_edge' in candidate.design_roles else 1 if 'perimeter' in candidate.design_roles else 2
+        )
+    return role_rank, primary, candidate.y_m, candidate.x_m
 
 
 def _respects_spacing(

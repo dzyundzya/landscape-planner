@@ -204,6 +204,7 @@ class PlanGenerationJobHandler:
         restrictions = build_restriction_zones(project=project, rule_set=rule_set, parameters=parameters)
         if data.planner_mode == 'llm':
             candidates, grid_spacing = build_llm_candidate_pool(
+                project=project,
                 restrictions=restrictions,
                 parameters=parameters,
             )
@@ -224,6 +225,7 @@ class PlanGenerationJobHandler:
                 offset_x_m=0,
                 offset_y_m=0,
                 grid_spacing_m=grid_spacing,
+                design_rationale=llm_result.rationale,
                 warnings=[*llm_result.warnings, *self._restriction_warnings(restrictions=restrictions)],
             )
         else:

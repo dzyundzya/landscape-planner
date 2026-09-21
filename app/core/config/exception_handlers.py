@@ -2,6 +2,7 @@ from fastapi import FastAPI, Request, status
 from fastapi.responses import JSONResponse
 from loguru import logger
 
+from app.services.exceptions.agents import AgentExecutionError, AgentUnavailableError
 from app.services.exceptions.analyses import AnalysisSourceNotReadyError, InvalidAnalysisError
 from app.services.exceptions.base import AlreadyExistsError, BadRequestError, NotFoundError
 from app.services.exceptions.config_snapshots import ConfigPrerequisiteError, InvalidConfigSnapshotError
@@ -29,6 +30,26 @@ from app.services.exceptions.project_files import InvalidProjectFileError, Proje
 
 def register_exception_handlers(app: FastAPI) -> None:
     """Регистрирует глобальные обработчики исключений."""
+
+    @app.exception_handler(AgentUnavailableError)
+    async def agent_unavailable_handler(request: Request, exc: AgentUnavailableError) -> JSONResponse:
+        """Сообщает, что агент отключён или не настроен."""
+
+        logger.info('Агент недоступен: path={}, detail={}', request.url.path, str(exc))
+        return JSONResponse(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            content={'detail': str(exc)},
+        )
+
+    @app.exception_handler(AgentExecutionError)
+    async def agent_execution_handler(request: Request, exc: AgentExecutionError) -> JSONResponse:
+        """Преобразует сбой модели или цикла агента в HTTP 502."""
+
+        logger.warning('Ошибка агента: path={}, detail={}', request.url.path, str(exc))
+        return JSONResponse(
+            status_code=status.HTTP_502_BAD_GATEWAY,
+            content={'detail': str(exc)},
+        )
 
     @app.exception_handler(NotFoundError)
     async def not_found_handler(request: Request, exc: NotFoundError) -> JSONResponse:

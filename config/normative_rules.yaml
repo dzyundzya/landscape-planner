@@ -1,5 +1,5 @@
 schema_version: 1
-version: draft-2026-09-19-sp42-2026-moscow-743
+version: draft-2026-09-21-sp42-2026-moscow-743
 rules:
   - id: sp42-2026-building-tree
     version: '1'
@@ -127,6 +127,25 @@ rules:
       Между наружными поверхностями ствола дерева и подземного водопровода либо его защитного футляра.
       Требуется геометрия наружной поверхности сети и учёт диаметра ствола; для кустарника числовое значение
       в таблице не установлено.
+
+  - id: sp42-2026-underground-water-bush
+    version: '1'
+    object_type: utility_water
+    vegetation_type: bush
+    distance_kind: not_specified
+    min_distance_m: null
+    measurement_reference: utility_outer_surface
+    conditions: {}
+    required_attributes: []
+    document: СП 42.13330.2026 «Градостроительство. Планировка и застройка территорий»
+    edition: утверждён приказом Минстроя России от 11.06.2026 № 368/пр
+    clause: п. 6.4.8, таблица 6.3, примечание 5
+    source_url: https://protect.gost.ru/sp/details/f6917ab4-63d8-4ecb-9794-0b4990ba3b99
+    verification_status: needs_verification
+    verified_at: null
+    description: >-
+      Для кустарника числовое расстояние до подземной сети водопровода в таблице не установлено.
+      Запись не создаёт запретную зону и должна быть подтверждена профильным специалистом.
 
   - id: sp42-2026-underground-power-tree
     version: '1'

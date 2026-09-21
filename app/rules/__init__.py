@@ -3,6 +3,7 @@ from app.rules.catalog import (
     NormativeRuleSchema,
     NormativeRuleSetSchema,
     RuleCatalogError,
+    RuleDistanceKind,
     RuleVerificationStatus,
     load_rule_set,
 )
@@ -26,6 +27,7 @@ __all__ = (
     'LoadedRuleSet',
     'LoadedPlantCatalog',
     'NormativeRuleSchema',
+    'RuleDistanceKind',
     'NormativeRuleSetSchema',
     'PlantAssortment',
     'PlantCatalogEntrySchema',

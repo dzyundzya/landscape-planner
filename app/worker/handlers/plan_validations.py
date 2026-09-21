@@ -98,7 +98,11 @@ class PlanValidationJobHandler:
             boundary=snapshot.config.boundary.model_dump(mode='json'),
             layer_mappings=[mapping.model_dump(mode='json') for mapping in snapshot.config.layer_mappings],
         )
-        restrictions = build_restriction_zones(project=project, rule_set=rule_set)
+        restrictions = build_restriction_zones(
+            project=project,
+            rule_set=rule_set,
+            parameters=snapshot.config.generation,
+        )
         return validate_plan_geometry(
             project=project,
             restrictions=restrictions,

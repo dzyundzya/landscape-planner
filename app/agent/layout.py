@@ -12,8 +12,25 @@ from app.planning.generator import GeneratedPlanting, LayoutCandidate
 from app.schemas.config_snapshot import GenerationParametersSchema
 from app.services.exceptions.agents import AgentExecutionError
 
-LLM_LAYOUT_VERSION = 'langchain-candidate-selection/1'
+LLM_LAYOUT_VERSION = 'langchain-candidate-selection/2'
 MAX_LLM_PLANTINGS = 200
+LANDSCAPE_LAYOUT_SYSTEM_PROMPT = """Ты ведущий ландшафтный архитектор городских территорий.
+Тебе переданы только допустимые точки, уже рассчитанные Python с учётом геометрии и нормативных ограничений.
+Твоя задача — выбрать из них понятную композицию, которую проектировщик сможет объяснить на плане.
+
+Сначала мысленно выбери два–четыре композиционных элемента, затем подбери точки для них:
+1. Основной ряд или аллея деревьев вдоль дороги. Используй точки road_alley, лежащие в одной линии или
+   образующие плавную последовательность, с визуально равномерным шагом.
+2. При необходимости второй короткий ряд деревьев или компактную группу у здания из точек building_edge.
+3. Две–четыре компактные группы кустарников по три–семь растений у здания или границы участка.
+4. Точки open_space используй только для отдельной компактной группы, а не для заполнения пустот.
+
+Не разбрасывай одиночные растения по всей территории, не создавай шахматное поле, не чередуй случайно деревья
+и кустарники и не пытайся обязательно использовать максимальное количество. Лучше выбрать меньше растений,
+но сохранить ритм, группы, свободные проходы и читаемую структуру. Не придумывай входы в здание, стороны света,
+координаты, нормы или новые точки: этих данных у тебя нет. Используй только переданные candidate_id и allowed.
+Верни сначала все деревья, затем все кустарники. В rationale по-русски назови выбранные композиционные элементы
+и объясни, почему они образуют цельный план."""
 
 
 class LlmPlacementChoice(BaseModel):
@@ -68,30 +85,21 @@ def select_llm_layout(
         for candidate in candidates
     ]
     prompt = (
-        'Выбери точки для плана озеленения. Используй только candidate_id из списка и тип из allowed. '
-        'Создай связную ландшафтную композицию, а не случайное заполнение. '
-        'Для аллей выбирай деревья с role=road_alley последовательными рядами вдоль дороги. '
-        'Около зданий выбирай деревья для тени и кустарники с role=building_edge. '
-        'Кустарники также можно собирать по role=perimeter. Точки open_space используй только для '
-        'осмысленных групп или когда профильных точек недостаточно. Не чередуй дерево и куст случайно. '
-        'Выбирай регулярные последовательности координат и не повторяй candidate_id. Соблюдай интервалы.\n'
-        f'Лимиты: trees={min(parameters.max_trees, MAX_LLM_PLANTINGS)}, '
-        f'bushes={min(parameters.max_bushes, MAX_LLM_PLANTINGS)}, '
-        f'tree_tree={parameters.tree_tree_distance_m}, bush_bush={parameters.bush_bush_distance_m}, '
-        f'tree_bush={parameters.tree_bush_distance_m}.\n'
+        'Составь композицию из переданных кандидатов. Значения x и y даны в метрах. '
+        'Для линии выбирай точки с одинаковым направлением и близким шагом между соседями. '
+        'Каждая посадка должна входить в ряд или компактную группу того же типа; избегай изолированных точек. '
+        'candidate_id нельзя повторять, а type обязан входить в allowed. Лимиты являются верхней границей, '
+        'а не обязательным количеством.\n'
+        f'Максимум: trees={min(parameters.max_trees, MAX_LLM_PLANTINGS)}, '
+        f'bushes={min(parameters.max_bushes, MAX_LLM_PLANTINGS)}. Минимальные интервалы: '
+        f'tree_tree={parameters.tree_tree_distance_m} м, bush_bush={parameters.bush_bush_distance_m} м, '
+        f'tree_bush={parameters.tree_bush_distance_m} м.\n'
         f'Кандидаты: {json.dumps(candidate_payload, ensure_ascii=False, separators=(",", ":"))}'
     )
     try:
         response = model.invoke(
             [
-                SystemMessage(
-                    content=(
-                        'Ты ландшафтный проектировщик. Точные допустимые координаты и их связь с дорогами, '
-                        'зданиями и границей уже рассчитаны Python. Проектируй аллеи деревьев, озеленение '
-                        'вокруг зданий и цельные группы кустарников. Выбирай только переданные точки; '
-                        'не придумывай координаты, нормы или новые точки.'
-                    )
-                ),
+                SystemMessage(content=LANDSCAPE_LAYOUT_SYSTEM_PROMPT),
                 HumanMessage(content=prompt),
             ]
         )
@@ -134,23 +142,12 @@ def _validate_choices(
         counts[choice.type] += 1
         selected.append(GeneratedPlanting(type=choice.type, x_m=candidate.x_m, y_m=candidate.y_m))
 
-    filled = _fill_composition(
-        candidates=candidates,
-        selected=selected,
-        used_ids=used_ids,
-        counts=counts,
-        limits=limits,
-        parameters=parameters,
-    )
-
     requested_total = parameters.max_trees + parameters.max_bushes
     if requested_total > 0 and not selected:
         raise AgentExecutionError('LLM не выбрал ни одной допустимой посадки')
     warnings = []
     if rejected:
         warnings.append(f'Python отклонил некорректные выборы LLM: {rejected}')
-    if filled:
-        warnings.append(f'Python дополнил композицию профильными точками: {filled}')
     if counts[PlantingType.TREE] < parameters.max_trees:
         warnings.append('LLM выбрал меньше деревьев, чем заданный лимит')
     if counts[PlantingType.BUSH] < parameters.max_bushes:
@@ -170,65 +167,10 @@ def _matches_composition_role(
     return not has_preferred or bool(preferred_roles.intersection(candidate.design_roles))
 
 
-def _fill_composition(
-    candidates: tuple[LayoutCandidate, ...],
-    selected: list[GeneratedPlanting],
-    used_ids: set[int],
-    counts: dict[PlantingType, int],
-    limits: dict[PlantingType, int],
-    parameters: GenerationParametersSchema,
-) -> int:
-    filled = 0
-    for planting_type in (PlantingType.TREE, PlantingType.BUSH):
-        ranked = sorted(
-            (candidate for candidate in candidates if planting_type in candidate.allowed_types),
-            key=lambda candidate: _composition_rank(candidate=candidate, planting_type=planting_type),
-        )
-        for candidate in ranked:
-            if counts[planting_type] >= limits[planting_type]:
-                break
-            if candidate.id in used_ids or not _respects_spacing(
-                candidate=candidate,
-                planting_type=planting_type,
-                selected=selected,
-                parameters=parameters,
-            ):
-                continue
-            selected.append(GeneratedPlanting(type=planting_type, x_m=candidate.x_m, y_m=candidate.y_m))
-            used_ids.add(candidate.id)
-            counts[planting_type] += 1
-            filled += 1
-    return filled
-
-
 def _preferred_roles(planting_type: PlantingType) -> set[str]:
     if planting_type is PlantingType.TREE:
         return {'road_alley', 'building_edge'}
     return {'building_edge', 'perimeter'}
-
-
-def _composition_rank(candidate: LayoutCandidate, planting_type: PlantingType) -> tuple[float, float, float, float]:
-    if planting_type is PlantingType.TREE:
-        primary = (
-            min(
-                value for value in (candidate.distance_to_road_m, candidate.distance_to_building_m) if value is not None
-            )
-            if candidate.distance_to_road_m is not None or candidate.distance_to_building_m is not None
-            else float('inf')
-        )
-        role_rank = (
-            0 if 'road_alley' in candidate.design_roles else 1 if 'building_edge' in candidate.design_roles else 2
-        )
-    else:
-        primary = (
-            candidate.distance_to_building_m
-            if candidate.distance_to_building_m is not None
-            else candidate.distance_to_boundary_m
-        )
-        role_rank = (
-            0 if 'building_edge' in candidate.design_roles else 1 if 'perimeter' in candidate.design_roles else 2
-        )
-    return role_rank, primary, candidate.y_m, candidate.x_m
 
 
 def _respects_spacing(

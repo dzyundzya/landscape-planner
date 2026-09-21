@@ -21,6 +21,13 @@ class RuleVerificationStatus(StrEnum):
     TEST_ONLY = 'test_only'
 
 
+class RuleDistanceKind(StrEnum):
+    """Способ задания расстояния в нормативном источнике."""
+
+    MINIMUM = 'minimum'
+    NOT_SPECIFIED = 'not_specified'
+
+
 class NormativeRuleSchema(BaseModel):
     """Одно версионированное правило минимального расстояния."""
 
@@ -28,7 +35,8 @@ class NormativeRuleSchema(BaseModel):
     version: Annotated[str, Field(min_length=1, max_length=100)]
     object_type: SemanticObjectType
     vegetation_type: PlantingType
-    min_distance_m: Annotated[float, Field(gt=0, le=10_000)]
+    distance_kind: RuleDistanceKind = RuleDistanceKind.MINIMUM
+    min_distance_m: Annotated[float, Field(gt=0, le=10_000)] | None = None
     measurement_reference: Annotated[str, Field(min_length=1, max_length=100)]
     conditions: dict[str, JsonValue] = Field(default_factory=dict)
     required_attributes: list[Annotated[str, Field(min_length=1, max_length=100)]] = Field(default_factory=list)
@@ -46,6 +54,10 @@ class NormativeRuleSchema(BaseModel):
     def validate_verification(self) -> 'NormativeRuleSchema':
         """Не допускает verified без полного указания проверенного источника."""
 
+        if self.distance_kind is RuleDistanceKind.MINIMUM and self.min_distance_m is None:
+            raise ValueError('Правило минимального расстояния должно содержать числовое значение')
+        if self.distance_kind is RuleDistanceKind.NOT_SPECIFIED and self.min_distance_m is not None:
+            raise ValueError('При отсутствии числового требования расстояние не задаётся')
         if self.verification_status is RuleVerificationStatus.VERIFIED:
             required = (self.document, self.edition, self.clause, self.source_url, self.verified_at)
             if any(value is None for value in required):

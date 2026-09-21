@@ -5,8 +5,9 @@ from shapely.geometry import GeometryCollection
 from shapely.geometry.base import BaseGeometry
 
 from app.geometry.preparation import PreparedGeometryObject, PreparedProjectGeometry
-from app.models import PlantingType
+from app.models import PlantingType, SemanticObjectType
 from app.rules import LoadedRuleSet, NormativeRuleSchema, RuleVerificationStatus
+from app.schemas.config_snapshot import GenerationParametersSchema
 
 
 @dataclass(frozen=True, slots=True)
@@ -60,6 +61,7 @@ class RestrictionResult:
 def build_restriction_zones(
     project: PreparedProjectGeometry,
     rule_set: LoadedRuleSet,
+    parameters: GenerationParametersSchema | None = None,
 ) -> RestrictionResult:
     """Применяет подходящие правила и сохраняет неопределённости их проверки."""
 
@@ -75,6 +77,12 @@ def build_restriction_zones(
     ]
 
     for obj in project.objects:
+        if parameters is not None and obj.object_type in {
+            SemanticObjectType.EXISTING_TREE,
+            SemanticObjectType.EXISTING_BUSH,
+        }:
+            zones.extend(_build_existing_vegetation_zones(obj=obj, parameters=parameters))
+            continue
         for planting_type in PlantingType:
             object_zones, object_issues = _build_object_zones(
                 obj=obj,
@@ -157,6 +165,8 @@ def _build_object_zones(
                     rule_id=rule.id,
                 )
             )
+        if rule.min_distance_m is None:
+            continue
         zones.append(
             RestrictionZone(
                 source_object_id=obj.provenance.source_object_id,
@@ -183,6 +193,50 @@ def _build_object_zones(
             )
         )
     return zones, issues
+
+
+def _build_existing_vegetation_zones(
+    obj: PreparedGeometryObject,
+    parameters: GenerationParametersSchema,
+) -> list[RestrictionZone]:
+    """Строит зоны от существующей растительности по проектным интервалам."""
+
+    source_type = SemanticObjectType(obj.object_type)
+    if source_type is SemanticObjectType.EXISTING_TREE:
+        distances = {
+            PlantingType.TREE: parameters.tree_tree_distance_m,
+            PlantingType.BUSH: parameters.tree_bush_distance_m,
+        }
+    else:
+        distances = {
+            PlantingType.TREE: parameters.tree_bush_distance_m,
+            PlantingType.BUSH: parameters.bush_bush_distance_m,
+        }
+
+    return [
+        RestrictionZone(
+            source_object_id=obj.provenance.source_object_id,
+            object_type=obj.object_type,
+            planting_type=planting_type,
+            rule_id=f'project-spacing-{source_type.value}-{planting_type.value}',
+            rule_version='1',
+            min_distance_m=distance,
+            measurement_reference='existing_vegetation_outer_surface',
+            document='Параметры проекта',
+            clause=_spacing_parameter_name(source_type=source_type, planting_type=planting_type),
+            source_geometry=obj.geometry,
+            geometry=obj.geometry.buffer(distance),
+        )
+        for planting_type, distance in distances.items()
+    ]
+
+
+def _spacing_parameter_name(source_type: SemanticObjectType, planting_type: PlantingType) -> str:
+    if source_type is SemanticObjectType.EXISTING_TREE and planting_type is PlantingType.TREE:
+        return 'tree_tree_distance_m'
+    if source_type is SemanticObjectType.EXISTING_BUSH and planting_type is PlantingType.BUSH:
+        return 'bush_bush_distance_m'
+    return 'tree_bush_distance_m'
 
 
 def _merge_zones(zones: list[RestrictionZone], planting_type: PlantingType) -> BaseGeometry:

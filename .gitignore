@@ -250,3 +250,7 @@ __marimo__/
 AGENTS.md
 .rules
 /rules
+/scripts/
+/scripts
+.scripts
+scripts/*

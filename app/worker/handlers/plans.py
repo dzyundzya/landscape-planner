@@ -190,8 +190,8 @@ class PlanGenerationJobHandler:
             boundary=data.boundary,
             layer_mappings=data.layer_mappings,
         )
-        restrictions = build_restriction_zones(project=project, rule_set=rule_set)
         parameters = GenerationParametersSchema.model_validate(data.generation)
+        restrictions = build_restriction_zones(project=project, rule_set=rule_set, parameters=parameters)
         result = generate_plantings(restrictions=restrictions, parameters=parameters)
         species = assign_species(
             planting_types=(planting.type for planting in result.plantings),

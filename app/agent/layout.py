@@ -12,8 +12,9 @@ from app.planning.generator import GeneratedPlanting, LayoutCandidate
 from app.schemas.config_snapshot import GenerationParametersSchema
 from app.services.exceptions.agents import AgentExecutionError
 
-LLM_LAYOUT_VERSION = 'langchain-candidate-selection/2'
+LLM_LAYOUT_VERSION = 'langchain-candidate-selection/3'
 MAX_LLM_PLANTINGS = 200
+MAX_LAYOUT_ATTEMPTS = 3
 LANDSCAPE_LAYOUT_SYSTEM_PROMPT = """Ты ведущий ландшафтный архитектор городских территорий.
 Тебе переданы только допустимые точки, уже рассчитанные Python с учётом геометрии и нормативных ограничений.
 Твоя задача — выбрать из них понятную композицию, которую проектировщик сможет объяснить на плане.
@@ -25,12 +26,11 @@ LANDSCAPE_LAYOUT_SYSTEM_PROMPT = """Ты ведущий ландшафтный �
 3. Две–четыре компактные группы кустарников по три–семь растений у здания или границы участка.
 4. Точки open_space используй только для отдельной компактной группы, а не для заполнения пустот.
 
-Не разбрасывай одиночные растения по всей территории, не создавай шахматное поле, не чередуй случайно деревья
-и кустарники и не пытайся обязательно использовать максимальное количество. Лучше выбрать меньше растений,
-но сохранить ритм, группы, свободные проходы и читаемую структуру. Не придумывай входы в здание, стороны света,
-координаты, нормы или новые точки: этих данных у тебя нет. Используй только переданные candidate_id и allowed.
-Верни сначала все деревья, затем все кустарники. В rationale по-русски назови выбранные композиционные элементы
-и объясни, почему они образуют цельный план."""
+Не разбрасывай одиночные растения по всей территории, не создавай шахматное поле и не чередуй случайно деревья
+и кустарники. Размести ровно указанное целевое количество каждого типа, сохранив ритм, группы, свободные проходы
+и читаемую структуру. Не придумывай входы в здание, стороны света, координаты, нормы или новые точки: этих данных
+у тебя нет. Используй только переданные candidate_id и allowed. Верни сначала все деревья, затем все кустарники.
+В rationale по-русски назови выбранные композиционные элементы и объясни, почему они образуют цельный план."""
 
 
 class LlmPlacementChoice(BaseModel):
@@ -67,8 +67,11 @@ def select_llm_layout(
 ) -> LlmLayoutResult:
     """Предлагает LLM выбрать посадки и повторно проверяет выбор в Python."""
 
+    target_counts = _target_counts(parameters=parameters)
     if not candidates:
-        return LlmLayoutResult(plantings=(), warnings=('Нет допустимых точек для LLM-планировщика',), rationale='')
+        if sum(target_counts.values()) > 0:
+            raise AgentExecutionError('Нет допустимых точек для размещения целевого количества растений')
+        return LlmLayoutResult(plantings=(), warnings=(), rationale='Посадки не запрошены')
 
     model = build_chat_model(settings=settings).with_structured_output(LlmLayoutResponse)
     candidate_payload = [
@@ -88,26 +91,42 @@ def select_llm_layout(
         'Составь композицию из переданных кандидатов. Значения x и y даны в метрах. '
         'Для линии выбирай точки с одинаковым направлением и близким шагом между соседями. '
         'Каждая посадка должна входить в ряд или компактную группу того же типа; избегай изолированных точек. '
-        'candidate_id нельзя повторять, а type обязан входить в allowed. Лимиты являются верхней границей, '
-        'а не обязательным количеством.\n'
-        f'Максимум: trees={min(parameters.max_trees, MAX_LLM_PLANTINGS)}, '
-        f'bushes={min(parameters.max_bushes, MAX_LLM_PLANTINGS)}. Минимальные интервалы: '
+        'candidate_id нельзя повторять, а type обязан входить в allowed. Ответ будет принят только при точном '
+        'совпадении количества после проверки Python.\n'
+        f'Целевое количество: trees={target_counts[PlantingType.TREE]}, '
+        f'bushes={target_counts[PlantingType.BUSH]}. Минимальные интервалы: '
         f'tree_tree={parameters.tree_tree_distance_m} м, bush_bush={parameters.bush_bush_distance_m} м, '
         f'tree_bush={parameters.tree_bush_distance_m} м.\n'
         f'Кандидаты: {json.dumps(candidate_payload, ensure_ascii=False, separators=(",", ":"))}'
     )
-    try:
-        response = model.invoke(
-            [
-                SystemMessage(content=LANDSCAPE_LAYOUT_SYSTEM_PROMPT),
-                HumanMessage(content=prompt),
-            ]
-        )
-    except Exception as exc:
-        raise AgentExecutionError('LLM не смог сформировать план посадок') from exc
-    if not isinstance(response, LlmLayoutResponse):
-        raise AgentExecutionError('LLM вернул некорректную структуру плана')
-    return _validate_choices(response=response, candidates=candidates, parameters=parameters)
+    feedback = ''
+    for attempt in range(1, MAX_LAYOUT_ATTEMPTS + 1):
+        try:
+            response = model.invoke(
+                [
+                    SystemMessage(content=LANDSCAPE_LAYOUT_SYSTEM_PROMPT),
+                    HumanMessage(content=prompt + feedback),
+                ]
+            )
+        except Exception as exc:
+            raise AgentExecutionError('LLM не смог сформировать план посадок') from exc
+        if not isinstance(response, LlmLayoutResponse):
+            raise AgentExecutionError('LLM вернул некорректную структуру плана')
+        result = _validate_choices(response=response, candidates=candidates, parameters=parameters)
+        actual_counts = _planting_counts(plantings=result.plantings)
+        if actual_counts == target_counts:
+            return result
+        if attempt < MAX_LAYOUT_ATTEMPTS:
+            feedback = (
+                '\nПредыдущий вариант не прошёл проверку. После удаления повторов, неподходящих типов и нарушений '
+                f'интервалов осталось trees={actual_counts[PlantingType.TREE]}, '
+                f'bushes={actual_counts[PlantingType.BUSH]}. Это попытка {attempt + 1} из {MAX_LAYOUT_ATTEMPTS}. '
+                'Сформируй заново полный план с точным целевым количеством, сохранив цельную композицию.'
+            )
+
+    raise AgentExecutionError(
+        f'LLM не смог разместить целевое количество растений без нарушения ограничений за {MAX_LAYOUT_ATTEMPTS} попытки'
+    )
 
 
 def _validate_choices(
@@ -131,7 +150,6 @@ def _validate_choices(
             or choice.candidate_id in used_ids
             or choice.type not in candidate.allowed_types
             or counts[choice.type] >= limits[choice.type]
-            or not _matches_composition_role(candidate=candidate, planting_type=choice.type, candidates=candidates)
             or not _respects_spacing(
                 candidate=candidate, planting_type=choice.type, selected=selected, parameters=parameters
             )
@@ -142,9 +160,6 @@ def _validate_choices(
         counts[choice.type] += 1
         selected.append(GeneratedPlanting(type=choice.type, x_m=candidate.x_m, y_m=candidate.y_m))
 
-    requested_total = parameters.max_trees + parameters.max_bushes
-    if requested_total > 0 and not selected:
-        raise AgentExecutionError('LLM не выбрал ни одной допустимой посадки')
     warnings = []
     if rejected:
         warnings.append(f'Python отклонил некорректные выборы LLM: {rejected}')
@@ -155,22 +170,20 @@ def _validate_choices(
     return LlmLayoutResult(plantings=tuple(selected), warnings=tuple(warnings), rationale=response.rationale)
 
 
-def _matches_composition_role(
-    candidate: LayoutCandidate,
-    planting_type: PlantingType,
-    candidates: tuple[LayoutCandidate, ...],
-) -> bool:
-    preferred_roles = _preferred_roles(planting_type=planting_type)
-    has_preferred = any(
-        planting_type in item.allowed_types and preferred_roles.intersection(item.design_roles) for item in candidates
-    )
-    return not has_preferred or bool(preferred_roles.intersection(candidate.design_roles))
+def _target_counts(parameters: GenerationParametersSchema) -> dict[PlantingType, int]:
+    target_counts = {
+        PlantingType.TREE: parameters.max_trees,
+        PlantingType.BUSH: parameters.max_bushes,
+    }
+    if sum(target_counts.values()) > MAX_LLM_PLANTINGS:
+        raise AgentExecutionError(f'Целевое количество растений превышает лимит LLM-планировщика {MAX_LLM_PLANTINGS}')
+    return target_counts
 
 
-def _preferred_roles(planting_type: PlantingType) -> set[str]:
-    if planting_type is PlantingType.TREE:
-        return {'road_alley', 'building_edge'}
-    return {'building_edge', 'perimeter'}
+def _planting_counts(plantings: tuple[GeneratedPlanting, ...]) -> dict[PlantingType, int]:
+    return {
+        planting_type: sum(planting.type is planting_type for planting in plantings) for planting_type in PlantingType
+    }
 
 
 def _respects_spacing(

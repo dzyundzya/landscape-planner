@@ -1,0 +1,96 @@
+x-app-environment: &app-environment
+  SERVER_HOST: 0.0.0.0
+  SERVER_PORT: 8000
+  SERVER_WORKERS: 1
+  DB_POSTGRES_HOST: db
+  DB_POSTGRES_PORT: 5432
+  FILE_STORAGE_ROOT: /data/storage
+  NORMATIVE_RULES_PATH: /app/config/normative_rules.yaml
+  PLANT_CATALOG_PATH: /app/config/plant_catalog.yaml
+
+x-app-base: &app-base
+  image: landscape-planner:local
+  env_file:
+    - .env
+  environment: *app-environment
+  volumes:
+    - file_storage:/data/storage
+  init: true
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ${DB_POSTGRES_NAME}
+      POSTGRES_USER: ${DB_POSTGRES_USERNAME}
+      POSTGRES_PASSWORD: ${DB_POSTGRES_PASSWORD}
+    ports:
+      - '127.0.0.1:${DB_POSTGRES_PORT:-5432}:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  test_db:
+    image: postgres:16-alpine
+    profiles: ['test']
+    environment:
+      POSTGRES_DB: landscape_planner_test
+      POSTGRES_USER: ${DB_POSTGRES_USERNAME}
+      POSTGRES_PASSWORD: ${DB_POSTGRES_PASSWORD}
+    ports:
+      - '127.0.0.1:5434:5432'
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  migrate:
+    <<: *app-base
+    command: ['alembic', 'upgrade', 'head']
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: 'no'
+
+  api:
+    <<: *app-base
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: ['uvicorn', 'app.main:backend_app', '--host', '0.0.0.0', '--port', '8000', '--workers', '1']
+    ports:
+      - '127.0.0.1:${SERVER_PORT:-8000}:8000'
+    depends_on:
+      db:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ['CMD', 'python', '-c', "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=3)"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    restart: unless-stopped
+    stop_grace_period: 20s
+
+  worker:
+    <<: *app-base
+    command: ['python', '-m', 'app.worker']
+    depends_on:
+      db:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+    restart: unless-stopped
+    stop_grace_period: 60s
+
+volumes:
+  postgres_data:
+  file_storage:

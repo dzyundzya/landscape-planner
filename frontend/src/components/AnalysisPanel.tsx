@@ -1,4 +1,7 @@
+import { useEffect, useState } from 'react'
+
 import type { Analysis } from '../types'
+import { Pagination } from './Pagination'
 
 type Props = {
   analysis: Analysis
@@ -10,9 +13,20 @@ const severityLabels = {
   blocking: 'Блокирует проверку',
 }
 
+const ENTITY_PAGE_SIZE = 8
+
 export function AnalysisPanel({ analysis }: Props) {
   const { result } = analysis
   const entities = Object.entries(result.entity_counts).sort(([left], [right]) => left.localeCompare(right))
+  const [entityPage, setEntityPage] = useState(1)
+  const totalEntityPages = Math.max(1, Math.ceil(entities.length / ENTITY_PAGE_SIZE))
+  const currentEntityPage = Math.min(entityPage, totalEntityPages)
+  const visibleEntities = entities.slice(
+    (currentEntityPage - 1) * ENTITY_PAGE_SIZE,
+    currentEntityPage * ENTITY_PAGE_SIZE,
+  )
+
+  useEffect(() => setEntityPage(1), [analysis.id])
 
   return (
     <section className="panel analysis-panel" aria-labelledby="analysis-title">
@@ -51,12 +65,19 @@ export function AnalysisPanel({ analysis }: Props) {
         <div>
           <h3>Состав чертежа</h3>
           <div className="chip-list">
-            {entities.map(([name, count]) => (
+            {visibleEntities.map(([name, count]) => (
               <span className="data-chip" key={name}>
                 {name} <b>{count}</b>
               </span>
             ))}
           </div>
+          <Pagination
+            currentPage={currentEntityPage}
+            pageSize={ENTITY_PAGE_SIZE}
+            totalItems={entities.length}
+            ariaLabel="Страницы состава чертежа"
+            onPageChange={setEntityPage}
+          />
         </div>
         <div>
           <h3>Границы modelspace</h3>

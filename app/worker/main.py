@@ -6,6 +6,7 @@ from loguru import logger
 
 from app.core.config.logger import configure_logger
 from app.core.config.manager import settings
+from app.core.config.monitoring import configure_sentry, flush_sentry
 from app.core.db.database import async_db
 from app.models import JobType
 from app.storage import LocalFileStorage
@@ -87,7 +88,11 @@ def main() -> None:
     """CLI entrypoint для `python -m app.worker`."""
 
     configure_logger()
-    reason = asyncio.run(run_worker())
+    configure_sentry(service_name='worker')
+    try:
+        reason = asyncio.run(run_worker())
+    finally:
+        flush_sentry()
     if reason is WorkerExitReason.LOCK_LOST:
         raise SystemExit(2)
 

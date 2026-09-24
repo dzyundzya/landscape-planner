@@ -1,6 +1,7 @@
 from pathlib import Path
+from typing import Annotated
 
-from pydantic import SecretStr
+from pydantic import Field, SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -44,6 +45,12 @@ class BackendSettings(BaseSettings):
 
     LOGGING_LEVEL: str = 'INFO'
     LOGGERS: tuple[str, str] = ('uvicorn.asgi', 'uvicorn.access')
+
+    SENTRY_DSN: SecretStr | None = None
+    SENTRY_ENVIRONMENT: str = 'development'
+    SENTRY_RELEASE: str | None = None
+    SENTRY_ENABLE_LOGS: bool = True
+    SENTRY_TRACES_SAMPLE_RATE: Annotated[float, Field(ge=0, le=1)] = 0.0
 
     FILE_STORAGE_ROOT: Path = Path('var/storage')
     MAX_UPLOAD_SIZE_BYTES: int = 300 * 1024 * 1024

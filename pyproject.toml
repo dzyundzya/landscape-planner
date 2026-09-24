@@ -21,6 +21,7 @@ shapely = ">=2,<3"
 pyyaml = "^6.0.3"
 langchain = "^1.4.2"
 langchain-openai = "^1.6.2"
+sentry-sdk = {version = "^2.35.0", extras = ["fastapi"]}
 
 
 [tool.poetry.group.dev.dependencies]

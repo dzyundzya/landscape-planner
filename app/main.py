@@ -13,12 +13,14 @@ from app.api.endpoints import router as api_endpoint_router
 from app.core.config.exception_handlers import register_exception_handlers
 from app.core.config.logger import configure_logger
 from app.core.config.manager import settings
+from app.core.config.monitoring import configure_sentry, flush_sentry
 from app.core.db.database import async_db
 
 
 def init_backend_app() -> FastAPI:
 
     configure_logger()
+    configure_sentry(service_name='api')
 
     @asynccontextmanager
     async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
@@ -27,10 +29,13 @@ def init_backend_app() -> FastAPI:
             settings.DEBUG,
             settings.API_PREFIX,
         )
-        yield
-        logger.info('Приложение Landscape planner останавливается')
-        await async_db.dispose()
-        logger.info('Подключение к базе данных закрыто')
+        try:
+            yield
+        finally:
+            logger.info('Приложение Landscape planner останавливается')
+            await async_db.dispose()
+            logger.info('Подключение к базе данных закрыто')
+            flush_sentry()
 
     app = FastAPI(
         **settings.set_backend_app_attributes,

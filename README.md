@@ -77,6 +77,24 @@ ALLOW_EXTERNAL_LLM=true
 Loopback-подключение не требует `ALLOW_EXTERNAL_LLM=true`. После изменения `.env`
 перезапустите FastAPI и worker: обращение к LLM выполняет worker.
 
+## Sentry
+
+Sentry собирает необработанные ошибки FastAPI, исключения worker и сообщения
+Loguru уровня `WARNING` и выше. Интеграция отключена, пока в `.env` не указан DSN:
+
+```dotenv
+SENTRY_DSN=https://<public-key>@<host>/<project-id>
+SENTRY_ENVIRONMENT=development
+SENTRY_RELEASE=landscape-planner@1.0.0
+SENTRY_ENABLE_LOGS=true
+SENTRY_TRACES_SAMPLE_RATE=0.0
+```
+
+После изменения настроек перезапустите API и worker. Они помечаются в Sentry тегом
+`service=api` или `service=worker`. Значение `SENTRY_TRACES_SAMPLE_RATE` находится
+в диапазоне от `0` до `1`; значение `0` отключает performance-транзакции. Тела HTTP-
+запросов, содержимое DXF и персональные данные приложением в Sentry не отправляются.
+
 В итоговом DXF деревья и кустарники имеют разные символы и отдельные слои. Рядом
 с каждой посадкой добавляется видимая подпись вида `Д-001 · Липа мелколистная` или
 `К-001 · Сирень обыкновенная`; полные UUID, тип, порода и марка также сохраняются

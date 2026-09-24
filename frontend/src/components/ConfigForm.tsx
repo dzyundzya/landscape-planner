@@ -1,4 +1,4 @@
-import { FormEvent, useMemo, useState } from 'react'
+import { FormEvent, useEffect, useMemo, useState } from 'react'
 
 import { coordinateUnitOptions, guessCoordinateUnit, objectTypeOptions, territoryOptions } from '../constants'
 import type {
@@ -16,6 +16,7 @@ import type {
 import { BoundaryPicker } from './BoundaryPicker'
 import { LayerPreview } from './LayerPreview'
 import { LayerAssistant } from './LayerAssistant'
+import { Pagination } from './Pagination'
 
 type Props = {
   analysis: Analysis
@@ -36,6 +37,8 @@ const defaultGeneration: Generation = {
   tree_bush_distance_m: 2.5,
   grid_spacing_m: 1,
 }
+
+const LAYER_PAGE_SIZE = 20
 
 export function ConfigForm({ analysis, isSaving, savedConfig, onSave }: Props) {
   const restoredConfig = savedConfig?.analysis_id === analysis.id ? savedConfig : null
@@ -60,6 +63,7 @@ export function ConfigForm({ analysis, isSaving, savedConfig, onSave }: Props) {
   const [generation, setGeneration] = useState<Generation>(restoredConfig?.generation ?? defaultGeneration)
   const [layerSearch, setLayerSearch] = useState('')
   const [layerView, setLayerView] = useState<LayerView>('active')
+  const [layerPage, setLayerPage] = useState(1)
   const [bulkObjectType, setBulkObjectType] = useState<SemanticObjectType>('ignore')
   const [previewLayerName, setPreviewLayerName] = useState<string | null>(null)
   const [assistantIsOpen, setAssistantIsOpen] = useState(false)
@@ -89,6 +93,12 @@ export function ConfigForm({ analysis, isSaving, savedConfig, onSave }: Props) {
       return true
     })
   }, [analysis.result.layers, layerMappings, layerSearch, layerView])
+  const totalLayerPages = Math.max(1, Math.ceil(visibleLayers.length / LAYER_PAGE_SIZE))
+  const currentLayerPage = Math.min(layerPage, totalLayerPages)
+  const paginatedLayers = visibleLayers.slice(
+    (currentLayerPage - 1) * LAYER_PAGE_SIZE,
+    currentLayerPage * LAYER_PAGE_SIZE,
+  )
   const confidentSuggestionCount = analysis.result.layers.filter(
     (layer) => layer.suggestion?.confidence === 'high' && layer.suggestion.object_type !== 'ignore',
   ).length
@@ -96,6 +106,8 @@ export function ConfigForm({ analysis, isSaving, savedConfig, onSave }: Props) {
   const unresolvedLayerCount = analysis.result.layers.filter(
     (layer) => !layer.is_unused && layer.suggestion?.confidence !== 'high',
   ).length
+
+  useEffect(() => setLayerPage(1), [layerSearch, layerView])
 
   function changeUnit(value: CoordinateUnit) {
     setCoordinateUnit(value)
@@ -345,7 +357,7 @@ export function ConfigForm({ analysis, isSaving, savedConfig, onSave }: Props) {
               </select>
             </label>
             <label>
-              <span>Назначить показанным</span>
+              <span>Назначить найденным</span>
               <select
                 value={bulkObjectType}
                 onChange={(event) => setBulkObjectType(event.target.value as SemanticObjectType)}
@@ -354,13 +366,15 @@ export function ConfigForm({ analysis, isSaving, savedConfig, onSave }: Props) {
               </select>
             </label>
             <button className="button button-secondary" type="button" onClick={applyBulkType} disabled={visibleLayers.length === 0}>
-              Применить к показанным
+              Применить ко всем найденным
             </button>
           </div>
           <div className="layer-tool-summary">
-            <span>Показано {visibleLayers.length} из {analysis.result.layers.length}</span>
+            <span>
+              Найдено {visibleLayers.length} из {analysis.result.layers.length} · на странице {paginatedLayers.length}
+            </span>
             <button className="text-button" type="button" onClick={() => applySuggestions(true)} disabled={visibleLayers.length === 0}>
-              Применить предложения к показанным
+              Применить предложения ко всем найденным
             </button>
           </div>
           {includedLayers === 0 && (
@@ -384,7 +398,7 @@ export function ConfigForm({ analysis, isSaving, savedConfig, onSave }: Props) {
             <div className="layer-row layer-header" role="row">
               <span>Слой и состав</span><span>Назначение</span><span>Геометрия</span><span>Просмотр</span>
             </div>
-            {visibleLayers.map(({ layer, index }) => {
+            {paginatedLayers.map(({ layer, index }) => {
               const mapping = layerMappings[index]
               return (
                 <div className="layer-row" role="row" key={layer.name}>
@@ -425,6 +439,13 @@ export function ConfigForm({ analysis, isSaving, savedConfig, onSave }: Props) {
             })}
             {visibleLayers.length === 0 && <p className="empty-layer-result">По заданному фильтру слои не найдены.</p>}
           </div>
+          <Pagination
+            currentPage={currentLayerPage}
+            pageSize={LAYER_PAGE_SIZE}
+            totalItems={visibleLayers.length}
+            ariaLabel="Страницы сопоставления слоёв"
+            onPageChange={setLayerPage}
+          />
           {hasUtilityLayers && (
             <article className="notice notice-warning mapping-notice">
               <span className="notice-marker" />

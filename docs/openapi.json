@@ -1,0 +1,3999 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Автосад API",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/api/projects/{project_id}/agent/messages": {
+      "post": {
+        "tags": [
+          "Agent"
+        ],
+        "summary": "Send Agent Message",
+        "description": "Передаёт сообщение агенту, привязанному к проекту из URL.",
+        "operationId": "send_agent_message_api_projects__project_id__agent_messages_post",
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Project Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AgentMessageCreateSchema"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgentMessageReadSchema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/projects/{project_id}/agent/autoplan": {
+      "post": {
+        "tags": [
+          "Agent"
+        ],
+        "summary": "Start Agent Autoplan",
+        "description": "Запускает автоматическую расстановку по подтверждённым настройкам проекта.",
+        "operationId": "start_agent_autoplan_api_projects__project_id__agent_autoplan_post",
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Project Id"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobReadSchema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/projects/{project_id}/analyze": {
+      "post": {
+        "tags": [
+          "Analyses"
+        ],
+        "summary": "Analyze Project",
+        "description": "Ставит анализ текущего исходника проекта в очередь.",
+        "operationId": "analyze_project_api_projects__project_id__analyze_post",
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Project Id"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobReadSchema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/projects/{project_id}/analysis": {
+      "get": {
+        "tags": [
+          "Analyses"
+        ],
+        "summary": "Get Project Analysis",
+        "description": "Возвращает анализ текущей версии исходника проекта.",
+        "operationId": "get_project_analysis_api_projects__project_id__analysis_get",
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Project Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnalysisReadSchema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/projects/{project_id}/config": {
+      "get": {
+        "tags": [
+          "Project configuration"
+        ],
+        "summary": "Get Project Config",
+        "description": "Возвращает последнюю конфигурацию текущего анализа проекта.",
+        "operationId": "get_project_config_api_projects__project_id__config_get",
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Project Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConfigSnapshotReadSchema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Project configuration"
+        ],
+        "summary": "Save Project Config",
+        "description": "Подтверждает настройки текущего анализа проекта.",
+        "operationId": "save_project_config_api_projects__project_id__config_put",
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Project Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConfigSnapshotUpsertSchema"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConfigSnapshotReadSchema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/projects/{project_id}/plans/{plan_id}/exports": {
+      "post": {
+        "tags": [
+          "Exports"
+        ],
+        "summary": "Create Export",
+        "description": "Фиксирует ревизию и ставит проверенный либо черновой экспорт в очередь.",
+        "operationId": "create_export_api_projects__project_id__plans__plan_id__exports_post",
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Project Id"
+            }
+          },
+          {
+            "name": "plan_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Plan Id"
+            }
+          },
+          {
+            "name": "draft",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "description": "Сформировать демонстрационный комплект без статуса нормативной проверки",
+              "default": false,
+              "title": "Draft"
+            },
+            "description": "Сформировать демонстрационный комплект без статуса нормативной проверки"
+          },
+          {
+            "name": "If-Match",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "If-Match"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobReadSchema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/projects/{project_id}/plans/{plan_id}/exports/{export_id}": {
+      "get": {
+        "tags": [
+          "Exports"
+        ],
+        "summary": "Get Export",
+        "description": "Возвращает готовый комплект файлов экспорта.",
+        "operationId": "get_export_api_projects__project_id__plans__plan_id__exports__export_id__get",
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Project Id"
+            }
+          },
+          {
+            "name": "plan_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Plan Id"
+            }
+          },
+          {
+            "name": "export_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Export Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExportReadSchema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/projects/{project_id}/artifacts/{artifact_id}": {
+      "get": {
+        "tags": [
+          "File artifacts"
+        ],
+        "summary": "Download File Artifact",
+        "description": "Скачивает сформированный файл проекта.",
+        "operationId": "download_file_artifact_api_projects__project_id__artifacts__artifact_id__get",
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Project Id"
+            }
+          },
+          {
+            "name": "artifact_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Artifact Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/jobs/{job_id}": {
+      "get": {
+        "tags": [
+          "Jobs"
+        ],
+        "summary": "Get Job",
+        "description": "Возвращает состояние фоновой задачи.",
+        "operationId": "get_job_api_jobs__job_id__get",
+        "parameters": [
+          {
+            "name": "job_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Job Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobReadSchema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/projects/{project_id}/plans": {
+      "post": {
+        "tags": [
+          "Plans"
+        ],
+        "summary": "Generate Plan",
+        "description": "Ставит генерацию плана по текущей конфигурации в очередь.",
+        "operationId": "generate_plan_api_projects__project_id__plans_post",
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Project Id"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobReadSchema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/projects/{project_id}/plans/current": {
+      "get": {
+        "tags": [
+          "Plans"
+        ],
+        "summary": "Get Current Plan",
+        "description": "Возвращает последний план проекта.",
+        "operationId": "get_current_plan_api_projects__project_id__plans_current_get",
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Project Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlanReadSchema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/projects/{project_id}/plans/{plan_id}": {
+      "get": {
+        "tags": [
+          "Plans"
+        ],
+        "summary": "Get Plan",
+        "description": "Возвращает план озеленения.",
+        "operationId": "get_plan_api_projects__project_id__plans__plan_id__get",
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Project Id"
+            }
+          },
+          {
+            "name": "plan_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Plan Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlanReadSchema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/projects/{project_id}/plans/{plan_id}/preview": {
+      "get": {
+        "tags": [
+          "Plans"
+        ],
+        "summary": "Get Plan Preview",
+        "description": "Возвращает диагностическую геометрию плана в локальных метрах.",
+        "operationId": "get_plan_preview_api_projects__project_id__plans__plan_id__preview_get",
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Project Id"
+            }
+          },
+          {
+            "name": "plan_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Plan Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlanPreviewReadSchema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/projects/{project_id}/plans/{plan_id}/validate": {
+      "post": {
+        "tags": [
+          "Plan validations"
+        ],
+        "summary": "Validate Plan",
+        "description": "Ставит повторную проверку текущей ревизии плана в очередь.",
+        "operationId": "validate_plan_api_projects__project_id__plans__plan_id__validate_post",
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Project Id"
+            }
+          },
+          {
+            "name": "plan_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Plan Id"
+            }
+          },
+          {
+            "name": "If-Match",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "If-Match"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobReadSchema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/projects/{project_id}/plans/{plan_id}/report": {
+      "get": {
+        "tags": [
+          "Plan validations"
+        ],
+        "summary": "Get Plan Report",
+        "description": "Возвращает объяснимые проверки актуальной ревизии плана.",
+        "operationId": "get_plan_report_api_projects__project_id__plans__plan_id__report_get",
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Project Id"
+            }
+          },
+          {
+            "name": "plan_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Plan Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlanValidationReadSchema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/projects/{project_id}/plans/{plan_id}/plantings": {
+      "post": {
+        "tags": [
+          "Plantings"
+        ],
+        "summary": "Add Planting",
+        "description": "Добавляет проверенную посадку в план.",
+        "operationId": "add_planting_api_projects__project_id__plans__plan_id__plantings_post",
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Project Id"
+            }
+          },
+          {
+            "name": "plan_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Plan Id"
+            }
+          },
+          {
+            "name": "If-Match",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "If-Match"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PlantingCreateSchema"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlantingMutationReadSchema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/projects/{project_id}/plans/{plan_id}/plantings/{planting_id}": {
+      "patch": {
+        "tags": [
+          "Plantings"
+        ],
+        "summary": "Update Planting",
+        "description": "Перемещает посадку или изменяет её тип.",
+        "operationId": "update_planting_api_projects__project_id__plans__plan_id__plantings__planting_id__patch",
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Project Id"
+            }
+          },
+          {
+            "name": "plan_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Plan Id"
+            }
+          },
+          {
+            "name": "planting_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Planting Id"
+            }
+          },
+          {
+            "name": "If-Match",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "If-Match"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PlantingPatchSchema"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlantingMutationReadSchema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Plantings"
+        ],
+        "summary": "Delete Planting",
+        "description": "Удаляет посадку из плана.",
+        "operationId": "delete_planting_api_projects__project_id__plans__plan_id__plantings__planting_id__delete",
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Project Id"
+            }
+          },
+          {
+            "name": "plan_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Plan Id"
+            }
+          },
+          {
+            "name": "planting_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Planting Id"
+            }
+          },
+          {
+            "name": "If-Match",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "If-Match"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/projects/": {
+      "get": {
+        "tags": [
+          "Projects"
+        ],
+        "summary": "Get Projects",
+        "description": "Возвращает страницу проектов.",
+        "operationId": "get_projects_api_projects__get",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "description": "Номер страницы",
+              "default": 1,
+              "title": "Page"
+            },
+            "description": "Номер страницы"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "description": "Количество объектов на странице",
+              "default": 20,
+              "title": "Limit"
+            },
+            "description": "Количество объектов на странице"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProjectPageSchema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Projects"
+        ],
+        "summary": "Create Project",
+        "description": "Создает проект.",
+        "operationId": "create_project_api_projects__post",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProjectCreateSchema"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProjectReadSchema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/projects/{project_id}": {
+      "get": {
+        "tags": [
+          "Projects"
+        ],
+        "summary": "Get Project",
+        "description": "Возвращает проект по ID.",
+        "operationId": "get_project_api_projects__project_id__get",
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Project Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProjectReadSchema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/projects/{project_id}/files/current": {
+      "get": {
+        "tags": [
+          "Project files"
+        ],
+        "summary": "Get Current Project File",
+        "description": "Возвращает последнюю версию исходного файла проекта.",
+        "operationId": "get_current_project_file_api_projects__project_id__files_current_get",
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Project Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProjectFileReadSchema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/projects/{project_id}/files/": {
+      "post": {
+        "tags": [
+          "Project files"
+        ],
+        "summary": "Upload Project File",
+        "description": "Загружает новую версию исходного файла проекта.",
+        "operationId": "upload_project_file_api_projects__project_id__files__post",
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Project Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_upload_project_file_api_projects__project_id__files__post"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProjectFileReadSchema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "summary": "Health Check",
+        "operationId": "health_check_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "type": "object",
+                  "title": "Response Health Check Health Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AgentMessageCreateSchema": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "maxLength": 4000,
+            "minLength": 1,
+            "title": "Message"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "message"
+        ],
+        "title": "AgentMessageCreateSchema",
+        "description": "Запрос пользователя к агенту текущего проекта."
+      },
+      "AgentMessageReadSchema": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "model": {
+            "type": "string",
+            "title": "Model"
+          },
+          "tool_calls": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Tool Calls"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "message",
+          "model"
+        ],
+        "title": "AgentMessageReadSchema",
+        "description": "Ответ агента и фактически вызванные инструменты."
+      },
+      "AnalysisBoundaryCandidateSchema": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Id"
+          },
+          "layer": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 1,
+            "title": "Layer"
+          },
+          "entity_type": {
+            "type": "string",
+            "maxLength": 32,
+            "minLength": 1,
+            "title": "Entity Type"
+          },
+          "area_source_units": {
+            "type": "number",
+            "exclusiveMinimum": 0.0,
+            "title": "Area Source Units"
+          },
+          "coordinates": {
+            "items": {
+              "prefixItems": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                }
+              ],
+              "type": "array",
+              "maxItems": 2,
+              "minItems": 2
+            },
+            "type": "array",
+            "maxItems": 513,
+            "minItems": 4,
+            "title": "Coordinates"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "layer",
+          "entity_type",
+          "area_source_units",
+          "coordinates"
+        ],
+        "title": "AnalysisBoundaryCandidateSchema",
+        "description": "Замкнутый контур, который пользователь может подтвердить как границу."
+      },
+      "AnalysisBoundsSchema": {
+        "properties": {
+          "min_x": {
+            "type": "number",
+            "title": "Min X"
+          },
+          "min_y": {
+            "type": "number",
+            "title": "Min Y"
+          },
+          "max_x": {
+            "type": "number",
+            "title": "Max X"
+          },
+          "max_y": {
+            "type": "number",
+            "title": "Max Y"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "min_x",
+          "min_y",
+          "max_x",
+          "max_y"
+        ],
+        "title": "AnalysisBoundsSchema",
+        "description": "Прямоугольные границы обнаруженной геометрии."
+      },
+      "AnalysisLayerGeometrySchema": {
+        "properties": {
+          "entity_type": {
+            "type": "string",
+            "maxLength": 32,
+            "minLength": 1,
+            "title": "Entity Type"
+          },
+          "closed": {
+            "type": "boolean",
+            "title": "Closed"
+          },
+          "coordinates": {
+            "items": {
+              "prefixItems": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                }
+              ],
+              "type": "array",
+              "maxItems": 2,
+              "minItems": 2
+            },
+            "type": "array",
+            "maxItems": 128,
+            "minItems": 2,
+            "title": "Coordinates"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "entity_type",
+          "closed",
+          "coordinates"
+        ],
+        "title": "AnalysisLayerGeometrySchema",
+        "description": "Облегчённая геометрия слоя для диагностического просмотра."
+      },
+      "AnalysisLayerGroupSchema": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Id"
+          },
+          "label": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 1,
+            "title": "Label"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "suggested",
+              "family"
+            ],
+            "title": "Kind"
+          },
+          "layer_names": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 100,
+            "minItems": 1,
+            "title": "Layer Names"
+          },
+          "suggestion": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AnalysisLayerSuggestionSchema"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "maxLength": 1000,
+            "minLength": 1,
+            "title": "Reason"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "label",
+          "kind",
+          "layer_names",
+          "reason"
+        ],
+        "title": "AnalysisLayerGroupSchema",
+        "description": "Группа слоёв для управляемого массового подтверждения."
+      },
+      "AnalysisLayerSchema": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 1,
+            "title": "Name"
+          },
+          "entity_count": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Entity Count"
+          },
+          "entity_counts": {
+            "additionalProperties": {
+              "type": "integer",
+              "minimum": 0.0
+            },
+            "type": "object",
+            "title": "Entity Counts"
+          },
+          "block_entity_count": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Block Entity Count",
+            "default": 0
+          },
+          "block_entity_counts": {
+            "additionalProperties": {
+              "type": "integer",
+              "minimum": 0.0
+            },
+            "type": "object",
+            "title": "Block Entity Counts"
+          },
+          "block_names": {
+            "items": {
+              "type": "string",
+              "maxLength": 255,
+              "minLength": 1
+            },
+            "type": "array",
+            "title": "Block Names"
+          },
+          "is_unused": {
+            "type": "boolean",
+            "title": "Is Unused",
+            "default": false
+          },
+          "suggestion": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AnalysisLayerSuggestionSchema"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "preview": {
+            "items": {
+              "$ref": "#/components/schemas/AnalysisLayerGeometrySchema"
+            },
+            "type": "array",
+            "maxItems": 12,
+            "title": "Preview"
+          },
+          "preview_truncated": {
+            "type": "boolean",
+            "title": "Preview Truncated",
+            "default": false
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "name",
+          "entity_count"
+        ],
+        "title": "AnalysisLayerSchema",
+        "description": "Сводка объектов одного слоя DXF."
+      },
+      "AnalysisLayerSuggestionSchema": {
+        "properties": {
+          "object_type": {
+            "$ref": "#/components/schemas/SemanticObjectType"
+          },
+          "geometry_role": {
+            "type": "string",
+            "enum": [
+              "line",
+              "area"
+            ],
+            "title": "Geometry Role"
+          },
+          "confidence": {
+            "type": "string",
+            "enum": [
+              "high",
+              "medium"
+            ],
+            "title": "Confidence"
+          },
+          "reason": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Reason"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "object_type",
+          "geometry_role",
+          "confidence",
+          "reason"
+        ],
+        "title": "AnalysisLayerSuggestionSchema",
+        "description": "Неподтверждённое предложение классификации слоя."
+      },
+      "AnalysisReadSchema": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Id"
+          },
+          "project_id": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Project Id"
+          },
+          "project_file_id": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Project File Id"
+          },
+          "job_id": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Job Id"
+          },
+          "schema_version": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Schema Version"
+          },
+          "result": {
+            "$ref": "#/components/schemas/AnalysisResultSchema"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "project_id",
+          "project_file_id",
+          "job_id",
+          "schema_version",
+          "result",
+          "created_at"
+        ],
+        "title": "AnalysisReadSchema",
+        "description": "Схема сохранённого анализа проекта."
+      },
+      "AnalysisResultSchema": {
+        "properties": {
+          "dxf_version": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 32
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dxf Version"
+          },
+          "drawing_units": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 64
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Drawing Units"
+          },
+          "entity_counts": {
+            "additionalProperties": {
+              "type": "integer",
+              "minimum": 0.0
+            },
+            "type": "object",
+            "title": "Entity Counts"
+          },
+          "layers": {
+            "items": {
+              "$ref": "#/components/schemas/AnalysisLayerSchema"
+            },
+            "type": "array",
+            "title": "Layers"
+          },
+          "layer_groups": {
+            "items": {
+              "$ref": "#/components/schemas/AnalysisLayerGroupSchema"
+            },
+            "type": "array",
+            "title": "Layer Groups"
+          },
+          "boundary_candidates": {
+            "items": {
+              "$ref": "#/components/schemas/AnalysisBoundaryCandidateSchema"
+            },
+            "type": "array",
+            "title": "Boundary Candidates"
+          },
+          "blocks": {
+            "additionalProperties": {
+              "type": "integer",
+              "minimum": 0.0
+            },
+            "type": "object",
+            "title": "Blocks"
+          },
+          "labels_count": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Labels Count",
+            "default": 0
+          },
+          "external_references": {
+            "items": {
+              "type": "string",
+              "maxLength": 500,
+              "minLength": 1
+            },
+            "type": "array",
+            "title": "External References"
+          },
+          "unsupported_entities": {
+            "additionalProperties": {
+              "type": "integer",
+              "minimum": 0.0
+            },
+            "type": "object",
+            "title": "Unsupported Entities"
+          },
+          "bounds": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AnalysisBoundsSchema"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "warnings": {
+            "items": {
+              "$ref": "#/components/schemas/AnalysisWarningSchema"
+            },
+            "type": "array",
+            "title": "Warnings"
+          },
+          "requires_user_confirmation": {
+            "type": "boolean",
+            "title": "Requires User Confirmation",
+            "default": true
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "AnalysisResultSchema",
+        "description": "Версионированный результат разбора DXF."
+      },
+      "AnalysisWarningSchema": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Code"
+          },
+          "message": {
+            "type": "string",
+            "maxLength": 2000,
+            "minLength": 1,
+            "title": "Message"
+          },
+          "severity": {
+            "$ref": "#/components/schemas/AnalysisWarningSeverity"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "code",
+          "message",
+          "severity"
+        ],
+        "title": "AnalysisWarningSchema",
+        "description": "Структурированное предупреждение анализатора."
+      },
+      "AnalysisWarningSeverity": {
+        "type": "string",
+        "enum": [
+          "info",
+          "warning",
+          "blocking"
+        ],
+        "title": "AnalysisWarningSeverity",
+        "description": "Серьёзность предупреждения анализа чертежа."
+      },
+      "Body_upload_project_file_api_projects__project_id__files__post": {
+        "properties": {
+          "file": {
+            "type": "string",
+            "contentMediaType": "application/octet-stream",
+            "title": "File",
+            "description": "Исходный файл DXF или DWF"
+          }
+        },
+        "type": "object",
+        "required": [
+          "file"
+        ],
+        "title": "Body_upload_project_file_api_projects__project_id__files__post"
+      },
+      "CheckResultSchema": {
+        "properties": {
+          "check_type": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Check Type"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ValidationStatus"
+          },
+          "planting_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Planting Id"
+          },
+          "actual": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Actual"
+          },
+          "required": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Required"
+          },
+          "unit": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 32,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unit"
+          },
+          "rule_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rule Id"
+          },
+          "rule_version": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rule Version"
+          },
+          "source_object_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 255,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Object Id"
+          },
+          "document": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Document"
+          },
+          "clause": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Clause"
+          },
+          "reason": {
+            "type": "string",
+            "maxLength": 2000,
+            "minLength": 1,
+            "title": "Reason"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "check_type",
+          "status",
+          "reason"
+        ],
+        "title": "CheckResultSchema",
+        "description": "Проверяемый факт Validator с трассировкой до источника и правила."
+      },
+      "ConfigSnapshotReadSchema": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Id"
+          },
+          "project_id": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Project Id"
+          },
+          "analysis_id": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Analysis Id"
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Version"
+          },
+          "schema_version": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Schema Version"
+          },
+          "coordinate_unit": {
+            "$ref": "#/components/schemas/CoordinateUnit"
+          },
+          "unit_scale_to_meters": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Unit Scale To Meters"
+          },
+          "boundary": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/PolygonBoundarySchema"
+              },
+              {
+                "$ref": "#/components/schemas/MultiPolygonBoundarySchema"
+              }
+            ],
+            "title": "Boundary",
+            "discriminator": {
+              "propertyName": "type",
+              "mapping": {
+                "MultiPolygon": "#/components/schemas/MultiPolygonBoundarySchema",
+                "Polygon": "#/components/schemas/PolygonBoundarySchema"
+              }
+            }
+          },
+          "layer_mappings": {
+            "items": {
+              "$ref": "#/components/schemas/LayerMappingSchema"
+            },
+            "type": "array",
+            "title": "Layer Mappings"
+          },
+          "generation": {
+            "$ref": "#/components/schemas/GenerationParametersSchema"
+          },
+          "rules_status": {
+            "$ref": "#/components/schemas/NormativeRulesStatus"
+          },
+          "rules_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rules Version"
+          },
+          "rules_sha256": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 64,
+                "minLength": 64
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rules Sha256"
+          },
+          "territory_type": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/TerritoryType"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "plant_catalog_status": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PlantCatalogStatus"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "plant_catalog_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Plant Catalog Version"
+          },
+          "plant_catalog_sha256": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 64,
+                "minLength": 64
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Plant Catalog Sha256"
+          },
+          "content_sha256": {
+            "type": "string",
+            "maxLength": 64,
+            "minLength": 64,
+            "title": "Content Sha256"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "project_id",
+          "analysis_id",
+          "version",
+          "schema_version",
+          "coordinate_unit",
+          "unit_scale_to_meters",
+          "boundary",
+          "layer_mappings",
+          "generation",
+          "rules_status",
+          "rules_version",
+          "rules_sha256",
+          "territory_type",
+          "plant_catalog_status",
+          "plant_catalog_version",
+          "plant_catalog_sha256",
+          "content_sha256",
+          "created_at"
+        ],
+        "title": "ConfigSnapshotReadSchema",
+        "description": "Схема неизменяемого снимка настроек проекта."
+      },
+      "ConfigSnapshotUpsertSchema": {
+        "properties": {
+          "coordinate_unit": {
+            "$ref": "#/components/schemas/CoordinateUnit"
+          },
+          "territory_type": {
+            "$ref": "#/components/schemas/TerritoryType"
+          },
+          "boundary": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/PolygonBoundarySchema"
+              },
+              {
+                "$ref": "#/components/schemas/MultiPolygonBoundarySchema"
+              }
+            ],
+            "title": "Boundary",
+            "discriminator": {
+              "propertyName": "type",
+              "mapping": {
+                "MultiPolygon": "#/components/schemas/MultiPolygonBoundarySchema",
+                "Polygon": "#/components/schemas/PolygonBoundarySchema"
+              }
+            }
+          },
+          "layer_mappings": {
+            "items": {
+              "$ref": "#/components/schemas/LayerMappingSchema"
+            },
+            "type": "array",
+            "title": "Layer Mappings"
+          },
+          "generation": {
+            "$ref": "#/components/schemas/GenerationParametersSchema"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "coordinate_unit",
+          "territory_type",
+          "boundary",
+          "generation"
+        ],
+        "title": "ConfigSnapshotUpsertSchema",
+        "description": "Схема подтверждения настроек текущего анализа."
+      },
+      "CoordinateUnit": {
+        "type": "string",
+        "enum": [
+          "millimeter",
+          "centimeter",
+          "meter",
+          "kilometer",
+          "inch",
+          "foot",
+          "yard"
+        ],
+        "title": "CoordinateUnit",
+        "description": "Подтверждённая единица координат исходного чертежа."
+      },
+      "ExportManifestItemSchema": {
+        "properties": {
+          "artifact_id": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Artifact Id"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/FileArtifactKind"
+          },
+          "format": {
+            "$ref": "#/components/schemas/FileArtifactFormat"
+          },
+          "download_name": {
+            "type": "string",
+            "title": "Download Name"
+          },
+          "size_bytes": {
+            "type": "integer",
+            "exclusiveMinimum": 0.0,
+            "title": "Size Bytes"
+          },
+          "sha256": {
+            "type": "string",
+            "maxLength": 64,
+            "minLength": 64,
+            "title": "Sha256"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "artifact_id",
+          "kind",
+          "format",
+          "download_name",
+          "size_bytes",
+          "sha256"
+        ],
+        "title": "ExportManifestItemSchema",
+        "description": "Проверяемая запись файла в комплекте экспорта."
+      },
+      "ExportReadSchema": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Id"
+          },
+          "project_id": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Project Id"
+          },
+          "plan_id": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Plan Id"
+          },
+          "plan_revision": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Plan Revision"
+          },
+          "validation_id": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Validation Id"
+          },
+          "job_id": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Job Id"
+          },
+          "export_version": {
+            "type": "string",
+            "title": "Export Version"
+          },
+          "manifest": {
+            "items": {
+              "$ref": "#/components/schemas/ExportManifestItemSchema"
+            },
+            "type": "array",
+            "title": "Manifest"
+          },
+          "artifacts": {
+            "items": {
+              "$ref": "#/components/schemas/FileArtifactReadSchema"
+            },
+            "type": "array",
+            "title": "Artifacts"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "project_id",
+          "plan_id",
+          "plan_revision",
+          "validation_id",
+          "job_id",
+          "export_version",
+          "manifest",
+          "artifacts",
+          "created_at"
+        ],
+        "title": "ExportReadSchema",
+        "description": "Готовый неизменяемый комплект экспорта."
+      },
+      "FileArtifactFormat": {
+        "type": "string",
+        "enum": [
+          "dxf",
+          "json",
+          "markdown"
+        ],
+        "title": "FileArtifactFormat",
+        "description": "Формат сформированного файла."
+      },
+      "FileArtifactKind": {
+        "type": "string",
+        "enum": [
+          "canonical_dxf",
+          "result_dxf",
+          "plan_json",
+          "report_json",
+          "report_markdown"
+        ],
+        "title": "FileArtifactKind",
+        "description": "Назначение сформированного файла."
+      },
+      "FileArtifactReadSchema": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Id"
+          },
+          "project_id": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Project Id"
+          },
+          "project_file_id": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 1.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Project File Id"
+          },
+          "job_id": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Job Id"
+          },
+          "export_id": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 1.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Export Id"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/FileArtifactKind"
+          },
+          "format": {
+            "$ref": "#/components/schemas/FileArtifactFormat"
+          },
+          "download_name": {
+            "type": "string",
+            "title": "Download Name"
+          },
+          "content_type": {
+            "type": "string",
+            "title": "Content Type"
+          },
+          "size_bytes": {
+            "type": "integer",
+            "exclusiveMinimum": 0.0,
+            "title": "Size Bytes"
+          },
+          "sha256": {
+            "type": "string",
+            "maxLength": 64,
+            "minLength": 64,
+            "title": "Sha256"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "project_id",
+          "project_file_id",
+          "job_id",
+          "export_id",
+          "kind",
+          "format",
+          "download_name",
+          "content_type",
+          "size_bytes",
+          "sha256",
+          "created_at"
+        ],
+        "title": "FileArtifactReadSchema",
+        "description": "Схема сформированного файла проекта."
+      },
+      "GenerationParametersSchema": {
+        "properties": {
+          "max_trees": {
+            "type": "integer",
+            "maximum": 10000.0,
+            "minimum": 0.0,
+            "title": "Max Trees"
+          },
+          "max_bushes": {
+            "type": "integer",
+            "maximum": 10000.0,
+            "minimum": 0.0,
+            "title": "Max Bushes"
+          },
+          "tree_tree_distance_m": {
+            "type": "number",
+            "maximum": 1000.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Tree Tree Distance M"
+          },
+          "bush_bush_distance_m": {
+            "type": "number",
+            "maximum": 1000.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Bush Bush Distance M"
+          },
+          "tree_bush_distance_m": {
+            "type": "number",
+            "maximum": 1000.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Tree Bush Distance M"
+          },
+          "grid_spacing_m": {
+            "type": "number",
+            "maximum": 1000.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Grid Spacing M"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "max_trees",
+          "max_bushes",
+          "tree_tree_distance_m",
+          "bush_bush_distance_m",
+          "tree_bush_distance_m",
+          "grid_spacing_m"
+        ],
+        "title": "GenerationParametersSchema",
+        "description": "Проектные параметры генерации посадок."
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "JobReadSchema": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Id"
+          },
+          "project_id": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Project Id"
+          },
+          "project_file_id": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 1.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Project File Id"
+          },
+          "type": {
+            "$ref": "#/components/schemas/JobType"
+          },
+          "status": {
+            "$ref": "#/components/schemas/JobStatus"
+          },
+          "stage": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Stage"
+          },
+          "result": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "$ref": "#/components/schemas/JsonValue"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Result"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "started_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Started At"
+          },
+          "finished_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Finished At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "project_id",
+          "project_file_id",
+          "type",
+          "status",
+          "stage",
+          "result",
+          "error",
+          "created_at",
+          "started_at",
+          "finished_at"
+        ],
+        "title": "JobReadSchema",
+        "description": "Схема состояния фоновой задачи."
+      },
+      "JobStatus": {
+        "type": "string",
+        "enum": [
+          "queued",
+          "running",
+          "succeeded",
+          "failed"
+        ],
+        "title": "JobStatus",
+        "description": "Состояние фоновой задачи."
+      },
+      "JobType": {
+        "type": "string",
+        "enum": [
+          "convert_dwf",
+          "analyze",
+          "generate_plan",
+          "validate_plan",
+          "export",
+          "agent_request"
+        ],
+        "title": "JobType",
+        "description": "Тип фоновой задачи."
+      },
+      "JsonValue": {},
+      "LayerMappingSchema": {
+        "properties": {
+          "layer": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 1,
+            "title": "Layer"
+          },
+          "object_type": {
+            "$ref": "#/components/schemas/SemanticObjectType"
+          },
+          "attributes": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/JsonValue"
+            },
+            "type": "object",
+            "title": "Attributes"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "layer",
+          "object_type"
+        ],
+        "title": "LayerMappingSchema",
+        "description": "Подтверждённая классификация объектов слоя DXF."
+      },
+      "MultiPolygonBoundarySchema": {
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "MultiPolygon",
+            "title": "Type"
+          },
+          "coordinate_space": {
+            "type": "string",
+            "const": "local_meters",
+            "title": "Coordinate Space",
+            "default": "local_meters"
+          },
+          "coordinates": {
+            "items": {
+              "items": {
+                "items": {
+                  "prefixItems": [
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "number"
+                    }
+                  ],
+                  "type": "array",
+                  "maxItems": 2,
+                  "minItems": 2
+                },
+                "type": "array",
+                "minItems": 4
+              },
+              "type": "array",
+              "minItems": 1
+            },
+            "type": "array",
+            "minItems": 1,
+            "title": "Coordinates"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "type",
+          "coordinates"
+        ],
+        "title": "MultiPolygonBoundarySchema",
+        "description": "Граница участка из нескольких полигонов."
+      },
+      "NormativeRulesStatus": {
+        "type": "string",
+        "enum": [
+          "needs_verification",
+          "verified"
+        ],
+        "title": "NormativeRulesStatus",
+        "description": "Статус нормативного набора снимка конфигурации."
+      },
+      "PlanGenerationSummarySchema": {
+        "properties": {
+          "candidate_count": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Candidate Count"
+          },
+          "tree_count": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Tree Count"
+          },
+          "bush_count": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Bush Count"
+          },
+          "rejected_candidate_count": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Rejected Candidate Count"
+          },
+          "strategy": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Strategy",
+            "default": "hex_grid_greedy"
+          },
+          "selected_offset_index": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Selected Offset Index",
+            "default": 0
+          },
+          "offset_x_m": {
+            "type": "number",
+            "title": "Offset X M",
+            "default": 0.0
+          },
+          "offset_y_m": {
+            "type": "number",
+            "title": "Offset Y M",
+            "default": 0.0
+          },
+          "grid_spacing_m": {
+            "anyOf": [
+              {
+                "type": "number",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Grid Spacing M"
+          },
+          "design_rationale": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 2000,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Design Rationale"
+          },
+          "warnings": {
+            "items": {
+              "type": "string",
+              "maxLength": 2000,
+              "minLength": 1
+            },
+            "type": "array",
+            "title": "Warnings"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "candidate_count",
+          "tree_count",
+          "bush_count",
+          "rejected_candidate_count"
+        ],
+        "title": "PlanGenerationSummarySchema",
+        "description": "Проверяемая сводка результата генератора."
+      },
+      "PlanPreviewReadSchema": {
+        "properties": {
+          "schema_version": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Schema Version",
+            "default": 2
+          },
+          "coordinate_space": {
+            "type": "string",
+            "const": "local_meters",
+            "title": "Coordinate Space",
+            "default": "local_meters"
+          },
+          "boundary": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/JsonValue"
+            },
+            "type": "object",
+            "title": "Boundary"
+          },
+          "objects": {
+            "items": {
+              "$ref": "#/components/schemas/PreviewObjectSchema"
+            },
+            "type": "array",
+            "title": "Objects"
+          },
+          "restrictions": {
+            "items": {
+              "$ref": "#/components/schemas/PreviewRestrictionSchema"
+            },
+            "type": "array",
+            "title": "Restrictions"
+          },
+          "zones": {
+            "$ref": "#/components/schemas/PreviewZonesSchema"
+          },
+          "issues": {
+            "items": {
+              "$ref": "#/components/schemas/PreviewIssueSchema"
+            },
+            "type": "array",
+            "title": "Issues"
+          },
+          "summary": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PreviewSummarySchema"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "plan_id": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Plan Id"
+          },
+          "plan_revision": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Plan Revision"
+          },
+          "plantings": {
+            "items": {
+              "$ref": "#/components/schemas/PlantingReadSchema"
+            },
+            "type": "array",
+            "title": "Plantings"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "boundary",
+          "objects",
+          "restrictions",
+          "zones",
+          "issues",
+          "plan_id",
+          "plan_revision",
+          "plantings"
+        ],
+        "title": "PlanPreviewReadSchema",
+        "description": "Диагностическое представление текущей ревизии плана."
+      },
+      "PlanReadSchema": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Id"
+          },
+          "project_id": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Project Id"
+          },
+          "project_file_id": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Project File Id"
+          },
+          "analysis_id": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Analysis Id"
+          },
+          "config_snapshot_id": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Config Snapshot Id"
+          },
+          "job_id": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Job Id"
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Revision"
+          },
+          "status": {
+            "$ref": "#/components/schemas/PlanStatus"
+          },
+          "generator_version": {
+            "type": "string",
+            "title": "Generator Version"
+          },
+          "generation_summary": {
+            "$ref": "#/components/schemas/PlanGenerationSummarySchema"
+          },
+          "plantings": {
+            "items": {
+              "$ref": "#/components/schemas/PlantingReadSchema"
+            },
+            "type": "array",
+            "title": "Plantings"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "project_id",
+          "project_file_id",
+          "analysis_id",
+          "config_snapshot_id",
+          "job_id",
+          "revision",
+          "status",
+          "generator_version",
+          "generation_summary",
+          "plantings",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "PlanReadSchema",
+        "description": "Схема плана озеленения."
+      },
+      "PlanStatus": {
+        "type": "string",
+        "enum": [
+          "needs_verification",
+          "verified",
+          "invalid"
+        ],
+        "title": "PlanStatus",
+        "description": "Состояние проверки плана озеленения."
+      },
+      "PlanValidationReadSchema": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Id"
+          },
+          "plan_id": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Plan Id"
+          },
+          "plan_revision": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Plan Revision"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ValidationStatus"
+          },
+          "validator_version": {
+            "type": "string",
+            "title": "Validator Version"
+          },
+          "checks": {
+            "items": {
+              "$ref": "#/components/schemas/CheckResultSchema"
+            },
+            "type": "array",
+            "title": "Checks"
+          },
+          "summary": {
+            "$ref": "#/components/schemas/ValidationSummarySchema"
+          },
+          "rules_status": {
+            "$ref": "#/components/schemas/NormativeRulesStatus"
+          },
+          "rules_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rules Version"
+          },
+          "rules_sha256": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 64,
+                "minLength": 64
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rules Sha256"
+          },
+          "plant_catalog_status": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PlantCatalogStatus"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "plant_catalog_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Plant Catalog Version"
+          },
+          "plant_catalog_sha256": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 64,
+                "minLength": 64
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Plant Catalog Sha256"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "plan_id",
+          "plan_revision",
+          "status",
+          "validator_version",
+          "checks",
+          "summary",
+          "rules_status",
+          "rules_version",
+          "rules_sha256",
+          "plant_catalog_status",
+          "plant_catalog_version",
+          "plant_catalog_sha256",
+          "created_at"
+        ],
+        "title": "PlanValidationReadSchema",
+        "description": "Сохранённый результат проверки ревизии плана."
+      },
+      "PlantCatalogStatus": {
+        "type": "string",
+        "enum": [
+          "needs_verification",
+          "verified"
+        ],
+        "title": "PlantCatalogStatus",
+        "description": "Статус проверки происхождения справочника растений."
+      },
+      "PlantingCreateSchema": {
+        "properties": {
+          "type": {
+            "$ref": "#/components/schemas/PlantingType"
+          },
+          "x_m": {
+            "type": "number",
+            "title": "X M"
+          },
+          "y_m": {
+            "type": "number",
+            "title": "Y M"
+          },
+          "species": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 255,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Species"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "type",
+          "x_m",
+          "y_m"
+        ],
+        "title": "PlantingCreateSchema",
+        "description": "Схема новой посадки в локальных метрах."
+      },
+      "PlantingMutationReadSchema": {
+        "properties": {
+          "plan_revision": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Plan Revision"
+          },
+          "planting": {
+            "$ref": "#/components/schemas/PlantingReadSchema"
+          }
+        },
+        "type": "object",
+        "required": [
+          "plan_revision",
+          "planting"
+        ],
+        "title": "PlantingMutationReadSchema",
+        "description": "Результат изменения посадки и новая ревизия плана."
+      },
+      "PlantingPatchSchema": {
+        "properties": {
+          "type": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PlantingType"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "x_m": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "X M"
+          },
+          "y_m": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Y M"
+          },
+          "species": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 255,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Species"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "PlantingPatchSchema",
+        "description": "Схема перемещения или изменения типа посадки."
+      },
+      "PlantingReadSchema": {
+        "properties": {
+          "public_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Public Id"
+          },
+          "plan_id": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Plan Id"
+          },
+          "type": {
+            "$ref": "#/components/schemas/PlantingType"
+          },
+          "source": {
+            "$ref": "#/components/schemas/PlantingSource"
+          },
+          "x_m": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "X M"
+          },
+          "y_m": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Y M"
+          },
+          "species": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Species"
+          }
+        },
+        "type": "object",
+        "required": [
+          "public_id",
+          "plan_id",
+          "type",
+          "source",
+          "x_m",
+          "y_m",
+          "species"
+        ],
+        "title": "PlantingReadSchema",
+        "description": "Схема посадки плана."
+      },
+      "PlantingSource": {
+        "type": "string",
+        "enum": [
+          "generated",
+          "manual"
+        ],
+        "title": "PlantingSource",
+        "description": "Источник появления посадки в плане."
+      },
+      "PlantingType": {
+        "type": "string",
+        "enum": [
+          "tree",
+          "bush"
+        ],
+        "title": "PlantingType",
+        "description": "Тип проектируемой посадки."
+      },
+      "PolygonBoundarySchema": {
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "Polygon",
+            "title": "Type"
+          },
+          "coordinate_space": {
+            "type": "string",
+            "const": "local_meters",
+            "title": "Coordinate Space",
+            "default": "local_meters"
+          },
+          "coordinates": {
+            "items": {
+              "items": {
+                "prefixItems": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ],
+                "type": "array",
+                "maxItems": 2,
+                "minItems": 2
+              },
+              "type": "array",
+              "minItems": 4
+            },
+            "type": "array",
+            "minItems": 1,
+            "title": "Coordinates"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "type",
+          "coordinates"
+        ],
+        "title": "PolygonBoundarySchema",
+        "description": "Граница участка в виде полигона с возможными отверстиями."
+      },
+      "PreviewIssueSchema": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Code"
+          },
+          "message": {
+            "type": "string",
+            "maxLength": 2000,
+            "minLength": 1,
+            "title": "Message"
+          },
+          "source_object_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Object Id"
+          },
+          "planting_type": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PlantingType"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "rule_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rule Id"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "code",
+          "message"
+        ],
+        "title": "PreviewIssueSchema",
+        "description": "Диагностическая проблема полноты preview."
+      },
+      "PreviewObjectSchema": {
+        "properties": {
+          "source_object_id": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Source Object Id"
+          },
+          "object_type": {
+            "$ref": "#/components/schemas/SemanticObjectType"
+          },
+          "geometry": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/JsonValue"
+            },
+            "type": "object",
+            "title": "Geometry"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "source_object_id",
+          "object_type",
+          "geometry"
+        ],
+        "title": "PreviewObjectSchema",
+        "description": "Подтверждённый объект исходного DXF в локальных метрах."
+      },
+      "PreviewRestrictionSchema": {
+        "properties": {
+          "source_object_id": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Source Object Id"
+          },
+          "object_type": {
+            "$ref": "#/components/schemas/SemanticObjectType"
+          },
+          "planting_type": {
+            "$ref": "#/components/schemas/PlantingType"
+          },
+          "rule_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Rule Id"
+          },
+          "rule_version": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Rule Version"
+          },
+          "min_distance_m": {
+            "type": "number",
+            "exclusiveMinimum": 0.0,
+            "title": "Min Distance M"
+          },
+          "document": {
+            "type": "string",
+            "title": "Document"
+          },
+          "clause": {
+            "type": "string",
+            "title": "Clause"
+          },
+          "geometry": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/JsonValue"
+            },
+            "type": "object",
+            "title": "Geometry"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "source_object_id",
+          "object_type",
+          "planting_type",
+          "rule_id",
+          "rule_version",
+          "min_distance_m",
+          "document",
+          "clause",
+          "geometry"
+        ],
+        "title": "PreviewRestrictionSchema",
+        "description": "Отдельная нормативная зона с происхождением ограничения."
+      },
+      "PreviewSummarySchema": {
+        "properties": {
+          "object_count": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Object Count"
+          },
+          "displayed_object_count": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Displayed Object Count"
+          },
+          "restriction_count": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Restriction Count"
+          },
+          "displayed_restriction_count": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Displayed Restriction Count"
+          },
+          "source_coordinate_count": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Source Coordinate Count"
+          },
+          "displayed_coordinate_count": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Displayed Coordinate Count"
+          },
+          "simplified": {
+            "type": "boolean",
+            "title": "Simplified"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "object_count",
+          "displayed_object_count",
+          "restriction_count",
+          "displayed_restriction_count",
+          "source_coordinate_count",
+          "displayed_coordinate_count",
+          "simplified"
+        ],
+        "title": "PreviewSummarySchema",
+        "description": "Сводка полноты облегчённой геометрии для браузера."
+      },
+      "PreviewZonesSchema": {
+        "properties": {
+          "tree_available": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/JsonValue"
+            },
+            "type": "object",
+            "title": "Tree Available"
+          },
+          "bush_available": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/JsonValue"
+            },
+            "type": "object",
+            "title": "Bush Available"
+          },
+          "tree_exclusion": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/JsonValue"
+            },
+            "type": "object",
+            "title": "Tree Exclusion"
+          },
+          "bush_exclusion": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/JsonValue"
+            },
+            "type": "object",
+            "title": "Bush Exclusion"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "tree_available",
+          "bush_available",
+          "tree_exclusion",
+          "bush_exclusion"
+        ],
+        "title": "PreviewZonesSchema",
+        "description": "Объединённые допустимые и запрещённые зоны двух типов посадок."
+      },
+      "ProjectCreateSchema": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 2,
+            "title": "Name",
+            "description": "Название проекта."
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 2000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description",
+            "description": "Описание проекта"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "title": "ProjectCreateSchema",
+        "description": "Схема создания проекта."
+      },
+      "ProjectFileFormat": {
+        "type": "string",
+        "enum": [
+          "dxf",
+          "dwf"
+        ],
+        "title": "ProjectFileFormat",
+        "description": "Формат исходного файла проекта."
+      },
+      "ProjectFileReadSchema": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Id"
+          },
+          "project_id": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Project Id"
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Version"
+          },
+          "format": {
+            "$ref": "#/components/schemas/ProjectFileFormat"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ProjectFileStatus"
+          },
+          "original_name": {
+            "type": "string",
+            "title": "Original Name"
+          },
+          "content_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Content Type"
+          },
+          "size_bytes": {
+            "type": "integer",
+            "exclusiveMinimum": 0.0,
+            "title": "Size Bytes"
+          },
+          "sha256": {
+            "type": "string",
+            "maxLength": 64,
+            "minLength": 64,
+            "title": "Sha256"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "project_id",
+          "version",
+          "format",
+          "status",
+          "original_name",
+          "content_type",
+          "size_bytes",
+          "sha256",
+          "created_at"
+        ],
+        "title": "ProjectFileReadSchema",
+        "description": "Схема исходного файла проекта."
+      },
+      "ProjectFileStatus": {
+        "type": "string",
+        "enum": [
+          "ready",
+          "conversion_required"
+        ],
+        "title": "ProjectFileStatus",
+        "description": "Готовность исходного файла к анализу."
+      },
+      "ProjectPageSchema": {
+        "properties": {
+          "total": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Total",
+            "description": "Общее количество объектов"
+          },
+          "page": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Page",
+            "description": "Номер текущей страницы"
+          },
+          "limit": {
+            "type": "integer",
+            "maximum": 100.0,
+            "minimum": 1.0,
+            "title": "Limit",
+            "description": "Максимальное количество объектов на странице"
+          },
+          "pages": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Pages",
+            "description": "Общее количество страниц"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/ProjectReadSchema"
+            },
+            "type": "array",
+            "title": "Items",
+            "description": "Список объектов на текущей странице"
+          }
+        },
+        "type": "object",
+        "required": [
+          "total",
+          "page",
+          "limit",
+          "pages",
+          "items"
+        ],
+        "title": "ProjectPageSchema",
+        "description": "Схема списка проектов с пагинацией."
+      },
+      "ProjectReadSchema": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "description",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "ProjectReadSchema",
+        "description": "Схема проекта для ответа."
+      },
+      "SemanticObjectType": {
+        "type": "string",
+        "enum": [
+          "building",
+          "road",
+          "utility_water",
+          "utility_sewer",
+          "utility_gas",
+          "utility_power",
+          "existing_tree",
+          "existing_bush",
+          "other_obstacle",
+          "ignore"
+        ],
+        "title": "SemanticObjectType",
+        "description": "Подтверждённое назначение объектов слоя."
+      },
+      "TerritoryType": {
+        "type": "string",
+        "enum": [
+          "courtyard",
+          "preschool",
+          "education_and_sport",
+          "healthcare",
+          "roads",
+          "public_and_commercial",
+          "parks_and_public_green",
+          "industrial_and_protection"
+        ],
+        "title": "TerritoryType",
+        "description": "Тип территории для подбора рекомендованного ассортимента."
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      },
+      "ValidationStatus": {
+        "type": "string",
+        "enum": [
+          "passed",
+          "failed",
+          "needs_verification"
+        ],
+        "title": "ValidationStatus",
+        "description": "Результат отдельной проверки или всего запуска Validator."
+      },
+      "ValidationSummarySchema": {
+        "properties": {
+          "total": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Total"
+          },
+          "passed": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Passed"
+          },
+          "failed": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Failed"
+          },
+          "needs_verification": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Needs Verification"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "total",
+          "passed",
+          "failed",
+          "needs_verification"
+        ],
+        "title": "ValidationSummarySchema",
+        "description": "Количество проверок по каждому итоговому статусу."
+      }
+    }
+  }
+}

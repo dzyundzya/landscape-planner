@@ -1,0 +1,111 @@
+{
+  "coordinate_unit": "meter",
+  "territory_type": "courtyard",
+  "boundary": {
+    "type": "Polygon",
+    "coordinate_space": "local_meters",
+    "coordinates": [
+      [
+        [
+          0.0,
+          18.0
+        ],
+        [
+          100.0,
+          18.0
+        ],
+        [
+          100.0,
+          60.0
+        ],
+        [
+          0.0,
+          60.0
+        ],
+        [
+          0.0,
+          18.0
+        ]
+      ]
+    ]
+  },
+  "layer_mappings": [
+    {
+      "layer": "0",
+      "object_type": "ignore",
+      "attributes": {
+        "geometry_role": "line"
+      }
+    },
+    {
+      "layer": "Defpoints",
+      "object_type": "ignore",
+      "attributes": {
+        "geometry_role": "line"
+      }
+    },
+    {
+      "layer": "РАМКА_ГРАНИЦА_УЧАСТКА",
+      "object_type": "ignore",
+      "attributes": {
+        "geometry_role": "line"
+      }
+    },
+    {
+      "layer": "ЗДАНИЕ",
+      "object_type": "building",
+      "attributes": {
+        "geometry_role": "area",
+        "measurement_reference": "exterior_wall",
+        "building_use": "other"
+      }
+    },
+    {
+      "layer": "КРАЙ_ДОРОГИ",
+      "object_type": "road",
+      "attributes": {
+        "geometry_role": "line",
+        "measurement_reference": "roadway_edge"
+      }
+    },
+    {
+      "layer": "ВОДОПРОВОД",
+      "object_type": "utility_water",
+      "attributes": {
+        "geometry_role": "line",
+        "measurement_reference": "utility_outer_surface"
+      }
+    },
+    {
+      "layer": "ЭЛЕКТРОКАБЕЛЬ",
+      "object_type": "utility_power",
+      "attributes": {
+        "geometry_role": "line",
+        "measurement_reference": "utility_outer_surface",
+        "network_kind": "underground_power_cable"
+      }
+    },
+    {
+      "layer": "СУЩЕСТВУЮЩИЕ_ДЕРЕВЬЯ",
+      "object_type": "existing_tree",
+      "attributes": {
+        "geometry_role": "area"
+      }
+    },
+    {
+      "layer": "ПОДПИСИ",
+      "object_type": "ignore",
+      "attributes": {
+        "geometry_role": "line"
+      }
+    }
+  ],
+  "generation": {
+    "max_trees": 12,
+    "max_bushes": 20,
+    "tree_tree_distance_m": 5.0,
+    "bush_bush_distance_m": 1.5,
+    "tree_bush_distance_m": 2.5,
+    "grid_spacing_m": 1.0
+  }
+}

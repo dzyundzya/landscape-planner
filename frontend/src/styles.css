@@ -27,12 +27,9 @@ button { cursor: pointer; }
 .topbar { height: 74px; display: flex; align-items: center; justify-content: space-between; padding: 0 clamp(24px, 5vw, 72px); background: rgba(255, 254, 249, 0.9); border-bottom: 1px solid rgba(23, 63, 53, 0.12); backdrop-filter: blur(14px); }
 .brand { color: var(--ink); display: flex; align-items: center; gap: 12px; text-decoration: none; }
 .brand > span:last-child { display: flex; flex-direction: column; }
-.brand b { font-family: Georgia, 'Times New Roman', serif; font-size: 21px; font-weight: 400; line-height: 1; }
-.brand small { color: var(--muted); font-size: 10px; letter-spacing: .08em; margin-top: 4px; text-transform: uppercase; }
-.brand-mark { width: 34px; height: 38px; position: relative; display: inline-block; }
-.brand-mark i { position: absolute; display: block; width: 18px; height: 26px; border-radius: 100% 0 100% 0; background: var(--leaf); transform: rotate(-22deg); }
-.brand-mark i:nth-child(2) { left: 14px; top: 3px; transform: rotate(72deg); background: var(--forest); }
-.brand-mark i:nth-child(3) { left: 8px; top: 16px; width: 3px; height: 21px; border-radius: 2px; transform: rotate(0); background: var(--forest); }
+.brand b { color: #125239; font-size: 25px; font-weight: 800; line-height: 1; }
+.brand small { color: var(--muted); font-size: 10px; line-height: 1.35; margin-top: 4px; }
+.brand-mark { width: 60px; height: 60px; flex: 0 0 auto; object-fit: contain; border-radius: 10px; }
 .topbar-note { color: var(--muted); display: flex; align-items: center; gap: 9px; font-size: 13px; font-weight: 600; }
 .live-dot { width: 8px; height: 8px; border-radius: 50%; background: #64a45d; box-shadow: 0 0 0 4px rgba(100,164,93,.14); }
 

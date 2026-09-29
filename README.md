@@ -1,6 +1,12 @@
-# Landscape Planner
+# Автосад
+
+<img src="frontend/public/brand/avtosad-logo.jpg" alt="Логотип Автосада" width="160" />
+
+**Интеллектуальное планирование городского озеленения.**
 
 Сервис автоматического проектирования городского озеленения по данным DXF.
+
+[Фирменное изображение с названием и слоганом](docs/brand/avtosad-presentation.jpg).
 
 ## Запуск в Docker
 

@@ -25,14 +25,14 @@ def init_backend_app() -> FastAPI:
     @asynccontextmanager
     async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
         logger.info(
-            'Приложение Landscape planner запущено: debug={}, api_prefix={}',
+            'Приложение Автосад запущено: debug={}, api_prefix={}',
             settings.DEBUG,
             settings.API_PREFIX,
         )
         try:
             yield
         finally:
-            logger.info('Приложение Landscape planner останавливается')
+            logger.info('Приложение Автосад останавливается')
             await async_db.dispose()
             logger.info('Подключение к базе данных закрыто')
             flush_sentry()

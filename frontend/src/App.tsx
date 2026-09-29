@@ -183,9 +183,9 @@ export function App() {
   return (
     <div className="app-shell">
       <header className="topbar">
-        <a className="brand" href="/static/" aria-label="Greenplan — главная">
-          <span className="brand-mark" aria-hidden="true"><i /><i /><i /></span>
-          <span><b>Greenplan</b><small>ландшафтное проектирование</small></span>
+        <a className="brand" href="/static/" aria-label="Автосад — главная">
+          <img className="brand-mark" src={`${import.meta.env.BASE_URL}brand/avtosad-logo.jpg`} alt="" width="60" height="60" />
+          <span><b>Автосад</b><small>Интеллектуальное планирование<br />городского озеленения</small></span>
         </a>
         <div className="topbar-note">
           <span className="live-dot" />
@@ -367,7 +367,7 @@ function FileSection({ project, projectFile, isUploading, onUpload }: { project:
             <input type="file" accept=".dxf,application/dxf" onChange={(event) => setFile(event.target.files?.[0] ?? null)} />
             <span className="upload-symbol">↥</span>
             <strong>{file?.name ?? 'Выберите DXF-файл'}</strong>
-            <small>{file ? formatBytes(file.size) : 'До 50 МБ · исходник сохраняется без изменений'}</small>
+            <small>{file ? formatBytes(file.size) : 'До 200 МБ · исходник сохраняется без изменений'}</small>
           </label>
           {localError && <p className="field-error">{localError}</p>}
           <button className="button button-primary" type="submit" disabled={!file || isUploading}>{isUploading ? 'Загружаем…' : `Загрузить в проект #${project.id}`}</button>

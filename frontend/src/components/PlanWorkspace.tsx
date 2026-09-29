@@ -138,12 +138,26 @@ export function PlanWorkspace({ projectId, initialPlanId, onProgress }: Props) {
 
   if (!generationJob && initialPlanId === null) {
     return (
-      <section className="panel action-panel">
-        <div className="panel-heading">
-          <div><p className="eyebrow">Шаг 5</p><h2>LLM-агент автопланирования</h2><p className="section-description">Python рассчитает допустимые точки, а LLM выберет места для деревьев и кустарников. Некорректные выборы будут отклонены, затем Validator проверит весь план.</p></div>
+      <section className="panel action-panel planting-assistant-card">
+        <div className="planting-assistant-icon" aria-hidden="true"><span>✦</span></div>
+        <div className="planting-assistant-content">
+          <p className="eyebrow">Шаг 5 · Помощник по озеленению</p>
+          <h2>Создать гармоничный план посадок</h2>
+          <p className="section-description">
+            Помощник подберёт расположение деревьев и кустарников в доступных зонах,
+            учтёт объекты участка и передаст результат на обязательную проверку.
+          </p>
+          <div className="planting-assistant-features" aria-label="Возможности помощника">
+            <span>Учитывает ограничения</span>
+            <span>Создаёт композицию</span>
+            <span>Оставляет план редактируемым</span>
+          </div>
+        </div>
+        <div className="planting-assistant-action">
           <button className="button button-primary" type="button" disabled={generationMutation.isLoading} onClick={() => generationMutation.mutate()}>
-            {generationMutation.isLoading ? 'Запускаем агента…' : 'Расставить автоматически'}
+            {generationMutation.isLoading ? 'Создаём план…' : 'Создать план посадок'}
           </button>
+          <small>После создания каждую посадку можно изменить</small>
         </div>
         {generationMutation.error !== null && <InlineError error={generationMutation.error} />}
       </section>
@@ -157,7 +171,7 @@ export function PlanWorkspace({ projectId, initialPlanId, onProgress }: Props) {
     return (
       <JobPanel
         eyebrow="Шаг 5"
-        title="LLM выбирает места посадок"
+        title="Помощник формирует план посадок"
         job={generationJobQuery.data ?? generationJob}
         error={actionError}
         isRetrying={generationMutation.isLoading}
@@ -182,7 +196,7 @@ export function PlanWorkspace({ projectId, initialPlanId, onProgress }: Props) {
         {plan.generation_summary.design_rationale && (
           <article className="notice notice-info">
             <span className="notice-marker" />
-            <div><strong>Концепция LLM</strong><p>{plan.generation_summary.design_rationale}</p></div>
+            <div><strong>Решение помощника</strong><p>{plan.generation_summary.design_rationale}</p></div>
           </article>
         )}
         {previewQuery.data ? (

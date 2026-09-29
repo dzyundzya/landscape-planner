@@ -29,7 +29,7 @@ from app.services.exports import ExportService
 from app.services.jobs import JobService
 from app.services.plans import PlanService
 
-SYSTEM_PROMPT = """Ты помощник сервиса проектирования озеленения Greenplan.
+SYSTEM_PROMPT = """Ты помощник сервиса проектирования озеленения «Автосад».
 Отвечай по-русски, коротко и только по фактам, полученным от инструментов.
 Не вычисляй геометрию и нормативные расстояния самостоятельно. Не придумывай нормы,
 координаты, статусы задач или результаты. Если инструмент вернул job_id, говори, что

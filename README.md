@@ -1,6 +1,65 @@
-# Landscape Planner
+# Автосад
+
+<img src="frontend/public/brand/avtosad-logo.jpg" alt="Логотип Автосада" width="160" />
+
+**Интеллектуальное планирование городского озеленения.**
 
 Сервис автоматического проектирования городского озеленения по данным DXF.
+
+[Фирменное изображение с названием и слоганом](docs/brand/avtosad-presentation.jpg).
+
+## Запуск в Docker
+
+Docker Compose запускает PostgreSQL, применяет миграции, затем поднимает API со
+встроенным frontend и отдельный worker. Исходные чертежи и результаты сохраняются
+в общем volume, доступном API и worker.
+
+Создайте локальный файл настроек и при необходимости добавьте ключ LLM и DSN
+Sentry:
+
+```bash
+cp .env.example .env
+```
+
+Соберите и запустите весь сервис:
+
+```bash
+docker compose up --build
+```
+
+После успешного запуска доступны:
+
+- интерфейс: `http://127.0.0.1:8000/`;
+- Swagger: `http://127.0.0.1:8000/docs`;
+- healthcheck: `http://127.0.0.1:8000/health`.
+
+Проверить контейнеры и посмотреть журналы:
+
+```bash
+docker compose ps
+docker compose logs -f api worker
+```
+
+Тестовую PostgreSQL при необходимости можно поднять отдельным профилем:
+
+```bash
+docker compose --profile test up -d test_db
+```
+
+Остановить сервис, сохранив базу и файлы:
+
+```bash
+docker compose down
+```
+
+Полностью удалить локальные данные можно явно командой `docker compose down -v`.
+Для обработки DXF размером около 150 МБ выделите Docker Desktop не менее 4 ГБ
+памяти: фактический пик worker на предоставленном примере составлял около 1,6 ГБ.
+
+Контейнеры читают `.env`, но Compose автоматически заменяет адрес PostgreSQL на
+`db`, путь файлового хранилища на `/data/storage`, а адрес API на `0.0.0.0:8000`.
+Для локального OpenAI-compatible сервера на macOS используйте в `LLM_BASE_URL`
+адрес `http://host.docker.internal:<порт>/v1` вместо `127.0.0.1`.
 
 ## Frontend
 

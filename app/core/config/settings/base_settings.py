@@ -8,7 +8,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class BackendSettings(BaseSettings):
     """Настройки бека приложения."""
 
-    TITLE: str = 'API Landscape-planner'
+    TITLE: str = 'Автосад API'
     VERSION: str = '1.0.0'
     TIMEZONE: str = 'Europe/Moscow'
     DESCRIPTION: str | None = None
